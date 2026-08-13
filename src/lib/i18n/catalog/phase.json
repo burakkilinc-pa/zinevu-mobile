@@ -1,11 +1,4 @@
 {
-  "phase.leads": {
-    "en": "Every request that comes in, with its 3D preview — filter by new, sent, approved or declined.",
-    "nl": "Elke binnenkomende aanvraag, met 3D-voorbeeld — filter op nieuw, verstuurd, akkoord of afgewezen.",
-    "de": "Jede eingehende Anfrage mit 3D-Vorschau — gefiltert nach neu, versendet, angenommen oder abgelehnt.",
-    "fr": "Chaque demande reçue, avec son aperçu 3D — filtrez par nouveau, envoyé, accepté ou refusé.",
-    "tr": "Gelen her talep, 3D önizlemesiyle — yeni, gönderildi, onaylandı veya reddedildi olarak filtrele."
-  },
   "phase.planning": {
     "en": "Your measurements, installations and visits on one calendar.",
     "nl": "Je inmetingen, montages en bezoeken in één agenda.",

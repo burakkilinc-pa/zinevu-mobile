@@ -191,4 +191,29 @@ export function t(
   return translate(currentLocale(), key, vars);
 }
 
+/**
+ * Translator for keys that MAY not exist.
+ *
+ * Some labels are keyed off data rather than code — a configurator answer, a
+ * dealer's own master-form question. Those keys are open-ended by design: the
+ * dealer can add a question tomorrow, and `t()` would render the raw key path
+ * ("leads.answer.dakhelling") on their screen. This falls back to a caller's
+ * own string instead, which for an answer is the key itself — still readable,
+ * and honest about being untranslated.
+ */
+export function useTFallback(): (key: string, fallback: string) => string {
+  const locale = useLocaleStore((s) => s.locale);
+
+  return useCallback(
+    (key: string, fallback: string) => {
+      // English is the canonical catalogue — a key absent there is absent
+      // everywhere, and gen-i18n guarantees the other four match it.
+      if (!(key in en)) return fallback;
+
+      return translate(locale, key as MessageKey);
+    },
+    [locale]
+  );
+}
+
 export type { MessageKey };
