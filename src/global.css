@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Zinevu brand tokens (mirrors app.veranduo's tailwind.config.mjs + globals.css):
+   ink navy #082D36 as the foreground and primary, lime #E7FFA4 as the accent
+   surface, cloud #F6F7F9 as the app background. The web product tints its whole
+   grayscale toward ink via opacity modifiers, so the muted tokens here are
+   desaturated ink rather than neutral gray. Keep global.css, lib/theme.ts and
+   tailwind.config.js in sync. */
+@layer base {
+  :root {
+    --background: 220 17% 97%; /* zinevu-cloud #F6F7F9 */
+    --foreground: 191 74% 12%; /* zinevu-ink #082D36 */
+
+    --card: 0 0% 100%;
+    --card-foreground: 191 74% 12%;
+
+    /* Primary ACTION is solid ink with white text — the web portal's primary
+       button. Lime is an accent surface only; it has no contrast on white. */
+    --primary: 191 74% 12%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 191 65% 17%; /* zinevu-ink-soft #0F3C48 */
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 220 17% 94%;
+    --muted-foreground: 194 25% 34%; /* ink-muted #40606B */
+
+    --accent: 74 100% 82%; /* zinevu-lime #E7FFA4 */
+    --accent-foreground: 191 74% 12%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 142 71% 40%;
+    --warning: 38 92% 50%;
+
+    --border: 200 15% 89%;
+    --input: 200 15% 89%;
+    --ring: 191 74% 12%;
+  }
+
+  /* NativeWind resolves variable overrides on native through `.dark:root`,
+     not a bare `.dark` class — the latter only flips on web. */
+  .dark:root {
+    --background: 193 60% 7%;
+    --foreground: 220 17% 97%;
+
+    --card: 191 60% 11%;
+    --card-foreground: 220 17% 97%;
+
+    /* Ink is invisible on a dark ground, so the primary action inverts to the
+       lime the brand already uses for its active-nav pill. */
+    --primary: 74 100% 82%;
+    --primary-foreground: 191 74% 12%;
+
+    --secondary: 191 40% 20%;
+    --secondary-foreground: 220 17% 97%;
+
+    --muted: 191 40% 15%;
+    --muted-foreground: 194 15% 65%;
+
+    --accent: 191 45% 21%;
+    --accent-foreground: 220 17% 97%;
+
+    --destructive: 0 62% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 142 60% 45%;
+    --warning: 38 85% 55%;
+
+    --border: 191 32% 21%;
+    --input: 191 32% 21%;
+    --ring: 74 100% 82%;
+  }
+}

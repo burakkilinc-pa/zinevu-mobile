@@ -1,0 +1,35 @@
+{
+  "cli": {
+    "version": ">= 21.0.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://api.zinevu.com/api/v1",
+        "EXPO_PUBLIC_REVERB_KEY": "REPLACE_WITH_PROD_REVERB_APP_KEY",
+        "EXPO_PUBLIC_REVERB_HOST": "api.zinevu.com",
+        "EXPO_PUBLIC_REVERB_PORT": "443",
+        "EXPO_PUBLIC_REVERB_SCHEME": "https"
+      }
+    },
+    "production": {
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://api.zinevu.com/api/v1",
+        "EXPO_PUBLIC_REVERB_KEY": "REPLACE_WITH_PROD_REVERB_APP_KEY",
+        "EXPO_PUBLIC_REVERB_HOST": "api.zinevu.com",
+        "EXPO_PUBLIC_REVERB_PORT": "443",
+        "EXPO_PUBLIC_REVERB_SCHEME": "https"
+      }
+    }
+  }
+}

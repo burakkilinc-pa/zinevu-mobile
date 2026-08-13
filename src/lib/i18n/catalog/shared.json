@@ -1,0 +1,17 @@
+{
+  "errors.network": { "en": "Could not connect to the network.", "nl": "Kan geen verbinding maken.", "de": "Keine Netzwerkverbindung möglich.", "fr": "Impossible de se connecter au réseau.", "tr": "Ağa bağlanılamadı." },
+  "errors.timeout": { "en": "The request timed out.", "nl": "De aanvraag is verlopen.", "de": "Die Anfrage ist abgelaufen.", "fr": "La requête a expiré.", "tr": "İstek zaman aşımına uğradı." },
+  "errors.requestFailed": { "en": "Request failed ({status}).", "nl": "Aanvraag mislukt ({status}).", "de": "Anfrage fehlgeschlagen ({status}).", "fr": "Échec de la requête ({status}).", "tr": "İstek başarısız ({status})." },
+  "errors.permissionDenied": { "en": "Permission denied. Enable camera/photo access in Settings.", "nl": "Toegang geweigerd. Schakel camera-/fototoegang in bij Instellingen.", "de": "Zugriff verweigert. Aktiviere den Kamera-/Fotozugriff in den Einstellungen.", "fr": "Autorisation refusée. Activez l'accès à l'appareil photo/aux photos dans les Réglages.", "tr": "İzin reddedildi. Ayarlar'dan kamera/fotoğraf erişimini açın." },
+
+  "offline.noConnection": { "en": "No internet connection", "nl": "Geen internetverbinding", "de": "Keine Internetverbindung", "fr": "Pas de connexion Internet", "tr": "İnternet bağlantısı yok" },
+
+  "time.now": { "en": "now", "nl": "nu", "de": "jetzt", "fr": "à l'instant", "tr": "şimdi" },
+  "time.minutesShort": { "en": "{n}m", "nl": "{n}m", "de": "{n}Min.", "fr": "{n}min", "tr": "{n}dk" },
+  "time.hoursShort": { "en": "{n}h", "nl": "{n}u", "de": "{n}Std.", "fr": "{n}h", "tr": "{n}sa" },
+  "time.daysShort": { "en": "{n}d", "nl": "{n}d", "de": "{n}T", "fr": "{n}j", "tr": "{n}g" },
+  "time.today": { "en": "Today", "nl": "Vandaag", "de": "Heute", "fr": "Aujourd'hui", "tr": "Bugün" },
+  "time.yesterday": { "en": "Yesterday", "nl": "Gisteren", "de": "Gestern", "fr": "Hier", "tr": "Dün" },
+  "time.todayLower": { "en": "today", "nl": "vandaag", "de": "heute", "fr": "aujourd'hui", "tr": "bugün" },
+  "time.yesterdayLower": { "en": "yesterday", "nl": "gisteren", "de": "gestern", "fr": "hier", "tr": "dün" }
+}
