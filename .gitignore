@@ -20,6 +20,9 @@ expo-env.d.ts
 # Firebase service account key (FCM V1 push auth) — secret, unlike
 # google-services.json which only holds public identifiers.
 *firebase-adminsdk*.json
+# Play Console upload key. Carries permission to publish a release under our
+# name, so it never belongs in a repo — eas.json only points at the path.
+google-play-service-account.json
 
 # Metro
 .metro-health-check*

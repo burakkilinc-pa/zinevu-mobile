@@ -52,7 +52,38 @@ The API host is baked in per profile in `eas.json` — both profiles point at
 `https://api.zinevu.com`. Change it there, not in the code: `src/lib/config.ts`
 only holds the local-development fallback.
 
-## 5. Store listings
+## 5. TestFlight
+
+TestFlight distributes a **store** build, not the `preview` one — so use the
+`production` profile even though nobody is going to the App Store yet.
+
+```bash
+# Create the app record first; without it there is no ascAppId to submit to.
+npx eas build --profile production --platform ios
+npx eas submit --profile production --platform ios --latest
+```
+
+`eas submit` fills in the three `REPLACE_WITH_…` values in `eas.json` the first
+time it runs interactively — commit them afterwards, they are identifiers, not
+secrets. The Apple ID is an e-mail; the team ID is the ten-character string in
+the Apple Developer membership page; the ASC app id is the numeric one in the
+App Store Connect URL.
+
+Two things Apple stops the build on, both of which look like nothing until they
+happen:
+
+- **Export compliance.** Already answered — `usesNonExemptEncryption: false` in
+  `app.json`. HTTPS alone is exempt, and the app uses nothing beyond it.
+- **A build cannot be re-uploaded under a number that already exists.** The
+  `production` profile has `autoIncrement` with `appVersionSource: "remote"`, so
+  EAS keeps the counter — do not also bump `buildNumber` by hand or the two
+  fight.
+
+Internal testers (up to 100, your own team) get the build as soon as it finishes
+processing, with no Apple review. **External** testers do need a review pass, and
+that review needs the demo account from step 6.
+
+## 6. Store listings
 
 Not started. Both stores need an icon (already generated — `assets/images/icon.png`),
 screenshots, a description, and a privacy policy URL. The app links to
