@@ -15,7 +15,7 @@
       },
       "env": {
         "EXPO_PUBLIC_API_URL": "https://api.zinevu.com/api/v1",
-        "EXPO_PUBLIC_REVERB_KEY": "REPLACE_WITH_PROD_REVERB_APP_KEY",
+        "EXPO_PUBLIC_REVERB_KEY": "local-reverb-key",
         "EXPO_PUBLIC_REVERB_HOST": "api.zinevu.com",
         "EXPO_PUBLIC_REVERB_PORT": "443",
         "EXPO_PUBLIC_REVERB_SCHEME": "https"
@@ -25,7 +25,7 @@
       "autoIncrement": true,
       "env": {
         "EXPO_PUBLIC_API_URL": "https://api.zinevu.com/api/v1",
-        "EXPO_PUBLIC_REVERB_KEY": "REPLACE_WITH_PROD_REVERB_APP_KEY",
+        "EXPO_PUBLIC_REVERB_KEY": "local-reverb-key",
         "EXPO_PUBLIC_REVERB_HOST": "api.zinevu.com",
         "EXPO_PUBLIC_REVERB_PORT": "443",
         "EXPO_PUBLIC_REVERB_SCHEME": "https"
