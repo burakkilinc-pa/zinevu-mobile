@@ -1,0 +1,28 @@
+{
+  "chat.filter.awaiting": { "en": "Waiting", "nl": "Wacht op ons", "de": "Wartet", "fr": "En attente", "tr": "Bekliyor" },
+  "chat.filter.open": { "en": "Open", "nl": "Open", "de": "Offen", "fr": "Ouvert", "tr": "Açık" },
+  "chat.filter.all": { "en": "All", "nl": "Alles", "de": "Alle", "fr": "Tout", "tr": "Tümü" },
+  "chat.filter.closed": { "en": "Closed", "nl": "Gesloten", "de": "Geschlossen", "fr": "Fermé", "tr": "Kapalı" },
+
+  "chat.empty.awaiting": { "en": "Nobody is waiting for an answer.", "nl": "Niemand wacht op antwoord.", "de": "Niemand wartet auf eine Antwort.", "fr": "Personne n'attend de réponse.", "tr": "Cevap bekleyen kimse yok." },
+  "chat.empty.open": { "en": "No open conversations.", "nl": "Geen open gesprekken.", "de": "Keine offenen Gespräche.", "fr": "Aucune conversation ouverte.", "tr": "Açık sohbet yok." },
+  "chat.empty.all": { "en": "No conversations yet.", "nl": "Nog geen gesprekken.", "de": "Noch keine Gespräche.", "fr": "Aucune conversation pour l'instant.", "tr": "Henüz sohbet yok." },
+  "chat.empty.closed": { "en": "No closed conversations.", "nl": "Geen gesloten gesprekken.", "de": "Keine geschlossenen Gespräche.", "fr": "Aucune conversation fermée.", "tr": "Kapalı sohbet yok." },
+
+  "chat.anonymous": { "en": "Anonymous visitor", "nl": "Anonieme bezoeker", "de": "Anonymer Besucher", "fr": "Visiteur anonyme", "tr": "Anonim ziyaretçi" },
+  "chat.noMessages": { "en": "No messages yet", "nl": "Nog geen berichten", "de": "Noch keine Nachrichten", "fr": "Pas encore de messages", "tr": "Henüz mesaj yok" },
+  "chat.threadCount": { "en": "{n} conversations", "nl": "{n} gesprekken", "de": "{n} Gespräche", "fr": "{n} conversations", "tr": "{n} sohbet" },
+  "chat.offerCount": { "en": "{n} offers", "nl": "{n} offertes", "de": "{n} Angebote", "fr": "{n} devis", "tr": "{n} teklif" },
+
+  "chat.header.toggle": { "en": "Show details", "nl": "Details tonen", "de": "Details anzeigen", "fr": "Afficher les détails", "tr": "Detayları göster" },
+  "chat.header.offers": { "en": "Their offers", "nl": "Hun offertes", "de": "Ihre Angebote", "fr": "Leurs devis", "tr": "Teklifleri" },
+  "chat.header.otherThreads": { "en": "Other conversations", "nl": "Andere gesprekken", "de": "Andere Gespräche", "fr": "Autres conversations", "tr": "Diğer sohbetler" },
+  "chat.header.draftOffer": { "en": "Draft", "nl": "Concept", "de": "Entwurf", "fr": "Brouillon", "tr": "Taslak" },
+
+  "chat.composerPlaceholder": { "en": "Write a message…", "nl": "Schrijf een bericht…", "de": "Nachricht schreiben…", "fr": "Écrire un message…", "tr": "Bir mesaj yaz…" },
+  "chat.send": { "en": "Send", "nl": "Versturen", "de": "Senden", "fr": "Envoyer", "tr": "Gönder" },
+  "chat.readOnly": { "en": "You can read this conversation but not reply.", "nl": "Je kunt dit gesprek lezen maar niet beantwoorden.", "de": "Du kannst dieses Gespräch lesen, aber nicht beantworten.", "fr": "Vous pouvez lire cette conversation mais pas y répondre.", "tr": "Bu sohbeti okuyabilirsin ama cevaplayamazsın." },
+
+  "chat.noAccess.title": { "en": "No access to chat", "nl": "Geen toegang tot chat", "de": "Kein Zugriff auf den Chat", "fr": "Pas d'accès au chat", "tr": "Sohbete erişim yok" },
+  "chat.noAccess.body": { "en": "Your account doesn't have permission to see conversations. Ask an admin in your team.", "nl": "Je account heeft geen rechten om gesprekken te zien. Vraag een beheerder in je team.", "de": "Dein Konto darf keine Gespräche sehen. Frag eine Administratorin in deinem Team.", "fr": "Votre compte n'a pas l'autorisation de voir les conversations. Demandez à un administrateur de votre équipe.", "tr": "Hesabının sohbetleri görme yetkisi yok. Ekibindeki bir yöneticiye sor." }
+}

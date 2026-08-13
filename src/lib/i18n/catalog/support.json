@@ -1,0 +1,33 @@
+{
+  "support.empty": { "en": "You haven't asked us anything yet.", "nl": "Je hebt ons nog niets gevraagd.", "de": "Du hast uns noch nichts gefragt.", "fr": "Vous ne nous avez encore rien demandé.", "tr": "Bize henüz bir şey sormadın." },
+  "support.status.open": { "en": "Waiting for Zinevu", "nl": "Wacht op Zinevu", "de": "Wartet auf Zinevu", "fr": "En attente de Zinevu", "tr": "Zinevu bekleniyor" },
+  "support.status.answered": { "en": "Answered", "nl": "Beantwoord", "de": "Beantwortet", "fr": "Répondu", "tr": "Yanıtlandı" },
+  "support.status.resolved": { "en": "Resolved", "nl": "Opgelost", "de": "Gelöst", "fr": "Résolu", "tr": "Çözüldü" },
+  "support.status.closed": { "en": "Closed", "nl": "Gesloten", "de": "Geschlossen", "fr": "Fermé", "tr": "Kapatıldı" },
+
+  "support.fromZinevu": { "en": "Zinevu Support", "nl": "Zinevu Support", "de": "Zinevu Support", "fr": "Support Zinevu", "tr": "Zinevu Destek" },
+  "support.fromYou": { "en": "You", "nl": "Jij", "de": "Du", "fr": "Vous", "tr": "Sen" },
+  "support.attachment": { "en": "Attachment", "nl": "Bijlage", "de": "Anhang", "fr": "Pièce jointe", "tr": "Ek" },
+  "support.replyPlaceholder": { "en": "Write a reply…", "nl": "Schrijf een reactie…", "de": "Antwort schreiben…", "fr": "Écrire une réponse…", "tr": "Bir yanıt yaz…" },
+  "support.closedNotice": { "en": "This ticket is closed. Open a new one if you need anything else.", "nl": "Dit ticket is gesloten. Open een nieuw ticket als je nog iets nodig hebt.", "de": "Dieses Ticket ist geschlossen. Öffne ein neues, wenn du noch etwas brauchst.", "fr": "Ce ticket est fermé. Ouvrez-en un nouveau si vous avez besoin d'autre chose.", "tr": "Bu talep kapatıldı. Başka bir şeye ihtiyacın olursa yeni bir tane aç." },
+
+  "support.new.action": { "en": "New ticket", "nl": "Nieuw ticket", "de": "Neues Ticket", "fr": "Nouveau ticket", "tr": "Yeni talep" },
+  "support.new.title": { "en": "Ask Zinevu", "nl": "Vraag Zinevu", "de": "Zinevu fragen", "fr": "Demander à Zinevu", "tr": "Zinevu'ya sor" },
+  "support.new.subject": { "en": "Subject", "nl": "Onderwerp", "de": "Betreff", "fr": "Objet", "tr": "Konu" },
+  "support.new.subjectPlaceholder": { "en": "In one line, what is it about?", "nl": "In één zin: waar gaat het over?", "de": "In einem Satz: worum geht es?", "fr": "En une ligne, de quoi s'agit-il ?", "tr": "Tek satırda, konu ne?" },
+  "support.new.category": { "en": "Category", "nl": "Categorie", "de": "Kategorie", "fr": "Catégorie", "tr": "Kategori" },
+  "support.new.message": { "en": "What happened?", "nl": "Wat is er gebeurd?", "de": "Was ist passiert?", "fr": "Que s'est-il passé ?", "tr": "Ne oldu?" },
+  "support.new.messagePlaceholder": { "en": "Describe it as you would to a colleague — what you did, what you expected, what happened instead.", "nl": "Beschrijf het zoals je het aan een collega zou vertellen — wat je deed, wat je verwachtte, wat er in plaats daarvan gebeurde.", "de": "Beschreib es wie einem Kollegen — was du getan hast, was du erwartet hast und was stattdessen passiert ist.", "fr": "Décrivez-le comme à un collègue : ce que vous avez fait, ce que vous attendiez, ce qui s'est passé.", "tr": "Bir iş arkadaşına anlatır gibi yaz — ne yaptın, ne bekliyordun, onun yerine ne oldu." },
+  "support.new.submit": { "en": "Send to Zinevu", "nl": "Versturen naar Zinevu", "de": "An Zinevu senden", "fr": "Envoyer à Zinevu", "tr": "Zinevu'ya gönder" },
+  "support.new.incomplete": { "en": "Fill in a subject and a message.", "nl": "Vul een onderwerp en een bericht in.", "de": "Gib einen Betreff und eine Nachricht ein.", "fr": "Renseignez un objet et un message.", "tr": "Bir konu ve mesaj gir." },
+
+  "support.category.technical": { "en": "Something is broken", "nl": "Er werkt iets niet", "de": "Etwas funktioniert nicht", "fr": "Quelque chose ne marche pas", "tr": "Bir şey çalışmıyor" },
+  "support.category.billing": { "en": "Billing", "nl": "Facturatie", "de": "Abrechnung", "fr": "Facturation", "tr": "Faturalama" },
+  "support.category.feature_request": { "en": "Feature request", "nl": "Functieverzoek", "de": "Feature-Wunsch", "fr": "Demande de fonctionnalité", "tr": "Özellik isteği" },
+  "support.category.feedback": { "en": "Feedback", "nl": "Feedback", "de": "Feedback", "fr": "Retour", "tr": "Geri bildirim" },
+  "support.category.account": { "en": "My account", "nl": "Mijn account", "de": "Mein Konto", "fr": "Mon compte", "tr": "Hesabım" },
+  "support.category.other": { "en": "Something else", "nl": "Iets anders", "de": "Etwas anderes", "fr": "Autre chose", "tr": "Başka bir şey" },
+
+  "account.profile.emailLocked": { "en": "Your e-mail is how you sign in, so it can't be changed here. Ask Zinevu Support if it needs to change.", "nl": "Je e-mailadres is je login, dus dat kan hier niet worden gewijzigd. Vraag Zinevu Support als het moet veranderen.", "de": "Deine E-Mail ist dein Login und kann hier nicht geändert werden. Wende dich an den Zinevu-Support, wenn sie sich ändern muss.", "fr": "Votre e-mail sert à vous connecter et ne peut pas être modifié ici. Contactez le support Zinevu s'il doit changer.", "tr": "E-postan giriş bilgin olduğu için burada değiştirilemez. Değişmesi gerekiyorsa Zinevu Destek'e yaz." },
+  "account.password.useCurrent": { "en": "I know my current password", "nl": "Ik weet mijn huidige wachtwoord", "de": "Ich kenne mein aktuelles Passwort", "fr": "Je connais mon mot de passe actuel", "tr": "Mevcut şifremi biliyorum" }
+}

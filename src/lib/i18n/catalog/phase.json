@@ -1,11 +1,4 @@
 {
-  "phase.chat": {
-    "en": "Live chat with the people in your funnel, grouped per customer.",
-    "nl": "Live chat met de mensen in je funnel, gegroepeerd per klant.",
-    "de": "Live-Chat mit den Menschen in deinem Funnel, nach Kunde gruppiert.",
-    "fr": "Chat en direct avec les personnes de votre tunnel, regroupé par client.",
-    "tr": "Hunidekilerle canlı sohbet, müşteri bazında gruplanmış."
-  },
   "phase.jobs": {
     "en": "The visits assigned to you, with everything you need on site.",
     "nl": "De bezoeken die aan jou zijn toegewezen, met alles wat je op locatie nodig hebt.",
@@ -19,12 +12,5 @@
     "de": "Zinevu-Backoffice: Mandanten, Abos und Support über alle Händler hinweg.",
     "fr": "Back-office Zinevu : locataires, abonnements et assistance pour tous les revendeurs.",
     "tr": "Zinevu arka ofisi: tüm bayiler genelinde kiracılar, abonelikler ve destek."
-  },
-  "phase.settings": {
-    "en": "Language, appearance, Face ID, password, profile photo and support.",
-    "nl": "Taal, weergave, Face ID, wachtwoord, profielfoto en support.",
-    "de": "Sprache, Darstellung, Face ID, Passwort, Profilfoto und Support.",
-    "fr": "Langue, apparence, Face ID, mot de passe, photo de profil et assistance.",
-    "tr": "Dil, görünüm, Face ID, şifre, profil fotoğrafı ve destek."
   }
 }

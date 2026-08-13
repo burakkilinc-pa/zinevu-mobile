@@ -34,10 +34,14 @@ type PushData = {
     | 'support.reply';
   /** Chat conversation uuid. */
   conversation_id?: string;
-  /** Deal / lead id — opens the lead detail. */
-  lead_id?: string;
-  /** Calendar event id — opens Planning on that day. */
-  event_id?: string;
+  /**
+   * The lead's unified routing key — "m{id}" for a Meta request, "d{id}" for
+   * an offer. NOT the raw deal id: the leads screen resolves the two through
+   * different endpoints, so the wrong one opens a screen that fails to load.
+   */
+  lead_ref?: string;
+  /** Y-m-d — opens Planning on that day. */
+  date?: string;
   /** Support ticket id. */
   ticket_id?: string;
 };
@@ -173,16 +177,22 @@ export function usePush(): void {
         router.push(`/chat/${data.conversation_id}`);
         return;
       }
-      if (data.lead_id) {
-        router.push(`/leads/${data.lead_id}`);
+      if (data.lead_ref) {
+        router.push(`/leads/${data.lead_ref}`);
         return;
       }
       if (data.ticket_id) {
         router.push(`/settings/support/${data.ticket_id}`);
         return;
       }
-      if (data.event_id) {
-        router.push(`/planning?event=${data.event_id}`);
+      if (data.date) {
+        router.push(`/planning?date=${data.date}`);
+        return;
+      }
+      // A push whose type we understand but whose target we don't still lands
+      // somewhere sensible rather than nowhere at all.
+      if (data.type === 'planning.changed') {
+        router.push('/planning');
       }
     }
 

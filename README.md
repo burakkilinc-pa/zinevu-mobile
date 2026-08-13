@@ -53,20 +53,29 @@ raw hex for props that only take a colour) — change all three together.
 ## Build phases
 
 - [x] **0 — Shell.** Brand, theme, i18n, API client on Zinevu's `{ meta, data }`
-      envelope, portal auth, role resolution, the role-aware tab dock, and a
-      placeholder screen per menu.
+      envelope, portal auth, role resolution, the role-aware tab dock.
 - [x] **1 — Backend push.** Expo device tokens, a send path that fans out to
-      browser *and* phone, and the five events wired to it. The dashboard
-      counters the app needs turned out to already exist
-      (`GET /portal/dealer/dashboard` + `chat/live-visitors`), and the
-      customer-grouped chat endpoint moved to phase 5, where the screen that
-      consumes it is built.
-- [ ] **2 — Dashboard.** Leads today, offers sent, action required, visitors,
-      page views, recent visitors.
-- [ ] **3 — Leads.** Status filter tabs, cards with the 3D preview, detail, and
-      a new lead from the configurator.
-- [ ] **4 — Planning.** A calendar at native Google/iOS quality.
-- [ ] **5 — Live chat.** Per customer, with their offers above the thread.
-- [ ] **6 — Support + Settings.** Language, appearance, Face ID, password,
-      profile photo.
-- [ ] **7 — Push + release.** Wire every notification, then EAS build.
+      browser *and* phone, and the events wired to it.
+- [x] **2 — Dashboard.** Leads today, offers sent, action required, visitors,
+      and who is on the site right now.
+- [x] **3 — Leads.** Status filter tabs, cards carrying a render of what the
+      customer configured, detail, and a new lead through the real configurator.
+- [x] **4 — Planning.** Month grid over the day's agenda, on the unified
+      follow-up record (field visits + reminders).
+- [x] **5 — Live chat.** Grouped per person rather than per thread, with their
+      offers and their other conversations above the messages.
+- [x] **6 — Support + Settings.** Tickets with Zinevu; language, appearance,
+      Face ID, password, profile photo.
+- [x] **7 — Push wiring.** Every notification carries a payload the app can
+      route on, and a body that respects who may read a customer's name.
+
+**Shipping** needs an Expo/Apple/Google account — see [RELEASE.md](RELEASE.md).
+The one thing that blocks push entirely is `eas init`, which has never been run.
+
+## Not built, on purpose
+
+- **Montage job planning.** Production jobs sit on their own slot grid, which is
+  a desk tool. Planning covers the visits somebody drives to.
+- **Editing an offer.** The lead detail is for deciding whether to call, and
+  then calling. The offer editor stays where there is a keyboard.
+- **Attachments in chat.** Reading them works; sending one does not yet.

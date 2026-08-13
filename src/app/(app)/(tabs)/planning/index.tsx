@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
 import { Screen, useDockClearance } from '@/components/ui/screen';
@@ -28,12 +28,28 @@ export default function PlanningScreen() {
   const router = useRouter();
   const bottom = useDockClearance();
 
-  const today = useMemo(() => new Date(), []);
+  // A planning push carries the day it is about, so opening one lands on that
+  // day rather than on whatever month the screen last showed.
+  const { date } = useLocalSearchParams<{ date?: string }>();
+  const initial = useMemo(() => {
+    const parsed = date ? new Date(`${date}T12:00:00`) : null;
+
+    return parsed && !Number.isNaN(parsed.getTime()) ? parsed : new Date();
+  }, [date]);
+
   const [cursor, setCursor] = useState({
-    year: today.getFullYear(),
-    month: today.getMonth(),
+    year: initial.getFullYear(),
+    month: initial.getMonth(),
   });
-  const [selected, setSelected] = useState(() => dateKey(today));
+  const [selected, setSelected] = useState(() => dateKey(initial));
+
+  // A second push while the screen is already open must move it too — the
+  // state above only runs on mount.
+  useEffect(() => {
+    if (!date) return;
+    setCursor({ year: initial.getFullYear(), month: initial.getMonth() });
+    setSelected(dateKey(initial));
+  }, [date, initial]);
 
   const { grid, byDay, isLoading, isError, allowed, refetch, isRefetching } =
     usePlanningMonth(cursor.year, cursor.month);
