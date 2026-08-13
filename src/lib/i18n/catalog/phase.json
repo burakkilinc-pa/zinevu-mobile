@@ -1,11 +1,4 @@
 {
-  "phase.planning": {
-    "en": "Your measurements, installations and visits on one calendar.",
-    "nl": "Je inmetingen, montages en bezoeken in één agenda.",
-    "de": "Deine Aufmaße, Montagen und Besuche in einem Kalender.",
-    "fr": "Vos métrés, poses et visites dans un seul agenda.",
-    "tr": "Ölçüm, montaj ve ziyaretlerin tek bir takvimde."
-  },
   "phase.chat": {
     "en": "Live chat with the people in your funnel, grouped per customer.",
     "nl": "Live chat met de mensen in je funnel, gegroepeerd per klant.",

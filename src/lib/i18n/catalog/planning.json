@@ -1,0 +1,12 @@
+{
+  "planning.today": { "en": "Today", "nl": "Vandaag", "de": "Heute", "fr": "Aujourd'hui", "tr": "Bugün" },
+  "planning.prevMonth": { "en": "Previous month", "nl": "Vorige maand", "de": "Voriger Monat", "fr": "Mois précédent", "tr": "Önceki ay" },
+  "planning.nextMonth": { "en": "Next month", "nl": "Volgende maand", "de": "Nächster Monat", "fr": "Mois suivant", "tr": "Sonraki ay" },
+  "planning.emptyDay": { "en": "Nothing planned.", "nl": "Niets gepland.", "de": "Nichts geplant.", "fr": "Rien de prévu.", "tr": "Planlanmış bir şey yok." },
+  "planning.untitled": { "en": "Appointment", "nl": "Afspraak", "de": "Termin", "fr": "Rendez-vous", "tr": "Randevu" },
+  "planning.status.done": { "en": "Done", "nl": "Afgerond", "de": "Erledigt", "fr": "Terminé", "tr": "Tamamlandı" },
+  "planning.progress.onSite": { "en": "On site", "nl": "Op locatie", "de": "Vor Ort", "fr": "Sur place", "tr": "Sahada" },
+  "planning.progress.working": { "en": "In progress", "nl": "Bezig", "de": "In Arbeit", "fr": "En cours", "tr": "Devam ediyor" },
+  "planning.noAccess.title": { "en": "No access to planning", "nl": "Geen toegang tot planning", "de": "Kein Zugriff auf die Planung", "fr": "Pas d'accès au planning", "tr": "Planlamaya erişim yok" },
+  "planning.noAccess.body": { "en": "Your account doesn't have permission to see the agenda. Ask an admin in your team.", "nl": "Je account heeft geen rechten om de agenda te zien. Vraag een beheerder in je team.", "de": "Dein Konto darf den Kalender nicht sehen. Frag eine Administratorin in deinem Team.", "fr": "Votre compte n'a pas l'autorisation de voir l'agenda. Demandez à un administrateur de votre équipe.", "tr": "Hesabının ajandayı görme yetkisi yok. Ekibindeki bir yöneticiye sor." }
+}
