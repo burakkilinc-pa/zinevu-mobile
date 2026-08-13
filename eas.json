@@ -35,9 +35,9 @@
   "submit": {
     "production": {
       "ios": {
-        "appleId": "REPLACE_WITH_APPLE_ID_EMAIL",
-        "ascAppId": "REPLACE_WITH_APP_STORE_CONNECT_APP_ID",
-        "appleTeamId": "REPLACE_WITH_APPLE_TEAM_ID"
+        "appleId": "gediposoftware@gmail.com",
+        "ascAppId": "6801282413",
+        "appleTeamId": "MPM7UW8NS4"
       },
       "android": {
         "serviceAccountKeyPath": "./google-play-service-account.json",

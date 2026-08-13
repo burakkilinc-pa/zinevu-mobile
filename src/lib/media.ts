@@ -62,6 +62,12 @@ export async function capturePhotos(
  * Captures a single video from the camera or library. No re-encoding (Expo
  * can't compress video); we cap the recorded duration to keep the file within
  * the backend's 100MB limit. Returns null if the user cancels.
+ *
+ * NOT CALLED ANYWHERE, and `RECORD_AUDIO` is blocked in `app.json` because of
+ * that — an unused permission is a question at store review and a line in the
+ * listing saying we can record you. Recording from the camera with it blocked
+ * yields silent video rather than an error, so if you wire this up, unblock the
+ * permission in the same change.
  */
 export async function captureVideo(
   source: 'camera' | 'library'
