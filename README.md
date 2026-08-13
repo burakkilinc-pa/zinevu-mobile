@@ -55,8 +55,12 @@ raw hex for props that only take a colour) — change all three together.
 - [x] **0 — Shell.** Brand, theme, i18n, API client on Zinevu's `{ meta, data }`
       envelope, portal auth, role resolution, the role-aware tab dock, and a
       placeholder screen per menu.
-- [ ] **1 — Backend.** Expo device tokens + push service, customer-grouped chat,
-      the dashboard counters the app needs.
+- [x] **1 — Backend push.** Expo device tokens, a send path that fans out to
+      browser *and* phone, and the five events wired to it. The dashboard
+      counters the app needs turned out to already exist
+      (`GET /portal/dealer/dashboard` + `chat/live-visitors`), and the
+      customer-grouped chat endpoint moved to phase 5, where the screen that
+      consumes it is built.
 - [ ] **2 — Dashboard.** Leads today, offers sent, action required, visitors,
       page views, recent visitors.
 - [ ] **3 — Leads.** Status filter tabs, cards with the 3D preview, detail, and
