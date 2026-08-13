@@ -1,0 +1,26 @@
+{
+  "dash.greeting": { "en": "Hi 👋", "nl": "Hoi 👋", "de": "Hallo 👋", "fr": "Salut 👋", "tr": "Merhaba 👋" },
+  "dash.greetingNamed": { "en": "Hi, {name} 👋", "nl": "Hoi {name} 👋", "de": "Hallo {name} 👋", "fr": "Salut {name} 👋", "tr": "Merhaba {name} 👋" },
+
+  "dash.today": { "en": "today", "nl": "vandaag", "de": "heute", "fr": "aujourd'hui", "tr": "bugün" },
+  "dash.vsYesterday": { "en": "vs yesterday", "nl": "t.o.v. gisteren", "de": "ggü. gestern", "fr": "vs hier", "tr": "düne göre" },
+
+  "dash.tile.leadsToday": { "en": "Leads today", "nl": "Leads vandaag", "de": "Leads heute", "fr": "Leads aujourd'hui", "tr": "Bugünkü talepler" },
+  "dash.tile.offersSent": { "en": "Offers sent", "nl": "Offertes verstuurd", "de": "Angebote gesendet", "fr": "Devis envoyés", "tr": "Gönderilen teklif" },
+  "dash.tile.visitors": { "en": "Visitors", "nl": "Bezoekers", "de": "Besucher", "fr": "Visiteurs", "tr": "Ziyaretçi" },
+  "dash.tile.requests": { "en": "Requests", "nl": "Aanvragen", "de": "Anfragen", "fr": "Demandes", "tr": "Talep" },
+
+  "dash.actions.title": { "en": "Action required", "nl": "Actie vereist", "de": "Aktion erforderlich", "fr": "Action requise", "tr": "Aksiyon gerekiyor" },
+  "dash.actions.clearTitle": { "en": "All caught up", "nl": "Alles bijgewerkt", "de": "Alles erledigt", "fr": "Tout est à jour", "tr": "Her şey tamam" },
+  "dash.actions.clearBody": { "en": "Nothing is waiting on you right now.", "nl": "Er staat niets open dat op jou wacht.", "de": "Im Moment wartet nichts auf dich.", "fr": "Rien n'attend après vous pour le moment.", "tr": "Şu an seni bekleyen bir şey yok." },
+
+  "dash.visitors.title": { "en": "On your site now", "nl": "Nu op je site", "de": "Jetzt auf deiner Website", "fr": "Sur votre site en ce moment", "tr": "Şu an sitende" },
+  "dash.visitors.empty": { "en": "Nobody is on your site right now.", "nl": "Er is nu niemand op je site.", "de": "Gerade ist niemand auf deiner Website.", "fr": "Personne n'est sur votre site en ce moment.", "tr": "Şu an sitende kimse yok." },
+  "dash.visitors.unknownPlace": { "en": "Unknown location", "nl": "Onbekende locatie", "de": "Unbekannter Ort", "fr": "Lieu inconnu", "tr": "Bilinmeyen konum" },
+  "dash.visitors.stageBrowsing": { "en": "Looking around", "nl": "Aan het rondkijken", "de": "Schaut sich um", "fr": "En train de regarder", "tr": "Geziniyor" },
+  "dash.visitors.stageInForm": { "en": "Filling in the form", "nl": "Vult het formulier in", "de": "Füllt das Formular aus", "fr": "Remplit le formulaire", "tr": "Formu dolduruyor" },
+  "dash.visitors.stageConverted": { "en": "Left a request", "nl": "Aanvraag achtergelaten", "de": "Anfrage hinterlassen", "fr": "A laissé une demande", "tr": "Talep bıraktı" },
+
+  "dash.noAccess.title": { "en": "No dashboard access", "nl": "Geen toegang tot dashboard", "de": "Kein Zugriff auf das Dashboard", "fr": "Pas d'accès au tableau de bord", "tr": "Panele erişim yok" },
+  "dash.noAccess.body": { "en": "Your account doesn't have permission to see the figures. Ask an admin in your team.", "nl": "Je account heeft geen rechten om de cijfers te zien. Vraag een beheerder in je team.", "de": "Dein Konto darf die Zahlen nicht sehen. Frag eine Administratorin in deinem Team.", "fr": "Votre compte n'a pas l'autorisation de voir les chiffres. Demandez à un administrateur de votre équipe.", "tr": "Hesabının rakamları görme yetkisi yok. Ekibindeki bir yöneticiye sor." }
+}

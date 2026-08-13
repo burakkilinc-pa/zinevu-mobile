@@ -1,0 +1,163 @@
+{
+  "dash.action.onboarding_incomplete": {
+    "en": "Finish your setup",
+    "nl": "Instellingen afronden",
+    "de": "Einrichtung abschließen",
+    "fr": "Terminer la configuration",
+    "tr": "Kurulumu tamamla"
+  },
+  "dash.action.send_failed": {
+    "en": "Sending failed",
+    "nl": "Verzenden mislukt",
+    "de": "Versand fehlgeschlagen",
+    "fr": "Échec de l'envoi",
+    "tr": "Gönderim başarısız"
+  },
+  "dash.action.tasks_overdue": {
+    "en": "Overdue tasks",
+    "nl": "Taken te laat",
+    "de": "Überfällige Aufgaben",
+    "fr": "Tâches en retard",
+    "tr": "Geciken görevler"
+  },
+  "dash.action.signed_no_next_step": {
+    "en": "Signed, no next step",
+    "nl": "Getekend, geen vervolgstap",
+    "de": "Unterschrieben, kein nächster Schritt",
+    "fr": "Signé, sans suite prévue",
+    "tr": "İmzalandı, sonraki adım yok"
+  },
+  "dash.action.service_urgent": {
+    "en": "Urgent service",
+    "nl": "Spoedservice",
+    "de": "Dringender Service",
+    "fr": "Service urgent",
+    "tr": "Acil servis"
+  },
+  "dash.action.production_deadline_passed": {
+    "en": "Production deadline passed",
+    "nl": "Productiedeadline verstreken",
+    "de": "Produktionstermin überschritten",
+    "fr": "Délai de production dépassé",
+    "tr": "Üretim termini geçti"
+  },
+  "dash.action.tasks_due_today": {
+    "en": "Tasks due today",
+    "nl": "Taken voor vandaag",
+    "de": "Aufgaben für heute",
+    "fr": "Tâches du jour",
+    "tr": "Bugünün görevleri"
+  },
+  "dash.action.needs_review": {
+    "en": "Leads needing review",
+    "nl": "Leads met een probleem",
+    "de": "Leads mit Problem",
+    "fr": "Leads à vérifier",
+    "tr": "Sorunlu lead'ler"
+  },
+  "dash.action.uncontacted": {
+    "en": "Never followed up",
+    "nl": "Nog niet opgevolgd",
+    "de": "Nie nachgefasst",
+    "fr": "Jamais relancé",
+    "tr": "Hiç dönülmedi"
+  },
+  "dash.action.hot_leads": {
+    "en": "Hot leads",
+    "nl": "Hot leads",
+    "de": "Hot Leads",
+    "fr": "Leads chauds",
+    "tr": "Sıcak lead'ler"
+  },
+  "dash.action.inbox_awaiting_reply": {
+    "en": "Waiting on your reply",
+    "nl": "Wacht op jouw antwoord",
+    "de": "Wartet auf Ihre Antwort",
+    "fr": "En attente de votre réponse",
+    "tr": "Cevabını bekliyor"
+  },
+  "dash.action.inbox_unread": {
+    "en": "Unread messages",
+    "nl": "Ongelezen berichten",
+    "de": "Ungelesene Nachrichten",
+    "fr": "Messages non lus",
+    "tr": "Okunmamış mesajlar"
+  },
+  "dash.action.offer_stale": {
+    "en": "Offers with no follow-up",
+    "nl": "Offertes zonder opvolging",
+    "de": "Angebote ohne Nachfassen",
+    "fr": "Devis sans relance",
+    "tr": "Takipsiz teklifler"
+  },
+  "dash.action.signed_no_production_doc": {
+    "en": "No production document",
+    "nl": "Nog geen productiedocument",
+    "de": "Kein Produktionsdokument",
+    "fr": "Pas de document de production",
+    "tr": "Üretim belgesi yok"
+  },
+  "dash.action.production_montage_unplanned": {
+    "en": "Install not scheduled",
+    "nl": "Montage nog niet gepland",
+    "de": "Montage nicht geplant",
+    "fr": "Pose non planifiée",
+    "tr": "Montaj planlanmadı"
+  },
+  "dash.action.production_ready": {
+    "en": "Ready, not delivered",
+    "nl": "Gereed, nog niet geleverd",
+    "de": "Fertig, nicht geliefert",
+    "fr": "Prêt, non livré",
+    "tr": "Hazır, teslim edilmedi"
+  },
+  "dash.action.service_backlog": {
+    "en": "Service to schedule",
+    "nl": "Service nog in te plannen",
+    "de": "Service einzuplanen",
+    "fr": "Service à planifier",
+    "tr": "Planlanacak servis"
+  },
+  "dash.action.not_invoiced": {
+    "en": "Not invoiced yet",
+    "nl": "Nog niet gefactureerd",
+    "de": "Noch nicht fakturiert",
+    "fr": "Pas encore facturé",
+    "tr": "Faturalanmadı"
+  },
+  "dash.action.invoice_unpaid": {
+    "en": "Invoice unpaid",
+    "nl": "Factuur nog niet betaald",
+    "de": "Rechnung offen",
+    "fr": "Facture impayée",
+    "tr": "Fatura ödenmedi"
+  },
+  "dash.action.production_unpaid": {
+    "en": "Delivered, unpaid",
+    "nl": "Geleverd, niet betaald",
+    "de": "Geliefert, nicht bezahlt",
+    "fr": "Livré, non payé",
+    "tr": "Teslim edildi, ödenmedi"
+  },
+  "dash.action.silent_leads": {
+    "en": "Offer never opened",
+    "nl": "Offerte nooit geopend",
+    "de": "Angebot nie geöffnet",
+    "fr": "Devis jamais ouvert",
+    "tr": "Teklif hiç açılmadı"
+  },
+  "dash.severity.warning": {
+    "en": "Action required",
+    "nl": "Actie vereist",
+    "de": "Aktion erforderlich",
+    "fr": "Action requise",
+    "tr": "İşlem gerekli"
+  },
+  "dash.severity.critical": {
+    "en": "Urgent",
+    "nl": "Dringend",
+    "de": "Dringend",
+    "fr": "Urgent",
+    "tr": "Acil"
+  }
+}

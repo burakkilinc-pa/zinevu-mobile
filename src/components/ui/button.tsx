@@ -16,15 +16,15 @@ type ButtonProps = PressableProps & {
 };
 
 const CONTAINER: Record<Variant, string> = {
-  // Mint fill + an ink hairline, mirroring the web primary (`border-black
-  // bg-brand-mint`): the pale mint needs the dark edge to read as a solid CTA
-  // rather than dissolving into the cream background.
-  primary: 'border border-foreground bg-primary active:opacity-90',
+  // Solid ink with white text — the portal's primary button. It inverts to
+  // lime-on-ink in dark mode through the token, so no border is needed in
+  // either scheme: the fill carries the CTA on its own.
+  primary: 'bg-primary active:opacity-90',
   secondary: 'bg-secondary active:opacity-90',
   outline: 'border border-border bg-transparent active:bg-muted',
   ghost: 'bg-transparent active:bg-muted',
-  // Positive confirm (Accept offer): a saturated success green so it clearly
-  // reads as the go-ahead, distinct from the pale mint primary.
+  // Positive confirm: a saturated success green so it clearly reads as the
+  // go-ahead, distinct from the brand-coloured primary.
   success: 'bg-success active:opacity-90',
 };
 
