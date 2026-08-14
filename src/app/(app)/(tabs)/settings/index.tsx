@@ -25,6 +25,7 @@ import {
   isBiometricEnabled,
   setBiometricEnabled,
 } from '@/features/auth/biometric';
+import { useCompany } from '@/features/auth/api/company.api';
 import { useSupportUnread } from '@/features/support/hooks/use-support';
 import { ApiError } from '@/lib/api/client';
 import { capturePhotos, PermissionDeniedError } from '@/lib/media';
@@ -63,6 +64,7 @@ export default function SettingsScreen() {
   const localePreference = useLocaleStore((s) => s.preference);
   const setLocalePreference = useLocaleStore((s) => s.setPreference);
   const supportUnread = useSupportUnread();
+  const company = useCompany();
 
   const [signingOut, setSigningOut] = useState(false);
   const [avatarBusy, setAvatarBusy] = useState(false);
@@ -182,11 +184,43 @@ export default function SettingsScreen() {
             {/* Only a real white label is named — a direct Zinevu signup has no
                 Brand row, and telling them they are "a partner of Zinevu"
                 would simply be untrue. */}
-            {account?.branded ? (
+            {!user?.company?.name && account?.branded ? (
               <Text className="text-sm text-muted-foreground">{account.name}</Text>
             ) : null}
           </View>
         </View>
+
+        {/* The firm they work for, wearing its own logo. The account's brand
+            logo would be the reseller's — a Valk Veranda member would be shown
+            Barida's mark. Falls back to the company name alone, which is
+            exactly what the offer mail does with an empty dealer logo. */}
+        {user?.company?.name ? (
+          <View
+            className="mt-5 flex-row items-center gap-3 rounded-2xl border border-border/50 bg-card p-3"
+            style={CARD_SHADOW}
+          >
+            {company.data?.logoUrl ? (
+              <Avatar
+                url={company.data.logoUrl}
+                initials={user.company.name.slice(0, 2).toUpperCase()}
+                size={44}
+                contain
+              />
+            ) : (
+              <View className="h-11 w-11 items-center justify-center rounded-full bg-secondary">
+                <Ionicons name="business-outline" size={20} color={c.white} />
+              </View>
+            )}
+            <View className="flex-1">
+              <Text className="text-base font-semibold text-foreground" numberOfLines={1}>
+                {company.data?.name || user.company.name}
+              </Text>
+              <Text className="text-sm text-muted-foreground">
+                {t('account.section.company')}
+              </Text>
+            </View>
+          </View>
+        ) : null}
 
         <Section title={t('account.section.profile')}>
           <Row

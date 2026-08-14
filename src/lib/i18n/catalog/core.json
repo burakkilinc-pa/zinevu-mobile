@@ -21,6 +21,8 @@
   "tabs.jobs": { "en": "My Jobs", "nl": "Mijn klussen", "de": "Meine Aufträge", "fr": "Mes chantiers", "tr": "İşlerim" },
   "tabs.admin": { "en": "Platform", "nl": "Platform", "de": "Plattform", "fr": "Plateforme", "tr": "Platform" },
 
+  "more.title": { "en": "All sections", "nl": "Alle onderdelen", "de": "Alle Bereiche", "fr": "Toutes les sections", "tr": "Tüm bölümler" },
+
   "role.admin": { "en": "Admin", "nl": "Beheerder", "de": "Administrator", "fr": "Administrateur", "tr": "Yönetici" },
   "role.montage": { "en": "Montage crew", "nl": "Montageteam", "de": "Montageteam", "fr": "Équipe de pose", "tr": "Montaj ekibi" },
   "role.production": { "en": "Production crew", "nl": "Productieteam", "de": "Produktionsteam", "fr": "Équipe de production", "tr": "Üretim ekibi" },
@@ -43,6 +45,7 @@
   "account.avatar.uploadFailed": { "en": "Could not upload the photo.", "nl": "Kon de foto niet uploaden.", "de": "Das Foto konnte nicht hochgeladen werden.", "fr": "Impossible d'envoyer la photo.", "tr": "Fotoğraf yüklenemedi." },
   "account.avatar.removeFailed": { "en": "Could not remove the photo.", "nl": "Kon de foto niet verwijderen.", "de": "Das Foto konnte nicht entfernt werden.", "fr": "Impossible de supprimer la photo.", "tr": "Fotoğraf kaldırılamadı." },
   "account.section.profile": { "en": "Profile", "nl": "Profiel", "de": "Profil", "fr": "Profil", "tr": "Profil" },
+  "account.section.company": { "en": "Your company", "nl": "Jouw bedrijf", "de": "Dein Unternehmen", "fr": "Votre entreprise", "tr": "Şirketin" },
   "account.section.appearance": { "en": "Appearance", "nl": "Weergave", "de": "Darstellung", "fr": "Apparence", "tr": "Görünüm" },
   "account.section.language": { "en": "Language", "nl": "Taal", "de": "Sprache", "fr": "Langue", "tr": "Dil" },
   "account.section.security": { "en": "Security", "nl": "Beveiliging", "de": "Sicherheit", "fr": "Sécurité", "tr": "Güvenlik" },

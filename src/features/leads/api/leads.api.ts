@@ -1,7 +1,8 @@
 import { request } from '@/lib/api/client';
 import {
-  TAB_STATUSES,
-  type FunnelCounts,
+  LEAD_TABS,
+  TAB_STAGES,
+  type BoardCounts,
   type FunnelStatus,
   type Lead,
   type LeadPage,
@@ -24,7 +25,6 @@ type RawLead = {
 
 type RawPage = {
   leads?: RawLead[];
-  funnel_counts?: Record<string, number>;
   pagination?: { current_page?: number; last_page?: number; total?: number };
 };
 
@@ -61,34 +61,50 @@ function mapLead(raw: RawLead): Lead {
 }
 
 /**
- * One page of leads for a tab.
+ * One page of one board column.
  *
- * The tab is sent as the comma list of funnel statuses it stands for, so the
- * server paginates the real result set — filtering client-side would page over
- * the wrong thing and drop rows off the end of a tab silently.
+ * Reads the same endpoint the web board reads, keyed by the column the tab
+ * stands for, so the two views can never disagree about which lane a lead is
+ * in. The server paginates the real column — filtering client-side would page
+ * over the wrong set and drop rows off the end of a tab silently.
  */
 export async function fetchLeads(tab: LeadTab, page: number): Promise<LeadPage> {
-  const d = await request<RawPage>('/portal/dealer/leads', {
+  const d = await request<RawPage>('/portal/dealer/leads/board', {
     params: {
-      status: TAB_STATUSES[tab].join(','),
+      stage: TAB_STAGES[tab],
       page,
       per_page: 20,
     },
   });
 
-  const counts: FunnelCounts = {};
-  for (const status of STATUSES) {
-    const n = d.funnel_counts?.[status];
-    if (typeof n === 'number') counts[status] = n;
-  }
-
   return {
     leads: (d.leads ?? []).map(mapLead).filter((l) => l.ref !== ''),
-    counts,
     page: d.pagination?.current_page ?? page,
     lastPage: d.pagination?.last_page ?? 1,
     total: d.pagination?.total ?? 0,
   };
+}
+
+/**
+ * The four column totals, for the tab badges.
+ *
+ * Its own request rather than a number riding along on the list response: the
+ * badges have to be right for the three tabs that are NOT open, and a column's
+ * own page can only ever count itself. `board/stats` exists for exactly this
+ * and returns nothing but the four numbers.
+ */
+export async function fetchLeadCounts(): Promise<BoardCounts> {
+  const d = await request<{ board_stage_counts?: Record<string, number> }>(
+    '/portal/dealer/leads/board/stats'
+  );
+
+  return Object.fromEntries(
+    LEAD_TABS.map((tab) => {
+      const n = d.board_stage_counts?.[TAB_STAGES[tab]];
+
+      return [tab, typeof n === 'number' ? n : 0];
+    })
+  ) as BoardCounts;
 }
 
 /** A funnel the dealer has switched on, offered behind the "new lead" button. */

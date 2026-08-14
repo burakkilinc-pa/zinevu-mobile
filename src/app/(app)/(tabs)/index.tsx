@@ -67,7 +67,14 @@ export default function DashboardScreen() {
               ? t('dash.greetingNamed', { name: user.name.split(' ')[0] })
               : t('dash.greeting')}
           </Text>
-          {account?.branded ? (
+          {/* Their OWN company, not the account: one account can carry a dozen
+              dealers behind a single white-label brand, so account.name would
+              greet a Valk Veranda user with the reseller's name. Only when the
+              user has no company of their own (assembler crew, platform staff)
+              does the branded account name stand in. */}
+          {user?.company?.name ? (
+            <Text className="mt-0.5 text-sm text-muted-foreground">{user.company.name}</Text>
+          ) : account?.branded ? (
             <Text className="mt-0.5 text-sm text-muted-foreground">{account.name}</Text>
           ) : null}
         </View>

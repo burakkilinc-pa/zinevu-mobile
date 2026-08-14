@@ -27,6 +27,8 @@ export type RawPortalUser = {
   leads_pii_visible?: boolean;
   status?: string;
   has_password?: boolean;
+  /** The company this user belongs to — the Dealer or Assembler row. */
+  authenticatable?: { id?: number | string | null; name?: string | null } | null;
 };
 
 export type RawPortalAccount = {
@@ -66,6 +68,17 @@ export function mapUser(raw: RawPortalUser): AuthUser {
     isPlatformAdmin: !!raw.is_platform_admin,
     pricingVisible: !!raw.pricing_visible,
     leadsPiiVisible: !!raw.leads_pii_visible,
+    // Who they actually work for. NOT the same as the account: account 5 alone
+    // carries ~15 dealers behind a single Brand row named "Barida BV", so
+    // greeting a Valk Veranda user with the account name puts another
+    // company's identity on their screen (the same bug the backend's
+    // PortalUserBrandResolver fixed for portal mail).
+    company: raw.authenticatable?.name
+      ? {
+          id: raw.authenticatable.id != null ? String(raw.authenticatable.id) : null,
+          name: raw.authenticatable.name,
+        }
+      : null,
     status: raw.status ?? 'active',
     // Only an explicit `false` means "invited, no password yet"; the login
     // payload omits the field entirely for an ordinary sign-in.

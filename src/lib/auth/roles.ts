@@ -23,6 +23,7 @@ export const PERMISSIONS = {
   leadsManage: 'leads.manage',
   leadsCommunicate: 'leads.communicate',
   offersView: 'offers.view',
+  offersManage: 'offers.manage',
   offersSend: 'offers.send',
   chatView: 'chat.view',
   chatReply: 'chat.reply',

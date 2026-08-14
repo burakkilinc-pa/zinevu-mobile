@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { Modal, Pressable, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
+
+import { BottomSheet } from '@/components/ui/bottom-sheet';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -83,24 +85,9 @@ export function NewLeadButton() {
         </Text>
       </Pressable>
 
-      <Modal
-        visible={sheetOpen}
-        animationType="slide"
-        transparent
-        onRequestClose={() => setSheetOpen(false)}
-      >
-        <Pressable
-          className="flex-1 justify-end"
-          style={{ backgroundColor: 'rgba(0,0,0,0.4)' }}
-          onPress={() => setSheetOpen(false)}
-        >
-          {/* Stops a tap inside the sheet from closing it. */}
-          <Pressable
-            onPress={() => {}}
-            className="gap-1 rounded-t-3xl bg-card px-5 pt-5"
-            style={{ paddingBottom: insets.bottom + 16 }}
-          >
-            <Text className="mb-3 text-lg font-bold text-foreground">
+      <BottomSheet visible={sheetOpen} onClose={() => setSheetOpen(false)}>
+        <View className="gap-1">
+            <Text className="mb-3 mt-4 text-lg font-bold text-foreground">
               {t('leads.new.title')}
             </Text>
 
@@ -133,9 +120,8 @@ export function NewLeadButton() {
                 </Pressable>
               ))
             )}
-          </Pressable>
-        </Pressable>
-      </Modal>
+        </View>
+      </BottomSheet>
     </>
   );
 }

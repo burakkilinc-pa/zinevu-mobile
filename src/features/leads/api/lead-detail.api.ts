@@ -1,5 +1,6 @@
 import { request } from '@/lib/api/client';
 import type { FunnelStatus } from '@/features/leads/types';
+import { mapOfferLine, type OfferLine, type OfferSettings, type RawOfferLine } from '@/features/leads/api/offer.api';
 
 /**
  * One lead, opened.
@@ -9,18 +10,26 @@ import type { FunnelStatus } from '@/features/leads/types';
  * split is a backend fact the screen should not have to know, so it is resolved
  * here — the screen asks for a ref and gets a lead.
  *
- * Only what a phone can act on is mapped. The desk detail page carries the
- * offer lines, the mail history, the pricing breakdown and the answer editor;
- * none of that is a thing anyone does standing up.
+ * The offer comes with it. A dealer standing in someone's garden is exactly the
+ * person who needs to change a line and send it, so the lines, the discount and
+ * the send state are all part of a lead here — see offer.api.ts for the writes.
  */
 
 export type LeadAnswer = {
   key: string;
   value: string;
+  /** True when this value is a dealer correction, not the customer's answer. */
+  overridden?: boolean;
 };
 
 export type LeadDetail = {
   ref: string;
+  /**
+   * The deal's numeric id — what every offer action is addressed by. Null for a
+   * Meta submission the mapping engine has not turned into an offer yet, which
+   * is the one case where there is nothing to edit or send.
+   */
+  dealId: number | null;
   status: FunnelStatus | null;
   customerName: string | null;
   customerEmail: string | null;
@@ -38,6 +47,20 @@ export type LeadDetail = {
   /** Last offer PDF, when one has been generated. */
   pdfUrl: string | null;
   previewImageUrl: string | null;
+  /** Photos the customer attached on the form's notes step. */
+  photoUrls: string[];
+  /** The offer lines as they stand. Empty for a lead with no offer yet. */
+  lines: OfferLine[];
+  /** Discount, VAT and the concept flag — saved together with the lines. */
+  offer: OfferSettings;
+  /** A concept has not been sent and can still be freely re-priced. */
+  isConcept: boolean;
+  /**
+   * Set when the dealer corrected an answer after the lines were built, i.e.
+   * the offer now prices something the customer no longer asked for. Cleared by
+   * a reprocess.
+   */
+  answersChangedAt: string | null;
 };
 
 type RawCustomer = {
@@ -59,6 +82,15 @@ type RawDeal = {
   customer?: RawCustomer | null;
   pdf?: { url?: string | null; original_url?: string | null } | null;
   preview_image_url?: string | null;
+  items?: RawOfferLine[] | null;
+  discount_rate?: number | string | null;
+  discount_note?: string | null;
+  final_total_override?: number | string | null;
+  is_concept?: boolean | number | null;
+  include_vat?: boolean | number | null;
+  show_item_descriptions?: boolean | number | null;
+  answers_changed_at?: string | null;
+  garden_photos?: { url?: string | null }[] | null;
 };
 
 /** "Hoofdstraat 12, 1234 AB Amersfoort" from the customer's address JSON. */
@@ -95,18 +127,34 @@ function mapAnswers(wizard: Record<string, unknown> | null | undefined): LeadAns
   const source = (wizard.answers ?? wizard) as Record<string, unknown>;
   if (typeof source !== 'object' || source === null) return [];
 
+  // A dealer correction never replaces what the customer submitted — the two
+  // are stored side by side, and the override is what the offer is priced on.
+  const overrides = (wizard.overrides ?? {}) as Record<string, unknown>;
+  const hasOverride = (key: string) =>
+    typeof overrides === 'object' &&
+    overrides !== null &&
+    Object.prototype.hasOwnProperty.call(overrides, key);
+
   const rows: LeadAnswer[] = [];
 
-  for (const [key, value] of Object.entries(source)) {
+  for (const [key, submitted] of Object.entries(source)) {
     // Bookkeeping the customer never answered, and free text that has its own
     // place on the screen.
-    if (['notes', 'source', 'answers', 'summary', 'attribution', 'consent_ip'].includes(key)) {
+    if (
+      ['notes', 'source', 'answers', 'overrides', 'summary', 'attribution', 'consent_ip'].includes(
+        key
+      )
+    ) {
       continue;
     }
+
+    const overridden = hasOverride(key);
+    const value = overridden ? overrides[key] : submitted;
+
     if (value === null || value === undefined || value === '' || typeof value === 'object') {
       continue;
     }
-    rows.push({ key, value: String(value) });
+    rows.push({ key, value: String(value), overridden });
   }
 
   return rows;
@@ -120,8 +168,14 @@ function mapDeal(ref: string, d: RawDeal): LeadDetail {
       ? ((wizard?.answers as Record<string, unknown>).notes as string)
       : null);
 
+  const bool = (v: unknown, fallback = false) =>
+    v === null || v === undefined ? fallback : !!v;
+  const numOrNull = (v: unknown) =>
+    v === null || v === undefined || v === '' ? null : Number(v);
+
   return {
     ref,
+    dealId: d.id === null || d.id === undefined ? null : Number(d.id),
     status: null,
     customerName: d.customer?.name ?? null,
     customerEmail: d.customer?.email ?? null,
@@ -138,6 +192,20 @@ function mapDeal(ref: string, d: RawDeal): LeadDetail {
     answers: mapAnswers(wizard),
     pdfUrl: d.pdf?.original_url ?? d.pdf?.url ?? null,
     previewImageUrl: d.preview_image_url ?? null,
+    photoUrls: (d.garden_photos ?? [])
+      .map((p) => p?.url)
+      .filter((u): u is string => typeof u === 'string' && u !== ''),
+    lines: (d.items ?? []).map(mapOfferLine),
+    offer: {
+      discountRate: Number(d.discount_rate ?? 0) || 0,
+      discountNote: d.discount_note ?? null,
+      finalTotalOverride: numOrNull(d.final_total_override),
+      isConcept: bool(d.is_concept, true),
+      includeVat: bool(d.include_vat, true),
+      showItemDescriptions: bool(d.show_item_descriptions, true),
+    },
+    isConcept: bool(d.is_concept, true),
+    answersChangedAt: d.answers_changed_at ?? null,
   };
 }
 
@@ -161,6 +229,10 @@ export async function fetchLeadDetail(ref: string): Promise<LeadDetail> {
 
   return {
     ...detail,
+    // Without an offer behind it there is nothing to price or send, and the
+    // fallback record's `id` is the SUBMISSION's — addressing a deal with it
+    // would edit somebody else's offer.
+    dealId: raw.deal?.id === null || raw.deal?.id === undefined ? null : Number(raw.deal.id),
     customerName: detail.customerName ?? raw.customer?.name ?? null,
     customerEmail: detail.customerEmail ?? raw.customer?.email ?? null,
     customerPhone: detail.customerPhone ?? raw.customer?.phone ?? null,

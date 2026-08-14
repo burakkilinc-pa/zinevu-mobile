@@ -1,22 +1,19 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 
-import { fetchActiveForms, fetchLeads } from '@/features/leads/api/leads.api';
-import { TAB_STATUSES, type LeadTab } from '@/features/leads/types';
+import {
+  fetchActiveForms,
+  fetchLeadCounts,
+  fetchLeads,
+} from '@/features/leads/api/leads.api';
+import { LEAD_TABS, type BoardCounts, type LeadTab } from '@/features/leads/types';
 
 export const leadKeys = {
   list: (tab: LeadTab) => ['leads', 'list', tab] as const,
+  counts: ['leads', 'counts'] as const,
   forms: ['leads', 'active-forms'] as const,
 };
 
-/**
- * A tab's leads, paged as the user scrolls.
- *
- * The counts on the response are dimension-aware — the API returns, for each
- * status, how many rows the OTHER filters would leave — so the tab badges can
- * be read straight off whichever page happened to load. That is also why they
- * are taken from the first page only: every page carries the same totals, and
- * the first one is the one that is always there.
- */
+/** A tab's board column, paged as the user scrolls. */
 export function useLeads(tab: LeadTab) {
   return useInfiniteQuery({
     queryKey: leadKeys.list(tab),
@@ -27,14 +24,23 @@ export function useLeads(tab: LeadTab) {
   });
 }
 
-/** Total across the statuses a tab covers, for its badge. */
-export function tabCount(
-  counts: Record<string, number | undefined> | undefined,
-  tab: LeadTab
-): number {
-  if (!counts) return 0;
+const EMPTY_COUNTS = Object.fromEntries(LEAD_TABS.map((t) => [t, 0])) as BoardCounts;
 
-  return TAB_STATUSES[tab].reduce((sum, status) => sum + (counts[status] ?? 0), 0);
+/**
+ * The four tab badges.
+ *
+ * Separate from the list because a badge has to be right for the tabs the user
+ * is not looking at, and shares the list's stale time so a pull-to-refresh
+ * moves both together.
+ */
+export function useLeadCounts() {
+  const query = useQuery({
+    queryKey: leadKeys.counts,
+    queryFn: fetchLeadCounts,
+    staleTime: 30_000,
+  });
+
+  return { counts: query.data ?? EMPTY_COUNTS, refetch: query.refetch };
 }
 
 /**
