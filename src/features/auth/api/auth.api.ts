@@ -47,6 +47,25 @@ export async function login(email: string, password: string): Promise<AuthSessio
 }
 
 /**
+ * Redeems a one-time magic-link token for a session — the same token the web
+ * portal consumes at /portal/magic. Zinevu support mints one from the admin
+ * panel and opens it on this phone as `zinevumobile://magic?token=…`; the
+ * backend records the redemption as an impersonation because the link carries
+ * who minted it (see Portal\AuthController::verifyMagicLink).
+ *
+ * Unauthenticated on purpose: the token IS the proof, and whoever was signed
+ * in on this device is signed out before it is exchanged.
+ */
+export async function loginWithMagicToken(token: string): Promise<AuthSession> {
+  const data = await request<TokenPayload>('/portal/auth/verify-magic-link', {
+    method: 'POST',
+    auth: false,
+    body: { token },
+  });
+  return toSession(data);
+}
+
+/**
  * Starts a forgotten-password reset. `channel: 'code'` is what the app wants:
  * it mails a short code the user types on the next screen, so the flow finishes
  * inside the app instead of bouncing out to a browser link.

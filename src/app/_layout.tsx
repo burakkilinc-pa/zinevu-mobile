@@ -31,6 +31,10 @@ export default function RootLayout() {
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="index" />
         <Stack.Screen name="(auth)" />
+        {/* zinevumobile://magic?token=… — support signing this phone in as a
+            dealer member. Outside both groups: it must be reachable whether or
+            not somebody is already signed in. */}
+        <Stack.Screen name="magic" />
         <Stack.Screen name="(app)" />
       </Stack>
       {!splashDone ? (
