@@ -3,6 +3,7 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "dependencies": {
+    "@bacons/apple-targets": "^5.0.0",
     "@expo-google-fonts/sora": "^0.4.2",
     "@expo/ui": "~57.0.8",
     "@expo/vector-icons": "^15.0.2",
