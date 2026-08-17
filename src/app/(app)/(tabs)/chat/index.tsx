@@ -39,6 +39,19 @@ export default function ChatListScreen() {
   const [filter, setFilter] = useState<ChatFilter>('awaiting');
   const query = useChatCustomers(filter);
 
+  // Only a pull drives the spinner. Bound to `isRefetching` the inbox's own
+  // 20s poll shows the control every twenty seconds, and it sits there until
+  // that request lands — a wait nobody asked for.
+  const [pulling, setPulling] = useState(false);
+  const onRefresh = async () => {
+    setPulling(true);
+    try {
+      await query.refetch();
+    } finally {
+      setPulling(false);
+    }
+  };
+
   if (!hasPermission(user, PERMISSIONS.chatView)) {
     return (
       <Placeholder
@@ -99,8 +112,8 @@ export default function ChatListScreen() {
         )}
         refreshControl={
           <RefreshControl
-            refreshing={query.isRefetching}
-            onRefresh={() => void query.refetch()}
+            refreshing={pulling}
+            onRefresh={() => void onRefresh()}
             tintColor={c.mutedForeground}
           />
         }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 import { BottomSheet } from '@/components/ui/bottom-sheet';
@@ -9,18 +9,46 @@ import { Ionicons } from '@expo/vector-icons';
 import { useColors } from '@/lib/theme';
 import { useT, type MessageKey } from '@/lib/i18n';
 import { useActiveForms } from '@/features/leads/hooks/use-leads';
+import { useAuthStore } from '@/features/auth/store';
+import { hasPermission, PERMISSIONS } from '@/lib/auth/roles';
 import type { TFunction } from '@/lib/i18n';
 
-/** Form types the app has a word for. Anything else is a type that shipped
- *  after this build — show its own name rather than a missing translation key. */
-const KNOWN_FORM_TYPES = ['veranda', 'carport'];
+/**
+ * The form catalogue, in the portal's own order (see `views/forms/formCatalog`
+ * on the web side) — so a dealer who knows their list from the browser finds it
+ * in the same order here.
+ *
+ * A type absent from this list is one that shipped after this build: it is still
+ * offered, just last and under its own slug, because a funnel the dealer has
+ * switched on must never be missing from this sheet.
+ */
+const FORM_CATALOG: { formType: string; icon: keyof typeof Ionicons.glyphMap }[] = [
+  { formType: 'veranda', icon: 'home-outline' },
+  { formType: 'cube_veranda', icon: 'cube-outline' },
+  { formType: 'carport', icon: 'car-outline' },
+  { formType: 'veranda_sunshade', icon: 'umbrella-outline' },
+  { formType: 'sliding_doors', icon: 'albums-outline' },
+];
+
+const CATALOG_ORDER = FORM_CATALOG.map((entry) => entry.formType);
+
+function formTypeIcon(formType: string): keyof typeof Ionicons.glyphMap {
+  return FORM_CATALOG.find((entry) => entry.formType === formType)?.icon ?? 'grid-outline';
+}
 
 function formTypeLabel(formType: string, t: TFunction): string {
-  if (KNOWN_FORM_TYPES.includes(formType)) {
+  if (CATALOG_ORDER.includes(formType)) {
     return t(`leads.formType.${formType}` as MessageKey);
   }
 
   return formType.charAt(0).toUpperCase() + formType.slice(1).replace(/_/g, ' ');
+}
+
+/** Catalogue order first, unknown types after it, `quick` under its own full form. */
+function catalogRank(formType: string): number {
+  const i = CATALOG_ORDER.indexOf(formType);
+
+  return i === -1 ? CATALOG_ORDER.length : i;
 }
 
 /**
@@ -37,16 +65,31 @@ function formTypeLabel(formType: string, t: TFunction): string {
  *
  * When exactly one funnel is live it skips the sheet and opens it — a menu with
  * one item is a tap wasted.
+ *
+ * The funnels sit behind their own capability, and a customer-service seat has
+ * the leads list without it. On the web that seat still gets the manual entry
+ * form; there is no such form on a phone, so here the button simply isn't there
+ * rather than opening a sheet that can only ever be empty.
  */
 export function NewLeadButton() {
   const t = useT();
   const c = useColors();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const forms = useActiveForms();
+  const user = useAuthStore((s) => s.user);
+  const canSeeForms = hasPermission(user, PERMISSIONS.formsView);
+  const forms = useActiveForms(canSeeForms);
   const [sheetOpen, setSheetOpen] = useState(false);
 
-  const available = forms.data ?? [];
+  const available = useMemo(
+    () =>
+      [...(forms.data ?? [])].sort(
+        (a, b) =>
+          catalogRank(a.formType) - catalogRank(b.formType) ||
+          Number(a.quick) - Number(b.quick)
+      ),
+    [forms.data]
+  );
 
   function open(url: string) {
     setSheetOpen(false);
@@ -60,6 +103,8 @@ export function NewLeadButton() {
     }
     setSheetOpen(true);
   }
+
+  if (!canSeeForms) return null;
 
   return (
     <>
@@ -104,7 +149,7 @@ export function NewLeadButton() {
                   className="flex-row items-center gap-3 rounded-xl px-1 py-3.5 active:bg-muted"
                 >
                   <Ionicons
-                    name={form.quick ? 'flash-outline' : 'cube-outline'}
+                    name={form.quick ? 'flash-outline' : formTypeIcon(form.formType)}
                     size={20}
                     color={c.foreground}
                   />

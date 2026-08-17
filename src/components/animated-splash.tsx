@@ -1,18 +1,16 @@
-import { useEffect, useRef } from 'react';
-import { Animated, StyleSheet } from 'react-native';
-import { Image } from 'expo-image';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Animated, StyleSheet, useWindowDimensions } from 'react-native';
+import LottieView from 'lottie-react-native';
 
-const NAVY = '#082D36'; // brand ink — matches the native splash background
-const ICON = require('../../assets/images/icon.png');
+const BLACK = '#000000'; // matches the native splash background
+const ANIMATION = require('../../assets/animations/zinevu-splash.json');
 
 /**
  * In-app launch animation that continues seamlessly from the native splash
- * (same ink background + Zinevu mark, so there's no visual jump when the OS
- * splash hands off). Once the app is `ready`, the emblem gives a gentle zoom
- * while the whole overlay dissolves to reveal the app underneath.
- *
- * Uses the RN Animated API (not reanimated) so it needs no worklet/babel setup
- * and matches the animation approach already used elsewhere in the app.
+ * (same black background, so there's no visual jump when the OS splash hands
+ * off). The Lottie mark — the same animation the website plays — runs once on
+ * a square canvas centred on screen; when both it and bootstrap are done, the
+ * overlay dissolves to reveal the app underneath.
  */
 export function AnimatedSplash({
   ready,
@@ -25,32 +23,36 @@ export function AnimatedSplash({
   onLayoutReady: () => void;
   onFinish: () => void;
 }) {
+  const { width, height } = useWindowDimensions();
+  // The source composition is square (400×400); keep it square and comfortably
+  // inside the shorter screen edge so it never crops on small phones.
+  const size = Math.min(width * 0.7, height * 0.5);
+
   // Start already visible (matching the native splash) — no re-fade-in flash.
-  const scale = useRef(new Animated.Value(1)).current;
   const overlay = useRef(new Animated.Value(1)).current;
   const started = useRef(false);
+  const [played, setPlayed] = useState(false);
+
+  const handleFinish = useCallback(() => setPlayed(true), []);
+
+  // Safety net: with "reduce motion" on, Lottie can skip straight to the last
+  // frame without ever calling onAnimationFinish — never trap the user here.
+  useEffect(() => {
+    const t = setTimeout(handleFinish, 4000);
+    return () => clearTimeout(t);
+  }, [handleFinish]);
 
   useEffect(() => {
-    if (!ready || started.current) return;
+    if (!ready || !played || started.current) return;
     started.current = true;
-    Animated.sequence([
-      Animated.delay(350),
-      Animated.parallel([
-        Animated.timing(scale, {
-          toValue: 1.18,
-          duration: 600,
-          useNativeDriver: true,
-        }),
-        Animated.timing(overlay, {
-          toValue: 0,
-          duration: 600,
-          useNativeDriver: true,
-        }),
-      ]),
-    ]).start(({ finished }) => {
+    Animated.timing(overlay, {
+      toValue: 0,
+      duration: 450,
+      useNativeDriver: true,
+    }).start(({ finished }) => {
       if (finished) onFinish();
     });
-  }, [ready, scale, overlay, onFinish]);
+  }, [ready, played, overlay, onFinish]);
 
   return (
     <Animated.View
@@ -58,14 +60,24 @@ export function AnimatedSplash({
       onLayout={onLayoutReady}
       style={[StyleSheet.absoluteFill, styles.bg, { opacity: overlay }]}
     >
-      <Animated.View style={{ transform: [{ scale }] }}>
-        <Image source={ICON} style={styles.logo} contentFit="contain" />
-      </Animated.View>
+      <LottieView
+        source={ANIMATION}
+        autoPlay
+        loop={false}
+        onAnimationFinish={handleFinish}
+        // lottie-ios parses more strictly than lottie-web — a malformed layer
+        // renders nothing at all, so surface it instead of showing black.
+        onAnimationFailure={(error) => {
+          console.warn('[splash] lottie failed', error);
+          handleFinish();
+        }}
+        resizeMode="contain"
+        style={{ width: size, height: size }}
+      />
     </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
-  bg: { backgroundColor: NAVY, alignItems: 'center', justifyContent: 'center' },
-  logo: { width: 150, height: 150 },
+  bg: { backgroundColor: BLACK, alignItems: 'center', justifyContent: 'center' },
 });

@@ -1,7 +1,8 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 
 import {
-  fetchActiveForms,
+  activeForms,
+  fetchDealerForms,
   fetchLeadCounts,
   fetchLeads,
 } from '@/features/leads/api/leads.api';
@@ -50,10 +51,33 @@ export function useLeadCounts() {
  * dealer switching a form on mid-session is not a case worth polling for, and
  * pull-to-refresh on the list invalidates it anyway.
  */
-export function useActiveForms() {
+export function useActiveForms(enabled = true) {
   return useQuery({
     queryKey: leadKeys.forms,
-    queryFn: fetchActiveForms,
+    queryFn: fetchDealerForms,
+    select: activeForms,
+    // A seat without `forms.view` gets a 403 here, and a failed query would read
+    // as "this dealer runs no funnels" — so it simply never asks.
+    enabled,
     staleTime: 10 * 60_000,
+  });
+}
+
+/**
+ * How one form type is set up — the slug and the option overrides the 3D view
+ * of a lead has to be gated on. A lead whose form type the dealer has not
+ * configured (and every Meta lead, which has none) falls back to veranda,
+ * because that is the flow the configurator mounts for them anyway.
+ */
+export function useDealerForm(formType: string | null, enabled = true) {
+  return useQuery({
+    queryKey: leadKeys.forms,
+    queryFn: fetchDealerForms,
+    enabled,
+    staleTime: 10 * 60_000,
+    select: (forms) =>
+      forms.find((f) => f.formType === formType) ??
+      forms.find((f) => f.formType === 'veranda') ??
+      null,
   });
 }

@@ -234,3 +234,18 @@ export async function revokePushDevice(): Promise<void> {
     // Sign-out must not fail because the device couldn't be revoked.
   }
 }
+
+/**
+ * Drops this phone's device id without calling the server. For account
+ * deletion, where the row is already gone with everything else and the token
+ * that would authorize the call has been destroyed — but the local id must
+ * still go, or the next sign-in would re-register against a device that no
+ * longer exists.
+ */
+export async function forgetPushDevice(): Promise<void> {
+  try {
+    await AsyncStorage.removeItem(DEVICE_ID_KEY);
+  } catch {
+    // Nothing to do — a stale id is re-created on the next registration.
+  }
+}

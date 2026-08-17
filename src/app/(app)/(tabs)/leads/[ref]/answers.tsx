@@ -8,9 +8,10 @@ import {
   View,
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
 
-import { Screen, useDockClearance } from '@/components/ui/screen';
+import { Screen } from '@/components/ui/screen';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { TextField } from '@/components/ui/text-field';
@@ -37,7 +38,7 @@ import { offerKeys, useUpdateAnswers } from '@/features/leads/hooks/use-offer';
  */
 export default function AnswersScreen() {
   const { ref } = useLocalSearchParams<{ ref: string }>();
-  const dock = useDockClearance();
+  const insets = useSafeAreaInsets();
   const t = useT();
   const tf = useTFallback();
   const c = useColors();
@@ -100,7 +101,7 @@ export default function AnswersScreen() {
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
           <ScrollView
-            contentContainerStyle={{ padding: 20, paddingBottom: dock + 24, gap: 16 }}
+            contentContainerStyle={{ padding: 20, paddingBottom: 24, gap: 16 }}
             keyboardShouldPersistTaps="handled"
           >
             <Card className="gap-4 p-4">
@@ -123,7 +124,13 @@ export default function AnswersScreen() {
             </Card>
           </ScrollView>
 
-          <View className="border-t border-border/60 bg-background px-5 py-3">
+          {/* The dock is hidden on this screen (see (tabs)/_layout), so the
+              footer owns the bottom edge and only has to clear the home
+              indicator. */}
+          <View
+            className="border-t border-border/60 bg-background px-5 pt-3"
+            style={{ paddingBottom: insets.bottom + 12 }}
+          >
             <Button
               title={update.isPending ? t('common.saving') : t('common.save')}
               loading={update.isPending}

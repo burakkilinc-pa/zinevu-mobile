@@ -26,11 +26,15 @@ export const PERMISSIONS = {
   offersManage: 'offers.manage',
   offersSend: 'offers.send',
   chatView: 'chat.view',
+  // The dealer's own lead funnels — what the `+` on the leads screen opens.
+  formsView: 'forms.view',
   chatReply: 'chat.reply',
   pricingView: 'pricing.view',
   calendarView: 'calendar.view',
   calendarManage: 'calendar.manage',
   tasksView: 'tasks.view',
+  // Booking / rescheduling a visit, as opposed to carrying one out.
+  tasksManage: 'tasks.manage',
   tasksExecute: 'tasks.execute',
   jobsView: 'jobs.view',
   analyticsView: 'analytics.view',

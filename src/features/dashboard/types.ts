@@ -1,12 +1,13 @@
 /**
  * The dashboard, as the app uses it.
  *
- * `GET /portal/dealer/dashboard` returns considerably more than this — twelve
- * months of trend, a daily series, production and service blocks, revenue and
- * pipeline value. None of that belongs on a phone: the screen answers "what
- * happened today and what is waiting for me", and everything else is a desk
- * job. So the mapper takes the handful of fields below and drops the rest,
- * rather than modelling a payload the UI will never render.
+ * `GET /portal/dealer/dashboard` returns considerably more than this — a daily
+ * series, production and service blocks, revenue and pipeline value. Most of
+ * that stays on the desk: the screen answers "what happened today, how is the
+ * business trending, and what is waiting for me". So the mapper takes the
+ * fields below and drops the rest, rather than modelling a payload the UI will
+ * never render. Money in particular is left out on purpose — a phone gets
+ * looked at in a customer's garden.
  *
  * The today figures come from the endpoint's `?preset=today` range block, which
  * also carries the equivalent figure for the day before — so every tile can say
@@ -36,6 +37,33 @@ export type Metric = {
   previous: number;
 };
 
+/** One calendar month of the twelve-month series. */
+export type MonthPoint = {
+  /** `YYYY-MM`, in the portal's timezone. */
+  month: string;
+  leads: number;
+  sent: number;
+  won: number;
+};
+
+/**
+ * The last 30 days as a funnel. The three figures are counted on different
+ * timestamps (created / sent / signed), so a deal can sit in one stage and not
+ * the one before it — the ratios are a rate of business, not a cohort.
+ */
+export type Conversion = {
+  leads: number;
+  offersSent: number;
+  won: number;
+};
+
+/** Where the last 30 days of leads came from. */
+export type LeadSources = {
+  meta: number;
+  form: number;
+  manual: number;
+};
+
 export type DashboardSummary = {
   /** Today, in the PORTAL's timezone (Europe/Amsterdam) — not the device's. */
   leadsToday: Metric;
@@ -50,6 +78,12 @@ export type DashboardSummary = {
   requestsToday: number;
   leadsThisMonth: number;
   wonThisMonth: number;
+  /** Twelve calendar months, oldest first, zero-filled by the API. */
+  monthly: MonthPoint[];
+  /** Lead → offer → signed over the last 30 days. */
+  conversion30d: Conversion;
+  /** Lead origin over the last 30 days. */
+  sources30d: LeadSources;
   /** Ordered most-urgent-first; zero-count rows never leave the server. */
   actions: DashboardAction[];
   generatedAt: string | null;

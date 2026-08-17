@@ -34,6 +34,12 @@ export type LeadDetail = {
   customerName: string | null;
   customerEmail: string | null;
   customerPhone: string | null;
+  /**
+   * The customer's country as ISO-2, and its dial code when the API expanded
+   * one. Both exist so a national number can be dialled — see lib/phone.ts.
+   */
+  customerCountry: string | null;
+  customerCallingCode: string | null;
   customerAddress: string | null;
   total: number | null;
   offerNo: string | null;
@@ -44,6 +50,17 @@ export type LeadDetail = {
   note: string | null;
   /** What they configured, as label/value rows. */
   answers: LeadAnswer[];
+  /**
+   * The same configuration as the flat master-form map the 3D configurator
+   * eats — corrections already applied. Rows are for reading, this is for
+   * handing to the scene; see `lead3dHandoff`.
+   */
+  answerMap: Record<string, unknown>;
+  /**
+   * Which funnel it came from (carport, sliding_doors, …). Null for a Meta
+   * lead, which has no form and opens the veranda flow.
+   */
+  formType: string | null;
   /** Last offer PDF, when one has been generated. */
   pdfUrl: string | null;
   previewImageUrl: string | null;
@@ -69,6 +86,40 @@ type RawCustomer = {
   phone?: string | null;
   address?: Record<string, unknown> | null;
 };
+
+/** The dial code the API resolved from the customer's country, if any. */
+function callingCode(customer: RawCustomer | null | undefined): string | null {
+  const info = customer?.address?.country_info;
+  const code =
+    info && typeof info === 'object' ? (info as Record<string, unknown>).calling_code : null;
+
+  return typeof code === 'string' || typeof code === 'number' ? String(code) : null;
+}
+
+/** The customer's country as ISO-2, straight off the normalized address. */
+function customerCountry(customer: RawCustomer | null | undefined): string | null {
+  const country = customer?.address?.country;
+
+  return typeof country === 'string' && country.trim() !== '' ? country.trim().toUpperCase() : null;
+}
+
+/**
+ * The customer's phone number, wherever it happens to live.
+ *
+ * `customers` has no phone column — the funnel stores it inside the address
+ * JSON, which is where the portal reads it from too. A top-level `phone` shows
+ * up on Meta-shaped rows, so both are tried before giving up: without this the
+ * Call and WhatsApp buttons are dead on every lead, which is most of what a
+ * dealer opens this screen to do.
+ */
+function customerPhone(customer: RawCustomer | null | undefined): string | null {
+  if (!customer) return null;
+
+  const nested = customer.address?.phone;
+  const raw = customer.phone ?? (typeof nested === 'string' ? nested : null);
+
+  return raw?.trim() || null;
+}
 
 type RawDeal = {
   id?: number | string;
@@ -160,6 +211,35 @@ function mapAnswers(wizard: Record<string, unknown> | null | undefined): LeadAns
   return rows;
 }
 
+/**
+ * The answers as one flat map, corrections applied.
+ *
+ * The 3D configurator is mounted from the master-form answers, not from the
+ * offer lines, so it wants the raw values — including the ones `mapAnswers`
+ * drops for display (bookkeeping, free text) — with each dealer override
+ * standing in for what the customer originally said, exactly as the portal
+ * builds its own handoff.
+ */
+function flatAnswers(wizard: Record<string, unknown> | null | undefined): Record<string, unknown> {
+  if (!wizard) return {};
+
+  const source = (wizard.answers ?? wizard) as Record<string, unknown>;
+  if (typeof source !== 'object' || source === null) return {};
+
+  const overrides = wizard.overrides;
+  const merged: Record<string, unknown> = { ...source };
+
+  if (overrides && typeof overrides === 'object' && !Array.isArray(overrides)) {
+    Object.assign(merged, overrides);
+  }
+
+  for (const key of ['answers', 'overrides', 'summary', 'attribution', 'consent_ip']) {
+    delete merged[key];
+  }
+
+  return merged;
+}
+
 function mapDeal(ref: string, d: RawDeal): LeadDetail {
   const wizard = d.wizard_answers ?? null;
   const note =
@@ -179,7 +259,9 @@ function mapDeal(ref: string, d: RawDeal): LeadDetail {
     status: null,
     customerName: d.customer?.name ?? null,
     customerEmail: d.customer?.email ?? null,
-    customerPhone: d.customer?.phone ?? null,
+    customerPhone: customerPhone(d.customer),
+    customerCountry: customerCountry(d.customer),
+    customerCallingCode: callingCode(d.customer),
     customerAddress: addressLine(d.customer?.address),
     // Absent (not zero) for a member who may not see money — the API strips
     // the key entirely rather than sending 0.
@@ -190,6 +272,8 @@ function mapDeal(ref: string, d: RawDeal): LeadDetail {
     offerSignedAt: d.offer_signed_at ?? null,
     note: note?.trim() || null,
     answers: mapAnswers(wizard),
+    answerMap: flatAnswers(wizard),
+    formType: typeof wizard?.form_type === 'string' ? wizard.form_type : null,
     pdfUrl: d.pdf?.original_url ?? d.pdf?.url ?? null,
     previewImageUrl: d.preview_image_url ?? null,
     photoUrls: (d.garden_photos ?? [])
@@ -235,6 +319,8 @@ export async function fetchLeadDetail(ref: string): Promise<LeadDetail> {
     dealId: raw.deal?.id === null || raw.deal?.id === undefined ? null : Number(raw.deal.id),
     customerName: detail.customerName ?? raw.customer?.name ?? null,
     customerEmail: detail.customerEmail ?? raw.customer?.email ?? null,
-    customerPhone: detail.customerPhone ?? raw.customer?.phone ?? null,
+    customerPhone: detail.customerPhone ?? customerPhone(raw.customer),
+    customerCountry: detail.customerCountry ?? customerCountry(raw.customer),
+    customerCallingCode: detail.customerCallingCode ?? callingCode(raw.customer),
   };
 }

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { RefreshControl, ScrollView, Text, View } from 'react-native';
 
 import { Screen, useDockClearance } from '@/components/ui/screen';
@@ -10,14 +11,20 @@ import { useDashboard, useLiveVisitors } from '@/features/dashboard/hooks/use-da
 import { StatTile } from '@/features/dashboard/components/stat-tile';
 import { ActionList } from '@/features/dashboard/components/action-list';
 import { VisitorList } from '@/features/dashboard/components/visitor-list';
+import {
+  ConversionFunnel,
+  MonthlyLeadsChart,
+  SourceSplit,
+} from '@/features/dashboard/components/charts';
 
 /**
  * The office landing screen: what came in today, and what is waiting.
  *
- * Deliberately short. Everything a desk dashboard also carries — revenue,
- * pipeline value, twelve-month trends, a period picker — is left on the web,
- * because a phone is opened between other things and a screen you have to study
- * is a screen you stop opening.
+ * Deliberately short. Today's figures and the waiting work come first; three
+ * small charts sit under them for the "how are we doing" question. What stays
+ * on the web is revenue, pipeline value and a period picker — a phone is opened
+ * between other things, and a screen you have to study is a screen you stop
+ * opening.
  */
 export default function DashboardScreen() {
   const t = useT();
@@ -28,6 +35,18 @@ export default function DashboardScreen() {
 
   const dashboard = useDashboard();
   const visitors = useLiveVisitors();
+
+  // Only a pull drives the spinner. The visitor list polls every 30s, and
+  // bound to `isRefetching` that poll shows the control on its own.
+  const [pulling, setPulling] = useState(false);
+  const onRefresh = async () => {
+    setPulling(true);
+    try {
+      await Promise.all([dashboard.refetch(), visitors.refetch()]);
+    } finally {
+      setPulling(false);
+    }
+  };
 
   const canSeeVisitors = hasPermission(user, PERMISSIONS.chatView);
 
@@ -44,7 +63,6 @@ export default function DashboardScreen() {
   }
 
   const summary = dashboard.data;
-  const refreshing = dashboard.isRefetching || visitors.isRefetching;
 
   return (
     <Screen padded={false} edges={['top']}>
@@ -52,11 +70,8 @@ export default function DashboardScreen() {
         contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 8, paddingBottom: bottom }}
         refreshControl={
           <RefreshControl
-            refreshing={refreshing}
-            onRefresh={() => {
-              void dashboard.refetch();
-              void visitors.refetch();
-            }}
+            refreshing={pulling}
+            onRefresh={() => void onRefresh()}
             tintColor={c.mutedForeground}
           />
         }
@@ -117,6 +132,19 @@ export default function DashboardScreen() {
         <View className="mb-6">
           <ActionList actions={summary?.actions ?? []} />
         </View>
+
+        {/* Below the fold on purpose: the tiles and the action list are what the
+            screen is opened for, and the trend is what you look at once you are
+            already here. Each chart hides itself when its numbers are all zero,
+            so a dealer in their first week doesn't scroll past three empty
+            frames. */}
+        {summary ? (
+          <View className="mb-6 gap-3">
+            <MonthlyLeadsChart months={summary.monthly} />
+            <ConversionFunnel conversion={summary.conversion30d} />
+            <SourceSplit sources={summary.sources30d} />
+          </View>
+        ) : null}
 
         {canSeeVisitors ? (
           <>

@@ -28,11 +28,11 @@ export function ScreenHeader({
     <View className="flex-row items-center gap-1 px-2 py-2">
       <Pressable
         onPress={onBack ?? (() => router.back())}
-        hitSlop={10}
+        hitSlop={12}
         accessibilityRole="button"
-        className="h-9 w-9 items-center justify-center rounded-full active:bg-muted"
+        className="h-11 w-11 items-center justify-center rounded-full active:bg-muted"
       >
-        <Ionicons name="chevron-back" size={24} color={c.foreground} />
+        <Ionicons name="chevron-back" size={30} color={c.foreground} />
       </Pressable>
       <Text className="flex-1 pr-3 text-base font-semibold text-foreground" numberOfLines={1}>
         {title}

@@ -329,6 +329,26 @@ export default function SettingsScreen() {
             }}
           />
         </View>
+
+        {/* Last on the screen, in its own labelled zone — findable per App Store
+            rule 5.1.1(v), and fenced off so nobody taps it on the way to
+            something else. The caption says what happens before you commit;
+            the screen behind it spells out the rest. */}
+        <Section title={t('account.section.danger')}>
+          <Pressable
+            onPress={() => router.push('/settings/delete-account')}
+            accessibilityRole="button"
+            className="flex-row items-center gap-3 px-4 py-3.5 active:bg-muted"
+          >
+            <Ionicons name="trash-outline" size={20} color={c.destructive} />
+            <Text className="flex-1 text-base" style={{ color: c.destructive }}>
+              {t('account.delete.title')}
+            </Text>
+          </Pressable>
+        </Section>
+        <Text className="mt-2 text-sm text-muted-foreground">
+          {t('account.delete.caption')}
+        </Text>
       </ScrollView>
     </Screen>
   );

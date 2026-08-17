@@ -40,6 +40,19 @@ export default function LeadsScreen() {
 
   const { counts, refetch: refetchCounts } = useLeadCounts();
 
+  // Only a pull drives the spinner. Bound to `isRefetching` it also fires for
+  // the refetch that happens on its own when the screen remounts — coming back
+  // from a lead — and the control then hangs at the top of a list nobody pulled.
+  const [pulling, setPulling] = useState(false);
+  const onRefresh = async () => {
+    setPulling(true);
+    try {
+      await Promise.all([query.refetch(), refetchCounts()]);
+    } finally {
+      setPulling(false);
+    }
+  };
+
   if (!hasPermission(user, PERMISSIONS.leadsView)) {
     return (
       <Placeholder
@@ -74,11 +87,8 @@ export default function LeadsScreen() {
         }}
         refreshControl={
           <RefreshControl
-            refreshing={query.isRefetching && !query.isFetchingNextPage}
-            onRefresh={() => {
-              void query.refetch();
-              void refetchCounts();
-            }}
+            refreshing={pulling}
+            onRefresh={() => void onRefresh()}
             tintColor={c.mutedForeground}
           />
         }

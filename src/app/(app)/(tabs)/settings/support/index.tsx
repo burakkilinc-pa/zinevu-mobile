@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -25,16 +26,28 @@ export default function SupportScreen() {
 
   const tickets = query.data ?? [];
 
+  // Only a pull drives the spinner — the ticket list polls on its own every
+  // 30s, and `isRefetching` would show the control for each of those.
+  const [pulling, setPulling] = useState(false);
+  const onRefresh = async () => {
+    setPulling(true);
+    try {
+      await query.refetch();
+    } finally {
+      setPulling(false);
+    }
+  };
+
   return (
     <Screen padded={false} edges={['top']}>
       <View className="flex-row items-center gap-1 px-2 py-2">
         <Pressable
           onPress={() => router.back()}
-          hitSlop={10}
+          hitSlop={12}
           accessibilityRole="button"
-          className="h-9 w-9 items-center justify-center rounded-full active:bg-muted"
+          className="h-11 w-11 items-center justify-center rounded-full active:bg-muted"
         >
-          <Ionicons name="chevron-back" size={24} color={c.foreground} />
+          <Ionicons name="chevron-back" size={30} color={c.foreground} />
         </Pressable>
         <Text className="flex-1 text-base font-semibold text-foreground">
           {t('tabs.support')}
@@ -54,8 +67,8 @@ export default function SupportScreen() {
         contentContainerStyle={{ padding: 20, paddingBottom: bottom, gap: 10 }}
         refreshControl={
           <RefreshControl
-            refreshing={query.isRefetching}
-            onRefresh={() => void query.refetch()}
+            refreshing={pulling}
+            onRefresh={() => void onRefresh()}
             tintColor={c.mutedForeground}
           />
         }

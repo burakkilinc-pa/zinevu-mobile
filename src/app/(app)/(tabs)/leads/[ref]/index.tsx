@@ -10,17 +10,20 @@ import { Screen, useDockClearance } from '@/components/ui/screen';
 import { Card } from '@/components/ui/card';
 import { toast } from '@/components/ui/toast';
 import { useColors } from '@/lib/theme';
-import { useT, useTFallback } from '@/lib/i18n';
+import { useLocale, useT, useTFallback } from '@/lib/i18n';
 import { formatDateTime } from '@/lib/time';
 import { formatMoney } from '@/lib/money';
+import { dialCode, toE164 } from '@/lib/phone';
 import { hasPermission, PERMISSIONS } from '@/lib/auth/roles';
 import { useAuthStore } from '@/features/auth/store';
 import { fetchLeadDetail } from '@/features/leads/api/lead-detail.api';
+import { useDealerForm } from '@/features/leads/hooks/use-leads';
+import { lead3dTarget } from '@/features/leads/lead-3d';
 import { OfferLinesCard } from '@/features/leads/components/offer-lines-card';
 import { ScreenHeader } from '@/features/leads/components/screen-header';
 import {
-  useDuplicateDeal,
   useEngagement,
+  useOfferPdf,
   useReprocessWizard,
   offerKeys,
 } from '@/features/leads/hooks/use-offer';
@@ -44,12 +47,14 @@ export default function LeadDetailScreen() {
   // are open-ended — see useTFallback.
   const tf = useTFallback();
   const c = useColors();
+  const locale = useLocale();
   const router = useRouter();
   const user = useAuthStore((s) => s.user);
 
   const canManageOffer = hasPermission(user, PERMISSIONS.offersManage);
   const canSend = hasPermission(user, PERMISSIONS.offersSend);
   const canSeePrices = hasPermission(user, PERMISSIONS.pricingView);
+  const canSeeForms = hasPermission(user, PERMISSIONS.formsView);
 
   const query = useQuery({
     queryKey: offerKeys.detail(String(ref)),
@@ -62,11 +67,20 @@ export default function LeadDetailScreen() {
 
   const engagement = useEngagement(dealId, !!lead?.offerSentAt);
   const reprocess = useReprocessWizard(String(ref), dealId ?? 0);
-  const duplicate = useDuplicateDeal(dealId ?? 0);
+  const pdf = useOfferPdf(dealId ?? 0);
+  // The 3D view is gated on the dealer's own form config, so it can only be
+  // offered once that has arrived — see lead-3d.ts.
+  const dealerForm = useDealerForm(lead?.formType ?? null, !!lead && canSeeForms);
+  const view3d = lead ? lead3dTarget(lead, dealerForm.data ?? null) : null;
 
-  // Strip anything a dialler would choke on. A number stored as
-  // "06 12 34 56 78" is common and dials fine once the spaces are gone.
-  const dialable = lead?.customerPhone?.replace(/[^\d+]/g, '') || null;
+  // Numbers are stored the way the customer typed them — "06 12 34 56 78",
+  // national and trunk-prefixed. WhatsApp only takes a full international
+  // number and rejects anything else as "not on WhatsApp", so the country the
+  // lead is in decides what that 0 becomes. See lib/phone.ts.
+  const dialable = toE164(
+    lead?.customerPhone,
+    dialCode(lead?.customerCallingCode, lead?.customerCountry, locale)
+  );
 
   /**
    * Rebuild the lines from the answers.
@@ -104,39 +118,29 @@ export default function LeadDetailScreen() {
     });
   }, [reprocess, t]);
 
-  const onDuplicate = useCallback(() => {
-    duplicate.mutate(undefined, {
-      onSuccess: (newId) => {
-        toast.success(t('offer.duplicated'));
-        if (newId) router.replace(`/leads/d${newId}`);
+  /**
+   * The offer as the customer will see it.
+   *
+   * Regenerated rather than linked: `pdfUrl` is whatever was last built, which
+   * is stale the moment a line changes, and a dealer opening this is checking
+   * what they are about to send.
+   */
+  const lastPdfUrl = lead?.pdfUrl ?? null;
+
+  const onPdf = useCallback(() => {
+    pdf.mutate(undefined, {
+      onSuccess: (url) => {
+        if (url) void WebBrowser.openBrowserAsync(url);
+        else if (lastPdfUrl) void WebBrowser.openBrowserAsync(lastPdfUrl);
+        else toast.error(t('common.error'));
       },
       onError: (error) => toast.error((error as Error).message),
     });
-  }, [duplicate, router, t]);
+  }, [pdf, lastPdfUrl, t]);
 
   return (
     <Screen padded={false} edges={['top']}>
-      <ScreenHeader
-        title={lead?.customerName || t('leads.noName')}
-        right={
-          dealId && canManageOffer ? (
-            <Pressable
-              onPress={onDuplicate}
-              disabled={duplicate.isPending}
-              hitSlop={10}
-              accessibilityRole="button"
-              accessibilityLabel={t('offer.duplicate')}
-              className="h-9 w-9 items-center justify-center rounded-full active:bg-muted"
-            >
-              {duplicate.isPending ? (
-                <ActivityIndicator color={c.mutedForeground} />
-              ) : (
-                <Ionicons name="copy-outline" size={20} color={c.foreground} />
-              )}
-            </Pressable>
-          ) : null
-        }
-      />
+      <ScreenHeader title={lead?.customerName || t('leads.noName')} />
 
       {query.isLoading ? (
         <View className="flex-1 items-center justify-center">
@@ -157,36 +161,61 @@ export default function LeadDetailScreen() {
             />
           ) : null}
 
-          {/* The four things you do from a phone. Big, side by side, no menu. */}
+          {/* What you do from a phone. Reaching the customer and looking at
+              what they configured sit together; sending — the one thing here
+              that leaves the building — gets its own full-width target so it
+              is never the button next to the one you meant. */}
           <View className="flex-row gap-3">
             <ActionButton
               icon="call"
               label={t('leads.detail.call')}
               disabled={!dialable}
-              onPress={() => dialable && Linking.openURL(`tel:${dialable}`)}
+              onPress={() => dialable && Linking.openURL(`tel:+${dialable}`)}
             />
             <ActionButton
               icon="logo-whatsapp"
               label="WhatsApp"
               disabled={!dialable}
-              // wa.me wants the international number without a plus or zeroes.
-              onPress={() =>
-                dialable && Linking.openURL(`https://wa.me/${dialable.replace(/^\+/, '')}`)
-              }
+              onPress={() => dialable && Linking.openURL(`https://wa.me/${dialable}`)}
             />
             <ActionButton
               icon="document-text"
-              label={t('leads.detail.offer')}
-              disabled={!lead.pdfUrl}
-              onPress={() => lead.pdfUrl && WebBrowser.openBrowserAsync(lead.pdfUrl)}
+              label={t('leads.detail.pdf')}
+              loading={pdf.isPending}
+              disabled={!dealId || !canSeePrices}
+              onPress={onPdf}
             />
             <ActionButton
-              icon="paper-plane"
-              label={t('offer.send.action')}
-              disabled={!dealId || !canSend}
-              onPress={() => router.push(`/leads/${lead.ref}/send`)}
+              icon="cube"
+              label={t('leads.detail.view3d')}
+              disabled={!view3d}
+              onPress={() =>
+                view3d &&
+                router.push({
+                  pathname: '/web-3d',
+                  params: {
+                    url: view3d.url,
+                    handoff: view3d.handoff,
+                    title: t('leads.detail.view3d'),
+                  },
+                })
+              }
             />
           </View>
+
+          {dealId && canSend ? (
+            <Pressable
+              onPress={() => router.push(`/leads/${lead.ref}/send`)}
+              accessibilityRole="button"
+              className="flex-row items-center justify-center gap-2 rounded-2xl py-4 active:opacity-90"
+              style={{ backgroundColor: c.primary }}
+            >
+              <Ionicons name="paper-plane" size={18} color={c.background} />
+              <Text className="text-base font-semibold" style={{ color: c.background }}>
+                {lead.offerSentAt ? t('offer.send.again') : t('offer.send.toCustomer')}
+              </Text>
+            </Pressable>
+          ) : null}
 
           {/* Corrections landed after the lines were priced — the offer now
               quotes something the customer no longer asked for. */}
@@ -436,24 +465,30 @@ function ActionButton({
   label,
   onPress,
   disabled,
+  loading,
 }: {
   icon: keyof typeof Ionicons.glyphMap;
   label: string;
   onPress: () => void;
   disabled?: boolean;
+  loading?: boolean;
 }) {
   const c = useColors();
 
   return (
     <Pressable
       onPress={onPress}
-      disabled={disabled}
+      disabled={disabled || loading}
       accessibilityRole="button"
       accessibilityState={disabled ? { disabled: true } : {}}
       className="flex-1 items-center gap-1.5 rounded-2xl border border-border bg-card py-3.5 active:bg-muted"
       style={disabled ? { opacity: 0.4 } : undefined}
     >
-      <Ionicons name={icon} size={20} color={c.foreground} />
+      {loading ? (
+        <ActivityIndicator size="small" color={c.foreground} />
+      ) : (
+        <Ionicons name={icon} size={20} color={c.foreground} />
+      )}
       <Text className="text-xs font-medium text-foreground">{label}</Text>
     </Pressable>
   );

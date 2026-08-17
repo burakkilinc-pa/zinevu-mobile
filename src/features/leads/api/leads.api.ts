@@ -118,6 +118,25 @@ export type ActiveForm = {
   url: string;
 };
 
+/**
+ * One form type as the dealer has it set up.
+ *
+ * More than the `+` button needs, because the 3D view of an existing lead is
+ * gated on the same per-dealer configuration the public funnel is: the slug
+ * (which the cut-list reads production settings from) and the option overrides
+ * (disabled options, custom colours, tightened bounds). Opening a lead in 3D
+ * without them would draw a range this dealer does not sell.
+ */
+export type DealerForm = {
+  formType: string;
+  enabled: boolean;
+  publicUrl: string | null;
+  quickEnabled: boolean;
+  quickPublicUrl: string | null;
+  slug: string | null;
+  optionOverrides: Record<string, unknown>;
+};
+
 /** The endpoint keys its forms by form_type rather than returning a list. */
 type RawForm = {
   form_type?: string;
@@ -125,10 +144,38 @@ type RawForm = {
   public_url?: string | null;
   quick_enabled?: boolean;
   quick_public_url?: string | null;
+  slug?: string | null;
+  option_overrides?: unknown;
 };
 
 /**
- * The dealer's live funnels.
+ * The dealer's funnels, as configured.
+ *
+ * Fetched once and read two ways — the `+` sheet wants the live ones as links
+ * (see `activeForms`), the 3D view wants the configuration behind a form type.
+ * One endpoint, one cache entry, so the two can never disagree.
+ */
+export async function fetchDealerForms(): Promise<DealerForm[]> {
+  const d = await request<{ forms?: Record<string, RawForm> }>('/portal/dealer/forms');
+
+  return Object.entries(d.forms ?? {}).map(([formType, raw]) => ({
+    formType,
+    enabled: !!raw.enabled,
+    publicUrl: raw.public_url ?? null,
+    quickEnabled: !!raw.quick_enabled,
+    quickPublicUrl: raw.quick_public_url ?? null,
+    slug: raw.slug ?? null,
+    // The API sends `{}` for "never touched"; a JSON array would mean the same
+    // thing but is not an override map, so it is not treated as one.
+    optionOverrides:
+      raw.option_overrides && typeof raw.option_overrides === 'object' && !Array.isArray(raw.option_overrides)
+        ? (raw.option_overrides as Record<string, unknown>)
+        : {},
+  }));
+}
+
+/**
+ * The funnels a dealer can start a lead from.
  *
  * `+` on the leads screen offers these and then opens the chosen one in a
  * WebView, so a lead created on a phone goes through exactly the configurator a
@@ -140,21 +187,17 @@ type RawForm = {
  * different tools — the short one for a phone call, the full one when sitting
  * with the customer.
  */
-export async function fetchActiveForms(): Promise<ActiveForm[]> {
-  const d = await request<{ forms?: Record<string, RawForm> }>(
-    '/portal/dealer/forms'
-  );
+export function activeForms(forms: DealerForm[]): ActiveForm[] {
+  const out: ActiveForm[] = [];
 
-  const forms: ActiveForm[] = [];
-
-  for (const [formType, raw] of Object.entries(d.forms ?? {})) {
-    if (raw.enabled && raw.public_url) {
-      forms.push({ id: `${formType}:full`, formType, quick: false, url: raw.public_url });
+  for (const form of forms) {
+    if (form.enabled && form.publicUrl) {
+      out.push({ id: `${form.formType}:full`, formType: form.formType, quick: false, url: form.publicUrl });
     }
-    if (raw.quick_enabled && raw.quick_public_url) {
-      forms.push({ id: `${formType}:quick`, formType, quick: true, url: raw.quick_public_url });
+    if (form.quickEnabled && form.quickPublicUrl) {
+      out.push({ id: `${form.formType}:quick`, formType: form.formType, quick: true, url: form.quickPublicUrl });
     }
   }
 
-  return forms;
+  return out;
 }

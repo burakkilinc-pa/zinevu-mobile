@@ -11,10 +11,11 @@ import {
   View,
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Screen, useDockClearance } from '@/components/ui/screen';
+import { Screen } from '@/components/ui/screen';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { TextField } from '@/components/ui/text-field';
@@ -54,7 +55,7 @@ let nextClientKey = 1;
  */
 export default function OfferEditorScreen() {
   const { ref } = useLocalSearchParams<{ ref: string }>();
-  const dock = useDockClearance();
+  const insets = useSafeAreaInsets();
   const t = useT();
   const c = useColors();
   const router = useRouter();
@@ -206,7 +207,7 @@ export default function OfferEditorScreen() {
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
           <ScrollView
-            contentContainerStyle={{ padding: 20, paddingBottom: dock + 24, gap: 16 }}
+            contentContainerStyle={{ padding: 20, paddingBottom: 24, gap: 16 }}
             keyboardShouldPersistTaps="handled"
           >
             {lines.map((line, index) => (
@@ -322,7 +323,13 @@ export default function OfferEditorScreen() {
             </Card>
           </ScrollView>
 
-          <View className="border-t border-border/60 bg-background px-5 py-3">
+          {/* The dock is hidden on this screen (see (tabs)/_layout), so the
+              footer owns the bottom edge and only has to clear the home
+              indicator. */}
+          <View
+            className="border-t border-border/60 bg-background px-5 pt-3"
+            style={{ paddingBottom: insets.bottom + 12 }}
+          >
             <Button
               title={save.isPending ? t('common.saving') : t('common.save')}
               loading={save.isPending}

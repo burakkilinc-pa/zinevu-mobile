@@ -61,6 +61,15 @@ export default function TabsLayout() {
   const chatIndex = segments.indexOf('chat');
   const inThread = chatIndex !== -1 && segments.length > chatIndex + 1;
 
+  // Same reasoning for the offer editors: they are one screen with one save
+  // button on the bottom edge, and a dock floating over it both covers the
+  // button and offers to navigate away mid-edit. Nothing on those screens is
+  // reachable from the dock anyway — you got there from a lead, and Back is
+  // how you leave.
+  const inEditor = ['offer', 'answers'].includes(segments[segments.length - 1] ?? '');
+
+  const hideDock = inThread || inEditor;
+
   // Each space's landing screen sits in the raised centre of the dock.
   const centerRoute = isInstaller ? 'jobs' : 'index';
 
@@ -69,7 +78,7 @@ export default function TabsLayout() {
     <MoreSheet visible={moreOpen} onClose={() => setMoreOpen(false)} />
     <Tabs
       tabBar={(props) =>
-        inThread ? null : <BrandTabBar {...props} centerRoute={centerRoute} />
+        hideDock ? null : <BrandTabBar {...props} centerRoute={centerRoute} />
       }
       screenOptions={{ headerShown: false }}
     >
