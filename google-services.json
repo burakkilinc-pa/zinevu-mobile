@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "132252195087",
+    "project_id": "zinevu-com",
+    "storage_bucket": "zinevu-com.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:132252195087:android:3e69cb544480ab8671867a",
+        "android_client_info": {
+          "package_name": "com.zinevu.mobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "132252195087-imcrs8e12bgk27lrb0ebblq6lbnnadar.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.zinevu.mobile",
+            "certificate_hash": "e62fb56beb168822bc544c5d162ad6400a8a569c"
+          }
+        },
+        {
+          "client_id": "132252195087-erifkbvlojvji31b7galnb6bb7ike2h0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1QFy2hXA2bwqCFlZs1Ny7xPXjCv0FN5Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "132252195087-erifkbvlojvji31b7galnb6bb7ike2h0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -19,8 +19,8 @@
         "EXPO_PUBLIC_REVERB_HOST": "api.zinevu.com",
         "EXPO_PUBLIC_REVERB_PORT": "443",
         "EXPO_PUBLIC_REVERB_SCHEME": "https",
-        "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "937185871682-cen8b7ohh5cef9qbksmfosmeos8s92c5.apps.googleusercontent.com",
-        "EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID": "937185871682-n8p53r82lvjceenuocb2cf4pgh4a1vjs.apps.googleusercontent.com"
+        "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "132252195087-erifkbvlojvji31b7galnb6bb7ike2h0.apps.googleusercontent.com",
+        "EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID": "132252195087-fauqcdu720mdheuiort7ionntgeucs06.apps.googleusercontent.com"
       }
     },
     "production": {
@@ -31,8 +31,8 @@
         "EXPO_PUBLIC_REVERB_HOST": "api.zinevu.com",
         "EXPO_PUBLIC_REVERB_PORT": "443",
         "EXPO_PUBLIC_REVERB_SCHEME": "https",
-        "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "937185871682-cen8b7ohh5cef9qbksmfosmeos8s92c5.apps.googleusercontent.com",
-        "EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID": "937185871682-n8p53r82lvjceenuocb2cf4pgh4a1vjs.apps.googleusercontent.com"
+        "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "132252195087-erifkbvlojvji31b7galnb6bb7ike2h0.apps.googleusercontent.com",
+        "EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID": "132252195087-fauqcdu720mdheuiort7ionntgeucs06.apps.googleusercontent.com"
       }
     }
   },
