@@ -2,6 +2,7 @@ import { useEffect, type ReactNode } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -115,7 +116,16 @@ export function BrandTabBar({ state, descriptors, navigation, centerRoute }: Tab
       target: route.key,
       canPreventDefault: true,
     });
-    if (!focused && !event.defaultPrevented) navigation.navigate(route.name);
+    if (event.defaultPrevented) return;
+    // Tapping the tab you are already on returns to that tab's root — the
+    // behaviour every tabbed app has. Without it a lead detail (a push inside
+    // the leads stack) traps you: the dock's Leads button is already focused,
+    // so nothing happens and the list is unreachable.
+    if (focused) {
+      if (router.canDismiss()) router.dismissAll();
+      return;
+    }
+    navigation.navigate(route.name);
   }
 
   return (
