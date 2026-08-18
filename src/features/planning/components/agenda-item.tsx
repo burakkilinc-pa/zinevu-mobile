@@ -3,6 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { useColors } from '@/lib/theme';
 import { useT } from '@/lib/i18n';
+import { followUpTypeLabel } from '@/features/planning/type-label';
 import { clockTime } from '@/lib/time';
 import type { PlanningItem } from '@/features/planning/types';
 
@@ -100,7 +101,7 @@ export function AgendaItem({
             numberOfLines={1}
             style={cancelled ? { textDecorationLine: 'line-through' } : undefined}
           >
-            {item.title || item.type?.name || t('planning.untitled')}
+            {item.title || followUpTypeLabel(t, item.type) || t('planning.untitled')}
           </Text>
         </View>
 

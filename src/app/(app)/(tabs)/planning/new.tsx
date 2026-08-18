@@ -17,6 +17,7 @@ import { dayLabel, clockTime } from '@/lib/time';
 import { dateKey } from '@/features/planning/calendar';
 import { useCreateVisit, useFollowUpTypes } from '@/features/planning/hooks/use-planning';
 import { followUpIcon } from '@/features/planning/icons';
+import { followUpTypeLabel } from '@/features/planning/type-label';
 
 /**
  * Booking one visit — a measurement, a montage, a delivery, a call.
@@ -109,7 +110,7 @@ export default function NewVisitScreen() {
         // The type's name is the honest default title: it is what the row will
         // read as on the grid, and it beats forcing a sentence out of somebody
         // standing in a driveway.
-        title: title.trim() || type.name,
+        title: title.trim() || followUpTypeLabel(t, type),
         // Naive wall-clock, read in the portal's timezone server-side.
         dueAt: `${dateKey(due)} ${String(due.getHours()).padStart(2, '0')}:${String(
           due.getMinutes()
@@ -177,7 +178,7 @@ export default function NewVisitScreen() {
                 size={20}
                 color={type.colorHex ?? c.foreground}
               />
-              <Text className="flex-1 text-base font-medium text-foreground">{type.name}</Text>
+              <Text className="flex-1 text-base font-medium text-foreground">{followUpTypeLabel(t, type)}</Text>
             </View>
           ) : (
             <Text className="text-sm text-muted-foreground">
@@ -266,7 +267,7 @@ export default function NewVisitScreen() {
 
           <TextField
             label={t('planning.new.subject')}
-            placeholder={type?.name ?? ''}
+            placeholder={followUpTypeLabel(t, type)}
             value={title}
             onChangeText={setTitle}
           />

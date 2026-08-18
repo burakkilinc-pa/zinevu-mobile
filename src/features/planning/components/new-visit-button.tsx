@@ -9,6 +9,7 @@ import { useColors } from '@/lib/theme';
 import { useT } from '@/lib/i18n';
 import { useFollowUpTypes } from '@/features/planning/hooks/use-planning';
 import { followUpIcon } from '@/features/planning/icons';
+import { followUpTypeLabel } from '@/features/planning/type-label';
 import type { FollowUpTypeOption } from '@/features/planning/types';
 
 /**
@@ -149,7 +150,7 @@ function TypeGroup({
           </View>
 
           <View className="flex-1">
-            <Text className="text-base text-foreground">{type.name}</Text>
+            <Text className="text-base text-foreground">{followUpTypeLabel(t, type)}</Text>
             {type.defaultDurationMinutes ? (
               <Text className="text-xs text-muted-foreground">
                 {t('planning.new.defaultDuration', {
