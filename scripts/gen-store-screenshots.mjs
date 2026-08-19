@@ -51,9 +51,25 @@ const icon = (name, color, size = 22, w = 1.7) =>
 // --- App UI fragments -------------------------------------------------------
 const statusBar = `<div class="status"><span>9:41</span><span class="bars"><i></i><i></i><i></i></span></div>`;
 
-const tabBar = (active) => `<div class="tabbar">${[
-  ['grid', 'Dashboard'], ['albums', 'Leads'], ['calendar', 'Planning'], ['chat', 'Live Chat'], ['settings', 'Settings'],
-].map(([ic, label], i) => `<div class="tab ${i === active ? 'on' : ''}">${icon(ic, i === active ? INK : '#8FA3AA', 21)}<span>${label}</span></div>`).join('')}</div>`;
+// The real dock: a floating ink pill, icon-only, with the landing tab sitting
+// in a notch carved out of the top-centre as a lime circle wearing the Z.
+// Mirrors src/components/brand-tab-bar.tsx — keep the two in step.
+const DOCK_TABS = [
+  ['albums', 'Leads'], ['calendar', 'Planning'], ['chat', 'Live Chat'], ['settings', 'Settings'],
+];
+const tabBar = (active, d) => {
+  const side = (i) => {
+    const [ic] = DOCK_TABS[i];
+    const on = active === DOCK_TABS[i][1];
+    return `<div class="dtab ${on ? 'on' : ''}">${on ? '<i class="halo"></i>' : ''}${icon(ic, on ? LIME : 'rgba(246,247,249,.6)', d.dk * 26, 1.8)}</div>`;
+  };
+  return `<div class="dockwrap"><div class="dock">
+    <div class="notch"><span></span></div>
+    ${side(0)}${side(1)}
+    <div class="dtab fabslot"><div class="fab ${active === 'Dashboard' ? '' : 'off'}">${mark(INK)}</div></div>
+    ${side(2)}${side(3)}
+  </div></div>`;
+};
 
 const tile = (label, value, delta, ic) => `
   <div class="tile">
@@ -94,7 +110,7 @@ const SCREENS = [
     file: '1-dashboard',
     headline: 'Your showroom,<br><em>in your pocket</em>',
     sub: 'Today’s leads, offers and visitors the moment you open the app.',
-    body: `
+    body: (device) => `
       ${statusBar}
       <div class="app">
         <div class="hello"><h2>Hi, Bram 👋</h2><span>Valk Veranda B.V.</span></div>
@@ -110,15 +126,16 @@ const SCREENS = [
         <div class="card">
           ${action('Amsterdam, NL', 'Filling in the form · 4m', 'live')}
           ${action('Antwerpen, BE', 'Looking around · 1m', 'live')}
+          ${action('Eindhoven, NL', 'Configuring a veranda · 6m', 'live')}
         </div>
       </div>
-      ${tabBar(0)}`,
+      ${tabBar('Dashboard', device)}`,
   },
   {
     file: '2-leads',
     headline: 'Every request,<br><em>with the render</em>',
     sub: 'You recognise the configuration before you read the name.',
-    body: `
+    body: (device) => `
       ${statusBar}
       <div class="app">
         <div class="nav"><h2>Leads</h2><div class="count">38 open</div></div>
@@ -127,13 +144,13 @@ const SCREENS = [
         ${leadCard('J. Peeters', 'Breda · Free-standing 4 × 3 m', '€ 6.410', 'Offer sent', 'info', '2h', '150')}
         ${leadCard('M. Janssen', 'Gent · Glasschuifwand', '€ 3.280', 'Signed', 'good', '1d', '30')}
       </div>
-      ${tabBar(1)}`,
+      ${tabBar('Leads', device)}`,
   },
   {
     file: '3-chat',
     headline: 'Answer while<br><em>they’re still there</em>',
     sub: 'Live chat from your website, answered wherever you are.',
-    body: `
+    body: (device) => `
       ${statusBar}
       <div class="app chat-bg">
         <div class="chead">
@@ -149,13 +166,13 @@ const SCREENS = [
         </div>
         <div class="composer"><span>Write a message…</span><div class="send">${icon('send', INK, 18)}</div></div>
       </div>
-      ${tabBar(3)}`,
+      ${tabBar('Live Chat', device)}`,
   },
   {
     file: '4-planning',
     headline: 'Measure, mount,<br><em>done</em>',
     sub: 'Visits, measurements and installations on one calendar.',
-    body: `
+    body: (device) => `
       ${statusBar}
       <div class="app">
         <div class="nav"><h2>June 2026</h2><div class="count">Today</div></div>
@@ -174,13 +191,13 @@ const SCREENS = [
         ${agenda('16:30', 'Call back', 'Familie Bakker · about the sunroof', 'b')}
         ${agenda('17:15', 'Service', 'De Wit · gutter check', 'a')}
       </div>
-      ${tabBar(2)}`,
+      ${tabBar('Planning', device)}`,
   },
   {
     file: '5-offer',
     headline: 'From request<br><em>to signed offer</em>',
     sub: 'Build the quote, send it, and watch it get approved.',
-    body: `
+    body: (device) => `
       ${statusBar}
       <div class="app">
         <div class="nav back"><h2>Offer #2416</h2><div class="count">Draft</div></div>
@@ -201,7 +218,7 @@ const SCREENS = [
           ${action('Visit planned', 'Thu 11 June, 09:00 · measurement', '')}
         </div>
       </div>
-      ${tabBar(1)}`,
+      ${tabBar('Leads', device)}`,
   },
 ];
 
@@ -254,8 +271,8 @@ h1 em { font-style: normal; color: ${LIME} }
 .status .bars i:nth-child(1) { height: ${device.ui * 0.4}px }
 .status .bars i:nth-child(2) { height: ${device.ui * 0.6}px }
 .status .bars i:nth-child(3) { height: ${device.ui * 0.8}px }
-.app { flex: 1; padding: ${device.ui * 0.9}px ${device.ui * 1.25}px 0; overflow: hidden }
-.app.chat-bg { padding-bottom: 0 }
+.app { flex: 1; padding: ${device.ui * 0.9}px ${device.ui * 1.25}px ${device.dk * 92}px; overflow: hidden }
+
 .hello h2, .nav h2 { font-size: ${device.ui * 1.5}px; font-weight: 700; letter-spacing: -.01em }
 .hello span { font-size: ${device.ui * 0.9}px; color: ${MUTED_FG} }
 .nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: ${device.ui * 0.9}px }
@@ -362,11 +379,23 @@ h3 { font-size: ${device.ui}px; font-weight: 600; margin: ${device.ui * 1.15}px 
 .hintrow { display: flex; align-items: center; justify-content: center; gap: ${device.ui * 0.4}px;
   margin-top: ${device.ui * 0.7}px; font-size: ${device.ui * 0.78}px; color: ${MUTED_FG} }
 
-.tabbar { display: flex; justify-content: space-around; align-items: center; background: #fff;
-  border-top: 1px solid ${BORDER}; padding: ${device.ui * 0.6}px 0 ${device.ui * 1.4}px }
-.tab { display: flex; flex-direction: column; align-items: center; gap: ${device.ui * 0.2}px;
-  font-size: ${device.ui * 0.62}px; color: #8FA3AA; font-weight: 600 }
-.tab.on { color: ${INK} }
+.dockwrap { position: absolute; left: 0; right: 0; bottom: 0;
+  padding: 0 ${device.dk * 16}px ${device.dk * 14}px; pointer-events: none }
+.dock { position: relative; height: ${device.dk * 64}px; border-radius: ${device.dk * 32}px;
+  background: ${INK}; display: flex; align-items: center;
+  box-shadow: 0 ${device.dk * 8}px ${device.dk * 16}px rgba(0,0,0,.22) }
+.notch { position: absolute; inset: 0; border-radius: ${device.dk * 32}px; overflow: hidden }
+.notch span { position: absolute; left: 50%; top: ${device.dk * -42}px; margin-left: ${device.dk * -29}px;
+  width: ${device.dk * 58}px; height: ${device.dk * 58}px; border-radius: 50%; background: ${CLOUD} }
+.dtab { flex: 1; height: 100%; display: flex; align-items: center; justify-content: center; position: relative }
+.halo { position: absolute; width: ${device.dk * 46}px; height: ${device.dk * 34}px;
+  border-radius: ${device.dk * 17}px; background: rgba(231,255,164,.16) }
+.fabslot { overflow: visible }
+.fab { position: absolute; top: ${device.dk * -8}px; width: ${device.dk * 60}px; height: ${device.dk * 60}px;
+  border-radius: 50%; background: ${LIME}; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 ${device.dk * 4}px ${device.dk * 9}px rgba(0,0,0,.24) }
+.fab.off { opacity: .9 }
+.fab svg { width: ${device.dk * 22}px; height: ${device.dk * 30}px }
 `;
 
 const page = (device, screen) => `<!doctype html><html><head><meta charset="utf-8"><style>${css(device)}</style></head>
@@ -374,7 +403,7 @@ const page = (device, screen) => `<!doctype html><html><head><meta charset="utf-
   <div class="brandrow">${mark(LIME)}<span>ZINEVU</span></div>
   <h1>${screen.headline}</h1>
   <p class="lede">${screen.sub}</p>
-  <div class="stage"><div class="frame"><div class="screen">${screen.body}</div></div></div>
+  <div class="stage"><div class="frame"><div class="screen">${screen.body(device)}</div></div></div>
 </div></body></html>`;
 
 // --- Devices ----------------------------------------------------------------
@@ -383,12 +412,12 @@ const DEVICES = [
   {
     name: 'iphone-6.5', w: 621, h: 1344, scale: 2,
     pad: 42, gap: 18, markW: 26, brand: 13, h1: 50, sub: 17, subW: 470,
-    frameW: 466, frameH: 960, radius: 48, bezel: 9, ui: 16, blur: 90,
+    frameW: 466, frameH: 960, radius: 48, bezel: 9, ui: 16, blur: 90, dk: 1.05,
   },
   {
     name: 'ipad-13', w: 1032, h: 1376, scale: 2,
     pad: 64, gap: 22, markW: 34, brand: 17, h1: 66, sub: 23, subW: 720,
-    frameW: 812, frameH: 1024, radius: 44, bezel: 13, ui: 22, blur: 130,
+    frameW: 812, frameH: 1024, radius: 44, bezel: 13, ui: 22, blur: 130, dk: 1.3,
   },
 ];
 
