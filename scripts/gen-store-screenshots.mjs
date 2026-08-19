@@ -85,9 +85,9 @@ const action = (title, sub, badge) => `
     ${badge ? `<div class="pill">${badge}</div>` : ''}
   </div>`;
 
-const leadCard = (name, place, price, status, tone, when, hue) => `
+const leadCard = (name, place, price, status, tone, when, render) => `
   <div class="lead">
-    <div class="shot" style="--h:${hue}"></div>
+    <div class="shot" style="background-image:url(${render}.jpg)"></div>
     <div class="lead-b">
       <div class="lead-r"><b>${name}</b><span class="price">${price}</span></div>
       <div class="lead-r"><span class="sub">${place}</span><span class="sub">${when}</span></div>
@@ -140,9 +140,9 @@ const SCREENS = [
       <div class="app">
         <div class="nav"><h2>Leads</h2><div class="count">38 open</div></div>
         <div class="segs"><span class="on">New</span><span>Sent</span><span>Approved</span><span>Declined</span></div>
-        ${leadCard('Familie de Vries', 'Utrecht · Veranda 6 × 3.5 m', '€ 8.940', 'Needs review', 'bad', '12m', '86')}
-        ${leadCard('J. Peeters', 'Breda · Free-standing 4 × 3 m', '€ 6.410', 'Offer sent', 'info', '2h', '150')}
-        ${leadCard('M. Janssen', 'Gent · Glasschuifwand', '€ 3.280', 'Signed', 'good', '1d', '30')}
+        ${leadCard('Familie de Vries', 'Utrecht · Veranda 6 × 3.5 m', '€ 8.940', 'Needs review', 'bad', '12m', 'veranda-anthracite')}
+        ${leadCard('J. Peeters', 'Breda · Free-standing 4 × 3 m', '€ 6.410', 'Offer sent', 'info', '2h', 'veranda-cream')}
+        ${leadCard('M. Janssen', 'Gent · Glasschuifwand', '€ 3.280', 'Signed', 'good', '1d', 'veranda-black')}
       </div>
       ${tabBar('Leads', device)}`,
   },
@@ -152,17 +152,20 @@ const SCREENS = [
     sub: 'Live chat from your website, answered wherever you are.',
     body: (device) => `
       ${statusBar}
-      <div class="app chat-bg">
+      <div class="app chat">
         <div class="chead">
           <div class="av">SD</div>
           <div><b>Sanne Dekker</b><span>Online · 2 offers</span></div>
         </div>
         <div class="thread">
-          ${bubble('Hi! Can the veranda be 6.5 m wide with only two posts?', false, '14:02')}
+          ${bubble('Hi! I just configured a veranda on your site — 6 × 3.5 m, anthracite.', false, '13:58')}
+          ${bubble('Saw it come in, nice choice. I can hold that price for 14 days.', true, '13:59')}
+          ${bubble('Can it be 6.5 m wide with only two posts?', false, '14:02')}
           ${bubble('Yes — up to 7 m with the reinforced beam. I’ll put it in your offer.', true, '14:03')}
           ${bubble('Great. And how long is delivery?', false, '14:04')}
           ${bubble('Four to six weeks, installation included.', true, '14:04')}
           ${bubble('Perfect, send it over 🙌', false, '14:05')}
+          ${bubble('On its way — you’ll get it by e-mail in a minute.', true, '14:06')}
         </div>
         <div class="composer"><span>Write a message…</span><div class="send">${icon('send', INK, 18)}</div></div>
       </div>
@@ -201,7 +204,7 @@ const SCREENS = [
       ${statusBar}
       <div class="app">
         <div class="nav back"><h2>Offer #2416</h2><div class="count">Draft</div></div>
-        <div class="hero" style="--h:120"></div>
+        <div class="hero"></div>
         <div class="card lines">
           <div class="line"><span>Veranda 6.0 × 3.5 m</span><b>€ 6.240</b></div>
           <div class="line"><span>Glasschuifwand, 4 panels</span><b>€ 1.850</b></div>
@@ -309,13 +312,8 @@ h3 { font-size: ${device.ui}px; font-weight: 600; margin: ${device.ui * 1.15}px 
 
 .lead { background: #fff; border: 1px solid ${BORDER}; border-radius: ${device.ui * 1.05}px; overflow: hidden;
   margin-bottom: ${device.ui * 0.75}px; box-shadow: 0 2px 10px rgba(8,45,54,.06) }
-.shot { height: ${device.ui * 7}px;
-  background: linear-gradient(160deg, hsl(var(--h) 30% 78%), hsl(var(--h) 22% 52%) 60%, hsl(200 25% 32%));
-  position: relative }
-.shot::after { content: ''; position: absolute; inset: 12% 10% 0;
-  border: ${device.ui * 0.16}px solid rgba(255,255,255,.55); border-bottom: 0;
-  border-radius: ${device.ui * 0.3}px ${device.ui * 0.3}px 0 0;
-  background: linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,.04)) }
+.shot { height: ${device.ui * 8.4}px;
+  background-size: cover; background-position: center 42%; background-color: #DDE3E6 }
 .lead-b { padding: ${device.ui * 0.8}px ${device.ui * 0.9}px; display: flex; flex-direction: column; gap: ${device.ui * 0.25}px }
 .lead-r { display: flex; justify-content: space-between; align-items: baseline }
 .lead-r b { font-size: ${device.ui}px; font-weight: 600 }
@@ -334,6 +332,7 @@ h3 { font-size: ${device.ui}px; font-weight: 600; margin: ${device.ui * 1.15}px 
   display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: ${device.ui * 0.85}px }
 .chead b { display: block; font-size: ${device.ui}px; font-weight: 600 }
 .chead span { font-size: ${device.ui * 0.78}px; color: ${MUTED_FG} }
+.app.chat { display: flex; flex-direction: column }
 .thread { display: flex; flex-direction: column; gap: ${device.ui * 0.6}px }
 .bub { max-width: 78%; background: #fff; border: 1px solid ${BORDER}; border-radius: ${device.ui}px;
   padding: ${device.ui * 0.6}px ${device.ui * 0.8}px; align-self: flex-start }
@@ -341,7 +340,7 @@ h3 { font-size: ${device.ui}px; font-weight: 600; margin: ${device.ui * 1.15}px 
 .bub time { display: block; margin-top: ${device.ui * 0.2}px; font-size: ${device.ui * 0.68}px; color: ${MUTED_FG} }
 .bub.mine { align-self: flex-end; background: ${INK}; border-color: ${INK}; color: ${CLOUD} }
 .bub.mine time { color: rgba(246,247,249,.55) }
-.composer { margin-top: ${device.ui * 1.1}px; display: flex; align-items: center; justify-content: space-between;
+.composer { margin-top: auto; display: flex; align-items: center; justify-content: space-between;
   background: #fff; border: 1px solid ${BORDER}; border-radius: 999px; padding: ${device.ui * 0.55}px ${device.ui * 0.55}px ${device.ui * 0.55}px ${device.ui}px;
   font-size: ${device.ui * 0.9}px; color: ${MUTED_FG} }
 .send { width: ${device.ui * 2}px; height: ${device.ui * 2}px; border-radius: 50%; background: ${LIME};
@@ -364,11 +363,7 @@ h3 { font-size: ${device.ui}px; font-weight: 600; margin: ${device.ui * 1.15}px 
 
 .nav.back h2::before { content: '‹  '; color: ${MUTED_FG} }
 .hero { height: ${device.ui * 8.5}px; border-radius: ${device.ui * 1.05}px; margin-bottom: ${device.ui * 0.9}px;
-  background: linear-gradient(160deg, hsl(var(--h) 28% 76%), hsl(var(--h) 20% 48%) 62%, hsl(200 26% 30%)); position: relative }
-.hero::after { content: ''; position: absolute; inset: 14% 12% 0;
-  border: ${device.ui * 0.18}px solid rgba(255,255,255,.6); border-bottom: 0;
-  border-radius: ${device.ui * 0.3}px ${device.ui * 0.3}px 0 0;
-  background: linear-gradient(180deg, rgba(255,255,255,.24), rgba(255,255,255,.05)) }
+  background: url(veranda-hero.jpg) center 42%/cover, #DDE3E6 }
 .lines .line { display: flex; justify-content: space-between; padding: ${device.ui * 0.7}px ${device.ui * 0.9}px;
   border-bottom: 1px solid ${BORDER}; font-size: ${device.ui * 0.9}px }
 .lines .line b { font-weight: 600 }
@@ -433,6 +428,13 @@ for (const [dest, src] of Object.entries(FONTS)) {
   const from = resolve(ROOT, 'node_modules', src);
   if (existsSync(from)) copyFileSync(from, resolve(WORK, dest));
   else console.warn(`! font missing: ${src} — falling back to system sans`);
+}
+
+// Real configurator renders — the lead cards and the offer hero show what the
+// customer actually built, so the frames use the same product renders the
+// configurator serves rather than an abstract stand-in.
+for (const render of ['veranda-anthracite', 'veranda-cream', 'veranda-black', 'veranda-hero']) {
+  copyFileSync(resolve(OUT, 'renders', `${render}.jpg`), resolve(WORK, `${render}.jpg`));
 }
 
 for (const device of DEVICES) {
