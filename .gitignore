@@ -51,3 +51,6 @@ example
 
 # native build artifacts (Xcode archives, dSYMs, etc.)
 /build
+
+# Screenshot generator scratch
+store/appstore/.build/

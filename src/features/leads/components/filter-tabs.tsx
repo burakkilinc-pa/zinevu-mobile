@@ -29,10 +29,19 @@ export function FilterTabs({
   const c = useColors();
 
   return (
+    // flexGrow:0 + alignSelf keep the row at its own height: a horizontal
+    // ScrollView with no height constraint eats the rest of the column, and
+    // then `alignItems: stretch` blows every chip up to that full height.
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
-      contentContainerStyle={{ gap: 8, paddingHorizontal: 20, paddingVertical: 4 }}
+      style={{ flexGrow: 0, flexShrink: 0 }}
+      contentContainerStyle={{
+        gap: 8,
+        paddingHorizontal: 20,
+        paddingVertical: 4,
+        alignItems: 'center',
+      }}
     >
       {LEAD_TABS.map((tab) => {
         const active = tab === value;

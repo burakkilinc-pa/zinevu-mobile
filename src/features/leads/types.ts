@@ -29,12 +29,28 @@ export type LeadTab = 'new' | 'sent' | 'approved' | 'declined';
 
 export const LEAD_TABS: LeadTab[] = ['new', 'sent', 'approved', 'declined'];
 
-/** Which funnel statuses each tab stands for. */
-export const TAB_STATUSES: Record<LeadTab, FunnelStatus[]> = {
-  new: ['processing', 'needs_review', 'offer_draft'],
-  sent: ['offer_sent'],
-  approved: ['won'],
-  declined: ['lost'],
+/**
+ * The board columns, as the API names them (Dutch — they are stored values).
+ *
+ * A lead's column is `board_stage`, which is NOT the same thing as its funnel
+ * status: the dealer can drag a card, and that placement is persisted. Once
+ * they have, the two answers diverge for good.
+ */
+export type BoardStage = 'nieuw' | 'verzonden' | 'gewonnen' | 'verloren';
+
+/**
+ * Which board column each tab is.
+ *
+ * The tabs filter by column, not by funnel status, so this screen shows what
+ * the web board shows — same rows, same counts. Filtering by funnel status
+ * instead would silently disagree with the board for every card a dealer has
+ * ever moved by hand.
+ */
+export const TAB_STAGES: Record<LeadTab, BoardStage> = {
+  new: 'nieuw',
+  sent: 'verzonden',
+  approved: 'gewonnen',
+  declined: 'verloren',
 };
 
 export type Lead = {
@@ -60,12 +76,11 @@ export type Lead = {
   relatedCount: number;
 };
 
-/** Per-status totals for the tab badges. */
-export type FunnelCounts = Partial<Record<FunnelStatus, number>>;
+/** Per-column totals for the tab badges. */
+export type BoardCounts = Record<LeadTab, number>;
 
 export type LeadPage = {
   leads: Lead[];
-  counts: FunnelCounts;
   page: number;
   lastPage: number;
   total: number;

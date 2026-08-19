@@ -10,8 +10,8 @@ import { useColors } from '@/lib/theme';
 import { useT, type MessageKey } from '@/lib/i18n';
 import { useAuthStore } from '@/features/auth/store';
 import { hasPermission, PERMISSIONS } from '@/lib/auth/roles';
-import { useLeads, tabCount } from '@/features/leads/hooks/use-leads';
-import { LEAD_TABS, type LeadTab } from '@/features/leads/types';
+import { useLeadCounts, useLeads } from '@/features/leads/hooks/use-leads';
+import { type LeadTab } from '@/features/leads/types';
 import { LeadCard } from '@/features/leads/components/lead-card';
 import { FilterTabs } from '@/features/leads/components/filter-tabs';
 import { NewLeadButton } from '@/features/leads/components/new-lead-button';
@@ -38,17 +38,20 @@ export default function LeadsScreen() {
     [query.data]
   );
 
-  // Every page carries the same dimension-aware totals, so the first one is
-  // read for the badges — it is the page that is always there.
-  const counts = query.data?.pages[0]?.counts;
-  const tabCounts = useMemo(
-    () =>
-      Object.fromEntries(LEAD_TABS.map((k) => [k, tabCount(counts, k)])) as Record<
-        LeadTab,
-        number
-      >,
-    [counts]
-  );
+  const { counts, refetch: refetchCounts } = useLeadCounts();
+
+  // Only a pull drives the spinner. Bound to `isRefetching` it also fires for
+  // the refetch that happens on its own when the screen remounts — coming back
+  // from a lead — and the control then hangs at the top of a list nobody pulled.
+  const [pulling, setPulling] = useState(false);
+  const onRefresh = async () => {
+    setPulling(true);
+    try {
+      await Promise.all([query.refetch(), refetchCounts()]);
+    } finally {
+      setPulling(false);
+    }
+  };
 
   if (!hasPermission(user, PERMISSIONS.leadsView)) {
     return (
@@ -68,10 +71,11 @@ export default function LeadsScreen() {
         <Text className="text-2xl font-bold text-foreground">{t('tabs.leads')}</Text>
       </View>
 
-      <FilterTabs value={tab} onChange={setTab} counts={tabCounts} />
+      <FilterTabs value={tab} onChange={setTab} counts={counts} />
 
       <FlashList
         data={leads}
+        style={{ flex: 1 }}
         keyExtractor={(lead) => lead.ref}
         contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: bottom + 72 }}
         renderItem={({ item }) => (
@@ -83,8 +87,8 @@ export default function LeadsScreen() {
         }}
         refreshControl={
           <RefreshControl
-            refreshing={query.isRefetching && !query.isFetchingNextPage}
-            onRefresh={() => void query.refetch()}
+            refreshing={pulling}
+            onRefresh={() => void onRefresh()}
             tintColor={c.mutedForeground}
           />
         }

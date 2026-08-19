@@ -2,6 +2,7 @@ import { useEffect, type ReactNode } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -32,21 +33,24 @@ import { useColors } from '@/lib/theme';
 
 const DOCK = '#082D36'; // brand ink (Zinevu navy), the dock body
 const ACTIVE_PILL = '#E7FFA4'; // brand lime — the portal's active-nav colour
-const ACTIVE_FG = '#082D36'; // ink emblem on the lime circle
 const INACTIVE_FG = 'rgba(246,247,249,0.6)'; // cloud, dimmed (inactive icons)
 
 const DOCK_H = 64; // dock bar height
 const DOCK_R = 32; // dock corner radius
 const FAB_SIZE = 60; // diameter of the centre button
 const FAB_LIFT = 10; // how far its centre rises above the dock middle (small poke)
-const MARK_SIZE = 34; // brand Z mark inside the FAB
+const MARK_H = 30; // brand Z mark height inside the FAB
+const MARK_W = Math.round((MARK_H * 164) / 224); // the mark's own 164×224 aspect
 
 // Notch cradle: a background-coloured circle whose lower arc carves the top
 // edge. Radius + centre-Y (negative = above the dock) set the opening & depth.
 const NOTCH_R = 29;
 const NOTCH_CY = -13; // depth ≈ NOTCH_R + NOTCH_CY (~16pt), opening ≈ 52pt
 
-const MARK = require('../../assets/images/android-icon-foreground.png');
+// The brand mark itself (the bare Z, ink-coloured) — not the app-icon
+// foreground, whose Z sits inside a lot of safe-area padding and reads wrong at
+// this size. SVG so it stays crisp; expo-image renders it natively.
+const MARK = require('../../assets/images/zinevu-mark.svg');
 
 type TabIcon = (a: { focused: boolean; color: string; size: number }) => ReactNode;
 
@@ -100,6 +104,11 @@ export function BrandTabBar({ state, descriptors, navigation, centerRoute }: Tab
   const left = sides.slice(0, half);
   const right = sides.slice(half);
 
+  // Where the centre button's flex slot actually sits. With an odd number of
+  // side tabs the split is uneven (e.g. 3 left / 2 right), so the slot is NOT
+  // at 50% — the notch has to follow it or the cradle drifts off the FAB.
+  const centerPct = center ? ((left.length + 0.5) / (routes.length || 1)) * 100 : 50;
+
   function press(route: Route) {
     const focused = route.key === activeKey;
     const event = navigation.emit({
@@ -107,7 +116,16 @@ export function BrandTabBar({ state, descriptors, navigation, centerRoute }: Tab
       target: route.key,
       canPreventDefault: true,
     });
-    if (!focused && !event.defaultPrevented) navigation.navigate(route.name);
+    if (event.defaultPrevented) return;
+    // Tapping the tab you are already on returns to that tab's root — the
+    // behaviour every tabbed app has. Without it a lead detail (a push inside
+    // the leads stack) traps you: the dock's Leads button is already focused,
+    // so nothing happens and the list is unreachable.
+    if (focused) {
+      if (router.canDismiss()) router.dismissAll();
+      return;
+    }
+    navigation.navigate(route.name);
   }
 
   return (
@@ -148,7 +166,7 @@ export function BrandTabBar({ state, descriptors, navigation, centerRoute }: Tab
               style={{
                 position: 'absolute',
                 top: NOTCH_CY - NOTCH_R,
-                left: '50%',
+                left: `${centerPct}%`,
                 marginLeft: -NOTCH_R,
                 width: NOTCH_R * 2,
                 height: NOTCH_R * 2,
@@ -353,8 +371,7 @@ function CenterTab({
           <Image
             source={MARK}
             contentFit="contain"
-            tintColor={ACTIVE_FG}
-            style={{ width: MARK_SIZE, height: MARK_SIZE, opacity: focused ? 1 : 0.9 }}
+            style={{ width: MARK_W, height: MARK_H, opacity: focused ? 1 : 0.9 }}
           />
         </Pressable>
       </Animated.View>

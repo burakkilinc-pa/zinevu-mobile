@@ -99,13 +99,23 @@ export function MonthGrid({
                 <View className="mt-0.5 h-1.5 flex-row items-center gap-0.5">
                   {items.slice(0, MAX_DOTS).map((item) => (
                     <View
-                      key={item.id}
+                      // Ids are unique per source, not across them: a task 12
+                      // and a calendar event 12 can share a day.
+                      key={`${item.source}${item.id}`}
                       className="h-1.5 w-1.5 rounded-full"
                       style={{
+                        // A synced block takes its own calendar's colour, so
+                        // "the grey ones are from my Google" reads at a glance.
+                        borderWidth: item.source === 'event' ? 1 : 0,
+                        borderColor: item.calendarColor ?? c.mutedForeground,
                         backgroundColor:
-                          // The dealer's colour when they set one; otherwise
-                          // the ink, which reads on both themes.
-                          item.type?.colorHex ?? c.foreground,
+                          item.source === 'event'
+                            // Hollow: it is time occupied, not work booked here,
+                            // and the ring says that without a legend.
+                            ? 'transparent'
+                            // The dealer's colour when they set one; otherwise
+                            // the ink, which reads on both themes.
+                            : item.type?.colorHex ?? c.foreground,
                         // Finished work is still shown — a calendar that hides
                         // it renders last week as empty — but it recedes.
                         opacity: item.status === 'done' ? 0.35 : 1,

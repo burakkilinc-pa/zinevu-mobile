@@ -1,79 +1,513 @@
 {
-  "leads.tab.new": { "en": "New", "nl": "Nieuw", "de": "Neu", "fr": "Nouveau", "tr": "Yeni" },
-  "leads.tab.sent": { "en": "Sent", "nl": "Verstuurd", "de": "Gesendet", "fr": "Envoyé", "tr": "Gönderildi" },
-  "leads.tab.approved": { "en": "Approved", "nl": "Akkoord", "de": "Angenommen", "fr": "Accepté", "tr": "Onaylandı" },
-  "leads.tab.declined": { "en": "Declined", "nl": "Niet akkoord", "de": "Abgelehnt", "fr": "Refusé", "tr": "Reddedildi" },
-
-  "leads.status.processing": { "en": "Processing", "nl": "Verwerken", "de": "Wird verarbeitet", "fr": "En traitement", "tr": "İşleniyor" },
-  "leads.status.needs_review": { "en": "Needs review", "nl": "Nakijken", "de": "Prüfen", "fr": "À vérifier", "tr": "Kontrol gerek" },
-  "leads.status.offer_draft": { "en": "Draft offer", "nl": "Concept offerte", "de": "Angebotsentwurf", "fr": "Devis brouillon", "tr": "Teklif taslağı" },
-  "leads.status.offer_sent": { "en": "Offer sent", "nl": "Offerte verstuurd", "de": "Angebot gesendet", "fr": "Devis envoyé", "tr": "Teklif gönderildi" },
-  "leads.status.won": { "en": "Signed", "nl": "Getekend", "de": "Unterschrieben", "fr": "Signé", "tr": "İmzalandı" },
-  "leads.status.lost": { "en": "Declined", "nl": "Niet akkoord", "de": "Abgelehnt", "fr": "Refusé", "tr": "Reddedildi" },
-
-  "leads.empty.new": { "en": "No new requests.", "nl": "Geen nieuwe aanvragen.", "de": "Keine neuen Anfragen.", "fr": "Aucune nouvelle demande.", "tr": "Yeni talep yok." },
-  "leads.empty.sent": { "en": "No offers waiting for an answer.", "nl": "Geen offertes die op antwoord wachten.", "de": "Keine Angebote, die auf Antwort warten.", "fr": "Aucun devis en attente de réponse.", "tr": "Cevap bekleyen teklif yok." },
-  "leads.empty.approved": { "en": "Nothing signed yet.", "nl": "Nog niets getekend.", "de": "Noch nichts unterschrieben.", "fr": "Rien de signé pour l'instant.", "tr": "Henüz imzalanan yok." },
-  "leads.empty.declined": { "en": "Nothing declined.", "nl": "Niets afgewezen.", "de": "Nichts abgelehnt.", "fr": "Rien de refusé.", "tr": "Reddedilen yok." },
-
-  "leads.noName": { "en": "No name yet", "nl": "Nog geen naam", "de": "Noch kein Name", "fr": "Pas encore de nom", "tr": "Henüz isim yok" },
-  "leads.noConfiguration": { "en": "No configuration", "nl": "Geen configuratie", "de": "Keine Konfiguration", "fr": "Pas de configuration", "tr": "Konfigürasyon yok" },
-  "leads.hasNote": { "en": "The customer left a note", "nl": "De klant liet een bericht achter", "de": "Der Kunde hat eine Notiz hinterlassen", "fr": "Le client a laissé un message", "tr": "Müşteri not bıraktı" },
-  "leads.related": { "en": "{n} more request(s) from this person", "nl": "Nog {n} aanvra(a)g(en) van deze persoon", "de": "Noch {n} Anfrage(n) von dieser Person", "fr": "{n} autre(s) demande(s) de cette personne", "tr": "Bu kişiden {n} talep daha" },
-
-  "leads.new.action": { "en": "New lead", "nl": "Nieuwe lead", "de": "Neuer Lead", "fr": "Nouveau lead", "tr": "Yeni talep" },
-  "leads.new.title": { "en": "Which funnel?", "nl": "Welke funnel?", "de": "Welcher Funnel?", "fr": "Quel tunnel ?", "tr": "Hangi form?" },
-  "leads.new.full": { "en": "Full configurator", "nl": "Volledige configurator", "de": "Vollständiger Konfigurator", "fr": "Configurateur complet", "tr": "Tam konfigüratör" },
-  "leads.new.quick": { "en": "Short form", "nl": "Kort formulier", "de": "Kurzes Formular", "fr": "Formulaire court", "tr": "Kısa form" },
-  "leads.new.noForms": { "en": "No funnel is switched on yet. Turn one on in the portal first.", "nl": "Er staat nog geen funnel aan. Zet er eerst één aan in het portaal.", "de": "Es ist noch kein Funnel aktiv. Aktiviere zuerst einen im Portal.", "fr": "Aucun tunnel n'est activé. Activez-en un dans le portail.", "tr": "Henüz açık form yok. Önce portaldan birini aç." },
-  "leads.formType.veranda": { "en": "Veranda", "nl": "Veranda", "de": "Terrassendach", "fr": "Véranda", "tr": "Veranda" },
-  "leads.formType.carport": { "en": "Carport", "nl": "Carport", "de": "Carport", "fr": "Carport", "tr": "Carport" },
-
-  "leads.noAccess.title": { "en": "No access to leads", "nl": "Geen toegang tot leads", "de": "Kein Zugriff auf Leads", "fr": "Pas d'accès aux leads", "tr": "Taleplere erişim yok" },
-  "leads.noAccess.body": { "en": "Your account doesn't have permission to see requests. Ask an admin in your team.", "nl": "Je account heeft geen rechten om aanvragen te zien. Vraag een beheerder in je team.", "de": "Dein Konto darf keine Anfragen sehen. Frag eine Administratorin in deinem Team.", "fr": "Votre compte n'a pas l'autorisation de voir les demandes. Demandez à un administrateur de votre équipe.", "tr": "Hesabının talepleri görme yetkisi yok. Ekibindeki bir yöneticiye sor." },
-
-  "leads.detail.call": { "en": "Call", "nl": "Bellen", "de": "Anrufen", "fr": "Appeler", "tr": "Ara" },
-  "leads.detail.offer": { "en": "Offer", "nl": "Offerte", "de": "Angebot", "fr": "Devis", "tr": "Teklif" },
-  "leads.detail.total": { "en": "Total", "nl": "Totaal", "de": "Gesamt", "fr": "Total", "tr": "Toplam" },
-  "leads.detail.offerNo": { "en": "Offer no.", "nl": "Offertenr.", "de": "Angebotsnr.", "fr": "N° de devis", "tr": "Teklif no" },
-  "leads.detail.phone": { "en": "Phone", "nl": "Telefoon", "de": "Telefon", "fr": "Téléphone", "tr": "Telefon" },
-  "leads.detail.email": { "en": "E-mail", "nl": "E-mail", "de": "E-Mail", "fr": "E-mail", "tr": "E-posta" },
-  "leads.detail.address": { "en": "Address", "nl": "Adres", "de": "Adresse", "fr": "Adresse", "tr": "Adres" },
-  "leads.detail.received": { "en": "Received", "nl": "Binnengekomen", "de": "Eingegangen", "fr": "Reçue", "tr": "Geldi" },
-  "leads.detail.sent": { "en": "Offer sent", "nl": "Offerte verstuurd", "de": "Angebot gesendet", "fr": "Devis envoyé", "tr": "Teklif gönderildi" },
-  "leads.detail.signed": { "en": "Signed", "nl": "Getekend", "de": "Unterschrieben", "fr": "Signé", "tr": "İmzalandı" },
-  "leads.detail.note": { "en": "The customer wrote", "nl": "De klant schreef", "de": "Der Kunde schrieb", "fr": "Le client a écrit", "tr": "Müşteri şunu yazdı" },
-  "leads.detail.configuration": { "en": "Configuration", "nl": "Configuratie", "de": "Konfiguration", "fr": "Configuration", "tr": "Konfigürasyon" },
-
-  "leads.answer.mount_type": { "en": "Mounting", "nl": "Constructie", "de": "Montage", "fr": "Structure", "tr": "Montaj tipi" },
-  "leads.answer.profile_color": { "en": "Profile colour", "nl": "Profielkleur", "de": "Profilfarbe", "fr": "Couleur du profil", "tr": "Profil rengi" },
-  "leads.answer.gutter_type": { "en": "Gutter", "nl": "Goot", "de": "Rinne", "fr": "Gouttière", "tr": "Oluk" },
-  "leads.answer.roof_material": { "en": "Roof material", "nl": "Dakmateriaal", "de": "Dachmaterial", "fr": "Matériau du toit", "tr": "Çatı malzemesi" },
-  "leads.answer.roof": { "en": "Roof", "nl": "Dak", "de": "Dach", "fr": "Toit", "tr": "Çatı" },
-  "leads.answer.lighting": { "en": "Lighting", "nl": "Verlichting", "de": "Beleuchtung", "fr": "Éclairage", "tr": "Aydınlatma" },
-  "leads.answer.sunshade": { "en": "Sunshade", "nl": "Zonwering", "de": "Sonnenschutz", "fr": "Store", "tr": "Güneşlik" },
-  "leads.answer.front": { "en": "Front", "nl": "Voorzijde", "de": "Front", "fr": "Façade", "tr": "Ön cephe" },
-  "leads.answer.left_side": { "en": "Left side", "nl": "Linkerzijde", "de": "Linke Seite", "fr": "Côté gauche", "tr": "Sol taraf" },
-  "leads.answer.right_side": { "en": "Right side", "nl": "Rechterzijde", "de": "Rechte Seite", "fr": "Côté droit", "tr": "Sağ taraf" },
-  "leads.answer.installation": { "en": "Installation", "nl": "Montage", "de": "Montage", "fr": "Pose", "tr": "Montaj" },
-  "leads.answer.width": { "en": "Width (cm)", "nl": "Breedte (cm)", "de": "Breite (cm)", "fr": "Largeur (cm)", "tr": "Genişlik (cm)" },
-  "leads.answer.depth": { "en": "Depth (cm)", "nl": "Diepte (cm)", "de": "Tiefe (cm)", "fr": "Profondeur (cm)", "tr": "Derinlik (cm)" },
-  "leads.answer.height": { "en": "Height (cm)", "nl": "Hoogte (cm)", "de": "Höhe (cm)", "fr": "Hauteur (cm)", "tr": "Yükseklik (cm)" },
-  "leads.answer.breedte_cm": { "en": "Width (cm)", "nl": "Breedte (cm)", "de": "Breite (cm)", "fr": "Largeur (cm)", "tr": "Genişlik (cm)" },
-  "leads.answer.diepte_cm": { "en": "Depth (cm)", "nl": "Diepte (cm)", "de": "Tiefe (cm)", "fr": "Profondeur (cm)", "tr": "Derinlik (cm)" },
-
-  "leads.value.on_the_wall": { "en": "Against the wall", "nl": "Aan de muur", "de": "An der Wand", "fr": "Contre le mur", "tr": "Duvara monte" },
-  "leads.value.free_standing": { "en": "Free-standing", "nl": "Vrijstaand", "de": "Freistehend", "fr": "Autoportant", "tr": "Serbest duran" },
-  "leads.value.free_standing_against_wall": { "en": "Free-standing against the wall", "nl": "Vrijstaand tegen de muur", "de": "Freistehend an der Wand", "fr": "Autoportant contre le mur", "tr": "Duvara dayalı serbest" },
-  "leads.value.ral_7016": { "en": "Anthracite (RAL 7016)", "nl": "Antraciet (RAL 7016)", "de": "Anthrazit (RAL 7016)", "fr": "Anthracite (RAL 7016)", "tr": "Antrasit (RAL 7016)" },
-  "leads.value.ral_9001": { "en": "Cream (RAL 9001)", "nl": "Crème (RAL 9001)", "de": "Creme (RAL 9001)", "fr": "Crème (RAL 9001)", "tr": "Krem (RAL 9001)" },
-  "leads.value.ral_9005": { "en": "Black (RAL 9005)", "nl": "Zwart (RAL 9005)", "de": "Schwarz (RAL 9005)", "fr": "Noir (RAL 9005)", "tr": "Siyah (RAL 9005)" },
-  "leads.value.straight": { "en": "Straight", "nl": "Recht", "de": "Gerade", "fr": "Droite", "tr": "Düz" },
-  "leads.value.oval": { "en": "Oval", "nl": "Halfrond", "de": "Oval", "fr": "Ovale", "tr": "Oval" },
-  "leads.value.poly": { "en": "Polycarbonate", "nl": "Polycarbonaat", "de": "Polycarbonat", "fr": "Polycarbonate", "tr": "Polikarbon" },
-  "leads.value.glass": { "en": "Glass", "nl": "Glas", "de": "Glas", "fr": "Verre", "tr": "Cam" },
-  "leads.value.none": { "en": "None", "nl": "Geen", "de": "Keine", "fr": "Aucun", "tr": "Yok" },
-  "leads.value.open": { "en": "Open", "nl": "Open", "de": "Offen", "fr": "Ouvert", "tr": "Açık" },
-  "leads.value.with_installation": { "en": "With installation", "nl": "Met montage", "de": "Mit Montage", "fr": "Avec pose", "tr": "Montaj dahil" },
-  "leads.value.without_installation": { "en": "Without installation", "nl": "Zonder montage", "de": "Ohne Montage", "fr": "Sans pose", "tr": "Montaj hariç" }
+  "leads.tab.new": {
+    "en": "New",
+    "nl": "Nieuw",
+    "de": "Neu",
+    "fr": "Nouveau",
+    "tr": "Yeni"
+  },
+  "leads.tab.sent": {
+    "en": "Sent",
+    "nl": "Verstuurd",
+    "de": "Gesendet",
+    "fr": "Envoyé",
+    "tr": "Gönderildi"
+  },
+  "leads.tab.approved": {
+    "en": "Approved",
+    "nl": "Akkoord",
+    "de": "Angenommen",
+    "fr": "Accepté",
+    "tr": "Onaylandı"
+  },
+  "leads.tab.declined": {
+    "en": "Declined",
+    "nl": "Niet akkoord",
+    "de": "Abgelehnt",
+    "fr": "Refusé",
+    "tr": "Reddedildi"
+  },
+  "leads.status.processing": {
+    "en": "Processing",
+    "nl": "Verwerken",
+    "de": "Wird verarbeitet",
+    "fr": "En traitement",
+    "tr": "İşleniyor"
+  },
+  "leads.status.needs_review": {
+    "en": "Needs review",
+    "nl": "Nakijken",
+    "de": "Prüfen",
+    "fr": "À vérifier",
+    "tr": "Kontrol gerek"
+  },
+  "leads.status.offer_draft": {
+    "en": "Draft offer",
+    "nl": "Concept offerte",
+    "de": "Angebotsentwurf",
+    "fr": "Devis brouillon",
+    "tr": "Teklif taslağı"
+  },
+  "leads.status.offer_sent": {
+    "en": "Offer sent",
+    "nl": "Offerte verstuurd",
+    "de": "Angebot gesendet",
+    "fr": "Devis envoyé",
+    "tr": "Teklif gönderildi"
+  },
+  "leads.status.won": {
+    "en": "Signed",
+    "nl": "Getekend",
+    "de": "Unterschrieben",
+    "fr": "Signé",
+    "tr": "İmzalandı"
+  },
+  "leads.status.lost": {
+    "en": "Declined",
+    "nl": "Niet akkoord",
+    "de": "Abgelehnt",
+    "fr": "Refusé",
+    "tr": "Reddedildi"
+  },
+  "leads.empty.new": {
+    "en": "No new requests.",
+    "nl": "Geen nieuwe aanvragen.",
+    "de": "Keine neuen Anfragen.",
+    "fr": "Aucune nouvelle demande.",
+    "tr": "Yeni talep yok."
+  },
+  "leads.empty.sent": {
+    "en": "No offers waiting for an answer.",
+    "nl": "Geen offertes die op antwoord wachten.",
+    "de": "Keine Angebote, die auf Antwort warten.",
+    "fr": "Aucun devis en attente de réponse.",
+    "tr": "Cevap bekleyen teklif yok."
+  },
+  "leads.empty.approved": {
+    "en": "Nothing signed yet.",
+    "nl": "Nog niets getekend.",
+    "de": "Noch nichts unterschrieben.",
+    "fr": "Rien de signé pour l'instant.",
+    "tr": "Henüz imzalanan yok."
+  },
+  "leads.empty.declined": {
+    "en": "Nothing declined.",
+    "nl": "Niets afgewezen.",
+    "de": "Nichts abgelehnt.",
+    "fr": "Rien de refusé.",
+    "tr": "Reddedilen yok."
+  },
+  "leads.noName": {
+    "en": "No name yet",
+    "nl": "Nog geen naam",
+    "de": "Noch kein Name",
+    "fr": "Pas encore de nom",
+    "tr": "Henüz isim yok"
+  },
+  "leads.noConfiguration": {
+    "en": "No configuration",
+    "nl": "Geen configuratie",
+    "de": "Keine Konfiguration",
+    "fr": "Pas de configuration",
+    "tr": "Konfigürasyon yok"
+  },
+  "leads.hasNote": {
+    "en": "The customer left a note",
+    "nl": "De klant liet een bericht achter",
+    "de": "Der Kunde hat eine Notiz hinterlassen",
+    "fr": "Le client a laissé un message",
+    "tr": "Müşteri not bıraktı"
+  },
+  "leads.related": {
+    "en": "{n} more request(s) from this person",
+    "nl": "Nog {n} aanvra(a)g(en) van deze persoon",
+    "de": "Noch {n} Anfrage(n) von dieser Person",
+    "fr": "{n} autre(s) demande(s) de cette personne",
+    "tr": "Bu kişiden {n} talep daha"
+  },
+  "leads.new.action": {
+    "en": "New lead",
+    "nl": "Nieuwe lead",
+    "de": "Neuer Lead",
+    "fr": "Nouveau lead",
+    "tr": "Yeni talep"
+  },
+  "leads.new.title": {
+    "en": "Which funnel?",
+    "nl": "Welke funnel?",
+    "de": "Welcher Funnel?",
+    "fr": "Quel tunnel ?",
+    "tr": "Hangi form?"
+  },
+  "leads.new.full": {
+    "en": "Full configurator",
+    "nl": "Volledige configurator",
+    "de": "Vollständiger Konfigurator",
+    "fr": "Configurateur complet",
+    "tr": "Tam konfigüratör"
+  },
+  "leads.new.quick": {
+    "en": "Short form",
+    "nl": "Kort formulier",
+    "de": "Kurzes Formular",
+    "fr": "Formulaire court",
+    "tr": "Kısa form"
+  },
+  "leads.new.noForms": {
+    "en": "No funnel is switched on yet. Turn one on in the portal first.",
+    "nl": "Er staat nog geen funnel aan. Zet er eerst één aan in het portaal.",
+    "de": "Es ist noch kein Funnel aktiv. Aktiviere zuerst einen im Portal.",
+    "fr": "Aucun tunnel n'est activé. Activez-en un dans le portail.",
+    "tr": "Henüz açık form yok. Önce portaldan birini aç."
+  },
+  "leads.formType.veranda": {
+    "en": "Veranda",
+    "nl": "Veranda",
+    "de": "Terrassendach",
+    "fr": "Véranda",
+    "tr": "Veranda"
+  },
+  "leads.formType.cube_veranda": {
+    "en": "Cube veranda",
+    "nl": "Cube veranda",
+    "de": "Cube-Terrassendach",
+    "fr": "Véranda cube",
+    "tr": "Cube veranda"
+  },
+  "leads.formType.carport": {
+    "en": "Carport",
+    "nl": "Carport",
+    "de": "Carport",
+    "fr": "Carport",
+    "tr": "Carport"
+  },
+  "leads.formType.veranda_sunshade": {
+    "en": "Veranda sun protection",
+    "nl": "Veranda zonwering",
+    "de": "Terrassendach-Sonnenschutz",
+    "fr": "Protection solaire véranda",
+    "tr": "Veranda güneş koruma"
+  },
+  "leads.formType.sliding_doors": {
+    "en": "Glass sliding walls",
+    "nl": "Glazen schuifwanden",
+    "de": "Glas-Schiebewände",
+    "fr": "Parois coulissantes en verre",
+    "tr": "Cam sürme duvarlar"
+  },
+  "leads.noAccess.title": {
+    "en": "No access to leads",
+    "nl": "Geen toegang tot leads",
+    "de": "Kein Zugriff auf Leads",
+    "fr": "Pas d'accès aux leads",
+    "tr": "Taleplere erişim yok"
+  },
+  "leads.noAccess.body": {
+    "en": "Your account doesn't have permission to see requests. Ask an admin in your team.",
+    "nl": "Je account heeft geen rechten om aanvragen te zien. Vraag een beheerder in je team.",
+    "de": "Dein Konto darf keine Anfragen sehen. Frag eine Administratorin in deinem Team.",
+    "fr": "Votre compte n'a pas l'autorisation de voir les demandes. Demandez à un administrateur de votre équipe.",
+    "tr": "Hesabının talepleri görme yetkisi yok. Ekibindeki bir yöneticiye sor."
+  },
+  "leads.detail.call": {
+    "en": "Call",
+    "nl": "Bellen",
+    "de": "Anrufen",
+    "fr": "Appeler",
+    "tr": "Ara"
+  },
+  "leads.detail.pdf": {
+    "en": "PDF",
+    "nl": "PDF",
+    "de": "PDF",
+    "fr": "PDF",
+    "tr": "PDF"
+  },
+  "leads.detail.view3d": {
+    "en": "3D view",
+    "nl": "3D-weergave",
+    "de": "3D-Ansicht",
+    "fr": "Vue 3D",
+    "tr": "3D görünüm"
+  },
+  "leads.detail.total": {
+    "en": "Total",
+    "nl": "Totaal",
+    "de": "Gesamt",
+    "fr": "Total",
+    "tr": "Toplam"
+  },
+  "leads.detail.offerNo": {
+    "en": "Offer no.",
+    "nl": "Offertenr.",
+    "de": "Angebotsnr.",
+    "fr": "N° de devis",
+    "tr": "Teklif no"
+  },
+  "leads.detail.phone": {
+    "en": "Phone",
+    "nl": "Telefoon",
+    "de": "Telefon",
+    "fr": "Téléphone",
+    "tr": "Telefon"
+  },
+  "leads.detail.email": {
+    "en": "E-mail",
+    "nl": "E-mail",
+    "de": "E-Mail",
+    "fr": "E-mail",
+    "tr": "E-posta"
+  },
+  "leads.detail.address": {
+    "en": "Address",
+    "nl": "Adres",
+    "de": "Adresse",
+    "fr": "Adresse",
+    "tr": "Adres"
+  },
+  "leads.detail.received": {
+    "en": "Received",
+    "nl": "Binnengekomen",
+    "de": "Eingegangen",
+    "fr": "Reçue",
+    "tr": "Geldi"
+  },
+  "leads.detail.sent": {
+    "en": "Offer sent",
+    "nl": "Offerte verstuurd",
+    "de": "Angebot gesendet",
+    "fr": "Devis envoyé",
+    "tr": "Teklif gönderildi"
+  },
+  "leads.detail.signed": {
+    "en": "Signed",
+    "nl": "Getekend",
+    "de": "Unterschrieben",
+    "fr": "Signé",
+    "tr": "İmzalandı"
+  },
+  "leads.detail.note": {
+    "en": "The customer wrote",
+    "nl": "De klant schreef",
+    "de": "Der Kunde schrieb",
+    "fr": "Le client a écrit",
+    "tr": "Müşteri şunu yazdı"
+  },
+  "leads.detail.configuration": {
+    "en": "Configuration",
+    "nl": "Configuratie",
+    "de": "Konfiguration",
+    "fr": "Configuration",
+    "tr": "Konfigürasyon"
+  },
+  "leads.answer.mount_type": {
+    "en": "Mounting",
+    "nl": "Constructie",
+    "de": "Montage",
+    "fr": "Structure",
+    "tr": "Montaj tipi"
+  },
+  "leads.answer.profile_color": {
+    "en": "Profile colour",
+    "nl": "Profielkleur",
+    "de": "Profilfarbe",
+    "fr": "Couleur du profil",
+    "tr": "Profil rengi"
+  },
+  "leads.answer.gutter_type": {
+    "en": "Gutter",
+    "nl": "Goot",
+    "de": "Rinne",
+    "fr": "Gouttière",
+    "tr": "Oluk"
+  },
+  "leads.answer.roof_material": {
+    "en": "Roof material",
+    "nl": "Dakmateriaal",
+    "de": "Dachmaterial",
+    "fr": "Matériau du toit",
+    "tr": "Çatı malzemesi"
+  },
+  "leads.answer.roof": {
+    "en": "Roof",
+    "nl": "Dak",
+    "de": "Dach",
+    "fr": "Toit",
+    "tr": "Çatı"
+  },
+  "leads.answer.lighting": {
+    "en": "Lighting",
+    "nl": "Verlichting",
+    "de": "Beleuchtung",
+    "fr": "Éclairage",
+    "tr": "Aydınlatma"
+  },
+  "leads.answer.sunshade": {
+    "en": "Sunshade",
+    "nl": "Zonwering",
+    "de": "Sonnenschutz",
+    "fr": "Store",
+    "tr": "Güneşlik"
+  },
+  "leads.answer.front": {
+    "en": "Front",
+    "nl": "Voorzijde",
+    "de": "Front",
+    "fr": "Façade",
+    "tr": "Ön cephe"
+  },
+  "leads.answer.left_side": {
+    "en": "Left side",
+    "nl": "Linkerzijde",
+    "de": "Linke Seite",
+    "fr": "Côté gauche",
+    "tr": "Sol taraf"
+  },
+  "leads.answer.right_side": {
+    "en": "Right side",
+    "nl": "Rechterzijde",
+    "de": "Rechte Seite",
+    "fr": "Côté droit",
+    "tr": "Sağ taraf"
+  },
+  "leads.answer.installation": {
+    "en": "Installation",
+    "nl": "Montage",
+    "de": "Montage",
+    "fr": "Pose",
+    "tr": "Montaj"
+  },
+  "leads.answer.width": {
+    "en": "Width (cm)",
+    "nl": "Breedte (cm)",
+    "de": "Breite (cm)",
+    "fr": "Largeur (cm)",
+    "tr": "Genişlik (cm)"
+  },
+  "leads.answer.depth": {
+    "en": "Depth (cm)",
+    "nl": "Diepte (cm)",
+    "de": "Tiefe (cm)",
+    "fr": "Profondeur (cm)",
+    "tr": "Derinlik (cm)"
+  },
+  "leads.answer.height": {
+    "en": "Height (cm)",
+    "nl": "Hoogte (cm)",
+    "de": "Höhe (cm)",
+    "fr": "Hauteur (cm)",
+    "tr": "Yükseklik (cm)"
+  },
+  "leads.answer.breedte_cm": {
+    "en": "Width (cm)",
+    "nl": "Breedte (cm)",
+    "de": "Breite (cm)",
+    "fr": "Largeur (cm)",
+    "tr": "Genişlik (cm)"
+  },
+  "leads.answer.diepte_cm": {
+    "en": "Depth (cm)",
+    "nl": "Diepte (cm)",
+    "de": "Tiefe (cm)",
+    "fr": "Profondeur (cm)",
+    "tr": "Derinlik (cm)"
+  },
+  "leads.value.on_the_wall": {
+    "en": "Against the wall",
+    "nl": "Aan de muur",
+    "de": "An der Wand",
+    "fr": "Contre le mur",
+    "tr": "Duvara monte"
+  },
+  "leads.value.free_standing": {
+    "en": "Free-standing",
+    "nl": "Vrijstaand",
+    "de": "Freistehend",
+    "fr": "Autoportant",
+    "tr": "Serbest duran"
+  },
+  "leads.value.free_standing_against_wall": {
+    "en": "Free-standing against the wall",
+    "nl": "Vrijstaand tegen de muur",
+    "de": "Freistehend an der Wand",
+    "fr": "Autoportant contre le mur",
+    "tr": "Duvara dayalı serbest"
+  },
+  "leads.value.ral_7016": {
+    "en": "Anthracite (RAL 7016)",
+    "nl": "Antraciet (RAL 7016)",
+    "de": "Anthrazit (RAL 7016)",
+    "fr": "Anthracite (RAL 7016)",
+    "tr": "Antrasit (RAL 7016)"
+  },
+  "leads.value.ral_9001": {
+    "en": "Cream (RAL 9001)",
+    "nl": "Crème (RAL 9001)",
+    "de": "Creme (RAL 9001)",
+    "fr": "Crème (RAL 9001)",
+    "tr": "Krem (RAL 9001)"
+  },
+  "leads.value.ral_9005": {
+    "en": "Black (RAL 9005)",
+    "nl": "Zwart (RAL 9005)",
+    "de": "Schwarz (RAL 9005)",
+    "fr": "Noir (RAL 9005)",
+    "tr": "Siyah (RAL 9005)"
+  },
+  "leads.value.straight": {
+    "en": "Straight",
+    "nl": "Recht",
+    "de": "Gerade",
+    "fr": "Droite",
+    "tr": "Düz"
+  },
+  "leads.value.oval": {
+    "en": "Oval",
+    "nl": "Halfrond",
+    "de": "Oval",
+    "fr": "Ovale",
+    "tr": "Oval"
+  },
+  "leads.value.poly": {
+    "en": "Polycarbonate",
+    "nl": "Polycarbonaat",
+    "de": "Polycarbonat",
+    "fr": "Polycarbonate",
+    "tr": "Polikarbon"
+  },
+  "leads.value.glass": {
+    "en": "Glass",
+    "nl": "Glas",
+    "de": "Glas",
+    "fr": "Verre",
+    "tr": "Cam"
+  },
+  "leads.value.none": {
+    "en": "None",
+    "nl": "Geen",
+    "de": "Keine",
+    "fr": "Aucun",
+    "tr": "Yok"
+  },
+  "leads.value.open": {
+    "en": "Open",
+    "nl": "Open",
+    "de": "Offen",
+    "fr": "Ouvert",
+    "tr": "Açık"
+  },
+  "leads.value.with_installation": {
+    "en": "With installation",
+    "nl": "Met montage",
+    "de": "Mit Montage",
+    "fr": "Avec pose",
+    "tr": "Montaj dahil"
+  },
+  "leads.value.without_installation": {
+    "en": "Without installation",
+    "nl": "Zonder montage",
+    "de": "Ohne Montage",
+    "fr": "Sans pose",
+    "tr": "Montaj hariç"
+  }
 }

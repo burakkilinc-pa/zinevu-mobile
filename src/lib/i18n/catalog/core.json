@@ -6,6 +6,7 @@
   "common.edit": { "en": "Edit", "nl": "Bewerken", "de": "Bearbeiten", "fr": "Modifier", "tr": "Düzenle" },
   "common.remove": { "en": "Remove", "nl": "Verwijderen", "de": "Entfernen", "fr": "Retirer", "tr": "Kaldır" },
   "common.done": { "en": "Done", "nl": "Klaar", "de": "Fertig", "fr": "Terminé", "tr": "Tamam" },
+  "common.back": { "en": "Back", "nl": "Terug", "de": "Zurück", "fr": "Retour", "tr": "Geri" },
   "common.retry": { "en": "Retry", "nl": "Opnieuw", "de": "Erneut versuchen", "fr": "Réessayer", "tr": "Tekrar dene" },
   "common.loading": { "en": "Loading…", "nl": "Laden…", "de": "Wird geladen…", "fr": "Chargement…", "tr": "Yükleniyor…" },
   "common.camera": { "en": "Camera", "nl": "Camera", "de": "Kamera", "fr": "Appareil photo", "tr": "Kamera" },
@@ -20,6 +21,8 @@
   "tabs.settings": { "en": "Settings", "nl": "Instellingen", "de": "Einstellungen", "fr": "Réglages", "tr": "Ayarlar" },
   "tabs.jobs": { "en": "My Jobs", "nl": "Mijn klussen", "de": "Meine Aufträge", "fr": "Mes chantiers", "tr": "İşlerim" },
   "tabs.admin": { "en": "Platform", "nl": "Platform", "de": "Plattform", "fr": "Plateforme", "tr": "Platform" },
+
+  "more.title": { "en": "All sections", "nl": "Alle onderdelen", "de": "Alle Bereiche", "fr": "Toutes les sections", "tr": "Tüm bölümler" },
 
   "role.admin": { "en": "Admin", "nl": "Beheerder", "de": "Administrator", "fr": "Administrateur", "tr": "Yönetici" },
   "role.montage": { "en": "Montage crew", "nl": "Montageteam", "de": "Montageteam", "fr": "Équipe de pose", "tr": "Montaj ekibi" },
@@ -43,8 +46,10 @@
   "account.avatar.uploadFailed": { "en": "Could not upload the photo.", "nl": "Kon de foto niet uploaden.", "de": "Das Foto konnte nicht hochgeladen werden.", "fr": "Impossible d'envoyer la photo.", "tr": "Fotoğraf yüklenemedi." },
   "account.avatar.removeFailed": { "en": "Could not remove the photo.", "nl": "Kon de foto niet verwijderen.", "de": "Das Foto konnte nicht entfernt werden.", "fr": "Impossible de supprimer la photo.", "tr": "Fotoğraf kaldırılamadı." },
   "account.section.profile": { "en": "Profile", "nl": "Profiel", "de": "Profil", "fr": "Profil", "tr": "Profil" },
+  "account.section.company": { "en": "Your company", "nl": "Jouw bedrijf", "de": "Dein Unternehmen", "fr": "Votre entreprise", "tr": "Şirketin" },
   "account.section.appearance": { "en": "Appearance", "nl": "Weergave", "de": "Darstellung", "fr": "Apparence", "tr": "Görünüm" },
   "account.section.language": { "en": "Language", "nl": "Taal", "de": "Sprache", "fr": "Langue", "tr": "Dil" },
+  "account.section.danger": { "en": "Danger zone", "nl": "Gevarenzone", "de": "Gefahrenzone", "fr": "Zone sensible", "tr": "Tehlikeli bölge" },
   "account.section.security": { "en": "Security", "nl": "Beveiliging", "de": "Sicherheit", "fr": "Sécurité", "tr": "Güvenlik" },
   "account.editProfile": { "en": "Edit profile", "nl": "Profiel bewerken", "de": "Profil bearbeiten", "fr": "Modifier le profil", "tr": "Profili düzenle" },
   "account.changePassword": { "en": "Change password", "nl": "Wachtwoord wijzigen", "de": "Passwort ändern", "fr": "Changer le mot de passe", "tr": "Şifre değiştir" },

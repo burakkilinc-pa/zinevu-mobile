@@ -12,6 +12,7 @@
       "bundleIdentifier": "com.zinevu.mobile",
       "supportsTablet": true,
       "appleTeamId": "MPM7UW8NS4",
+      "usesAppleSignIn": true,
       "config": {
         "usesNonExemptEncryption": false
       }
@@ -45,13 +46,13 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#082D36",
-          "image": "./assets/images/icon.png",
+          "backgroundColor": "#000000",
+          "image": "./assets/images/splash-blank.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "dark": {
-            "backgroundColor": "#04191F",
-            "image": "./assets/images/icon.png"
+            "backgroundColor": "#000000",
+            "image": "./assets/images/splash-blank.png"
           }
         }
       ],
@@ -89,7 +90,14 @@
           }
         }
       ],
-      "expo-web-browser"
+      "expo-web-browser",
+      "expo-apple-authentication",
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.132252195087-fauqcdu720mdheuiort7ionntgeucs06"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
