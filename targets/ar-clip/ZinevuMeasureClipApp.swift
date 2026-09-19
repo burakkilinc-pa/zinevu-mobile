@@ -21,7 +21,7 @@ struct ZinevuMeasureClipApp: App {
             InvocationRoot(fallback: Invocation(
                 slug: nil,
                 draftUuid: nil,
-                language: "nl",
+                language: Copy.normalize(nil),
                 fromQR: false
             ))
         }

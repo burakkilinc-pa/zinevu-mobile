@@ -43,12 +43,20 @@ struct Copy {
     let standItHere: String
     let errorTitle, errorBody, errorPermission: String
     let noDraftTitle, noDraftBody: String
-    /// The App Store app opened from the home screen: no design was ever
-    /// involved, so "we could not find it" would be a false alarm.
+    /// Opened without one of our links — Apple's own launch, an App Clip Code
+    /// with no URL: no design was ever involved, so "we could not find it"
+    /// would be a false alarm.
     let keptOnPhone: String
 
+    /**
+     The UI language. Our links always carry `lang` — the one the visitor
+     already chose on the funnel — so that wins. Without it (Apple's own
+     launch, most visibly App Review's) the phone's language is the only
+     signal there is, and it beats assuming Dutch for everyone.
+     */
     static func normalize(_ raw: String?) -> String {
-        let code = String((raw ?? "nl").prefix(2)).lowercased()
+        let asked = raw ?? Locale.preferredLanguages.first ?? "nl"
+        let code = String(asked.prefix(2)).lowercased()
         return all[code] != nil ? code : "nl"
     }
 

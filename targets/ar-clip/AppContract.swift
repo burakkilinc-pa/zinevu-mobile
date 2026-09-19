@@ -18,12 +18,6 @@ enum AppContract {
     /// `https://app.zinevu.com/ar/{slug}?id={draft}&lang=nl&from=qr`
     static let invocationPathPrefix = "/ar"
 
-    /// Running as the App Clip rather than the App Store app. A clip only
-    /// ever exists because a URL opened it, so it always expects a draft.
-    static var isClip: Bool {
-        Bundle.main.bundleIdentifier?.hasSuffix(".Clip") == true
-    }
-
     /**
      Where to send someone who has just measured and wants to SEE it.
 
@@ -72,22 +66,35 @@ struct Invocation {
     /// The URL this clip was opened with, kept verbatim for the one screen
     /// that has to explain why it could not find a design. See MeasureScreen.
     var sourceURL: String?
+    /// A URL arrived, but not one of ours. See `expectsDraft`.
+    var rejected = false
 
-    /// Whether a missing draft is a failure. The App Store app opened from the
-    /// home screen has no draft by design; a clip, or either target opened by
-    /// a scanned URL, was promised one.
-    var expectsDraft: Bool { AppContract.isClip || sourceURL != nil }
+    /**
+     Whether a missing draft is a failure — true only when one of OUR links
+     opened the clip, because only our links ever promise a design.
 
-    /// A URL that arrived but is not ours to open. Kept rather than dropped:
-    /// the no-draft screen prints it, and "no invocation url" would send the
-    /// search for the bug to the wrong place.
+     It used to be "always, for a clip", on the theory that a clip only exists
+     because a URL opened it. Apple opens it without one of ours all the time:
+     App Review and the App Store's own "Open" launch the default experience
+     with `https://appclip.apple.com/id?p=com.zinevu.mobile.Clip`, and an App
+     Clip Code with no registered URL does the same. Every one of those ended
+     on "we could not find your design" with that Apple URL printed under it —
+     an error screen, shown first to the one person deciding whether the clip
+     ships. They now measure like the home-screen case: sizes kept on the phone.
+     */
+    var expectsDraft: Bool { sourceURL != nil && !rejected }
+
+    /// A URL that arrived but is not ours to open. Kept rather than dropped,
+    /// so a debugger can still read it off the invocation — but it no longer
+    /// counts as a promise of a design.
     func rejecting(_ url: URL) -> Invocation {
         Invocation(
             slug: nil,
             draftUuid: nil,
             language: language,
             fromQR: false,
-            sourceURL: "\(url.absoluteString) (rejected)"
+            sourceURL: "\(url.absoluteString) (rejected)",
+            rejected: true
         )
     }
 
@@ -154,8 +161,7 @@ struct InvocationRoot: View {
     }
 
     /// One URL, wherever it came from — and a URL that is not ours is KEPT as a
-    /// rejection rather than dropped, so the no-draft screen can print what it
-    /// was actually opened with.
+    /// rejection rather than dropped, so it can still be read while debugging.
     private func accept(_ url: URL) {
         invocation = Invocation.parse(url) ?? invocation.rejecting(url)
     }

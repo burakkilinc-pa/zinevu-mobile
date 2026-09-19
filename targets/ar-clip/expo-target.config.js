@@ -33,9 +33,8 @@ module.exports = () => ({
   // What the customer reads on the App Clip card and under the icon.
   displayName: 'Zinevu Meten',
   // Leading dot = appended to this app's bundle id → com.zinevu.mobile.Clip.
-  // The `.Clip` suffix is load-bearing beyond convention: AppContract.isClip
-  // reads it to decide whether a missing draft is a failure or just someone
-  // who opened the app from their home screen.
+  // Named verbatim on the web side too — `src/lib/appClip.js` and the
+  // association document Apple fetches — so it cannot change here alone.
   bundleIdentifier: '.Clip',
   // The clip's own icon — the one the Smart App Banner and the App Library
   // show. Resolved relative to THIS folder, and it is the icon the measuring
