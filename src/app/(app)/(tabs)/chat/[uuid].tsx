@@ -141,7 +141,7 @@ export default function ChatThreadScreen() {
                 opacity: !draft.trim() || send.isPending ? 0.4 : 1,
               }}
             >
-              <Ionicons name="arrow-up" size={20} color={c.background} />
+              <Ionicons name="arrow-up" size={20} color={c.primaryForeground} />
             </Pressable>
           </View>
         ) : (
@@ -189,7 +189,7 @@ function Bubble({ message }: { message: ChatMessage }) {
             <Text
               key={attachment.id}
               className="text-sm underline"
-              style={{ color: mine ? c.background : c.foreground }}
+              style={{ color: mine ? c.primaryForeground : c.foreground }}
             >
               {attachment.fileName}
             </Text>
@@ -199,7 +199,7 @@ function Bubble({ message }: { message: ChatMessage }) {
         {message.body ? (
           <Text
             className="text-[15px] leading-5"
-            style={{ color: mine ? c.background : c.foreground }}
+            style={{ color: mine ? c.primaryForeground : c.foreground }}
           >
             {message.body}
           </Text>
@@ -207,7 +207,7 @@ function Bubble({ message }: { message: ChatMessage }) {
 
         <Text
           className="self-end text-[10px]"
-          style={{ color: mine ? c.background : c.mutedForeground, opacity: 0.7 }}
+          style={{ color: mine ? c.primaryForeground : c.mutedForeground, opacity: 0.7 }}
         >
           {message.pending ? '…' : clockTime(message.createdAt)}
         </Text>

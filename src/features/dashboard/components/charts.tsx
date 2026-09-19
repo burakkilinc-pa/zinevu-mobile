@@ -23,14 +23,15 @@ import type { Conversion, LeadSources, MonthPoint } from '@/features/dashboard/t
  */
 
 /**
- * Categorical hues for the source split — the only chart with more than one
- * series. Both sets pass the palette checks (lightness band, chroma floor,
- * colourblind separation, contrast) against their own card surface, so the
- * dark set is its own choice rather than a lightened flip of the light one.
+ * The chart hues are the brand's own (zinevu.com): deep teal first — every
+ * single-series bar wears it — then lime and smoke for the source split, the
+ * only chart with more than one series. The three sit far apart in lightness,
+ * which is what keeps them apart for colourblind eyes too; and every segment
+ * carries its number anyway, so colour is never the only message.
  */
 const CATEGORICAL = {
-  light: ['#0891B2', '#C2721A', '#6D5BD0'],
-  dark: ['#159BB8', '#B27C33', '#8878D8'],
+  light: ['#082D36', '#C7EE5C', '#9AA3A4'],
+  dark: ['#9DBCC2', '#E7FFA4', '#5B6566'],
 } as const;
 
 function useCategorical(): readonly string[] {

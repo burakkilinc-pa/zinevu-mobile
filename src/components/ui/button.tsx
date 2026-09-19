@@ -1,4 +1,5 @@
-import { ActivityIndicator, Pressable, Text, type PressableProps } from 'react-native';
+import { useState } from 'react';
+import { ActivityIndicator, Pressable, Text, View, type PressableProps } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import { cn } from '@/lib/cn';
@@ -10,18 +11,30 @@ type ButtonProps = PressableProps & {
   title: string;
   variant?: Variant;
   loading?: boolean;
-  /** Optional leading icon, rendered before the label in the label's colour. */
+  /**
+   * Optional leading icon. On a primary button it sits in the brand's chip —
+   * the black rounded square zinevu.com puts on the leading edge of its
+   * buttons; elsewhere it is drawn plain, in the label's colour.
+   */
   icon?: keyof typeof Ionicons.glyphMap;
   className?: string;
 };
 
+/**
+ * zinevu.com's buttons, for a thumb instead of a pointer.
+ *
+ * The site's primary is a lime face with a black label, flat at rest; on hover
+ * a black mass rises through it and the label turns. A phone has no hover, so
+ * the same turn happens while the finger is down: lime → black face with a
+ * WHITE label (the portal tried lime-on-black and dropped it), and the chip
+ * swaps the other way. Every face carries a 1.5px edge that is only visible
+ * when it has to be — on paper and outline faces, and when pressed.
+ */
 const CONTAINER: Record<Variant, string> = {
-  // Solid ink with white text — the portal's primary button. It inverts to
-  // lime-on-ink in dark mode through the token, so no border is needed in
-  // either scheme: the fill carries the CTA on its own.
-  primary: 'bg-primary active:opacity-90',
-  secondary: 'bg-secondary active:opacity-90',
-  outline: 'border border-border bg-transparent active:bg-muted',
+  primary: 'border-[1.5px] border-transparent bg-primary',
+  secondary: 'border-[1.5px] border-transparent bg-secondary active:opacity-90',
+  // The site's `paper` button: a white face on a hairline edge.
+  outline: 'border-[1.5px] border-border bg-card active:border-foreground',
   ghost: 'bg-transparent active:bg-muted',
   // Positive confirm: a saturated success green so it clearly reads as the
   // go-ahead, distinct from the brand-coloured primary.
@@ -48,34 +61,66 @@ export function Button({
   icon,
   disabled,
   className,
+  onPressIn,
+  onPressOut,
   ...props
 }: ButtonProps) {
   const colors = useColors();
+  const [pressed, setPressed] = useState(false);
   const isDisabled = disabled || loading;
-  const contentColor =
-    variant === 'secondary' || variant === 'success' || variant === 'destructive'
+  const turned = variant === 'primary' && pressed;
+  const chip = variant === 'primary' && !!icon;
+
+  const contentColor = turned
+    ? colors.onInk
+    : variant === 'secondary' || variant === 'success' || variant === 'destructive'
       ? colors.white
       : colors.foreground;
+
   return (
     <Pressable
       accessibilityRole="button"
       disabled={isDisabled}
+      onPressIn={(e) => {
+        setPressed(true);
+        onPressIn?.(e);
+      }}
+      onPressOut={(e) => {
+        setPressed(false);
+        onPressOut?.(e);
+      }}
       className={cn(
-        'h-12 flex-row items-center justify-center gap-2 rounded-md px-5',
+        'h-12 flex-row items-center justify-center gap-2.5 rounded-md',
+        chip ? 'pl-2 pr-5' : 'px-6',
         CONTAINER[variant],
-        isDisabled && 'opacity-50',
+        isDisabled && 'opacity-45',
         className
       )}
+      style={turned ? { backgroundColor: colors.ink, borderColor: colors.ink } : undefined}
       {...props}
     >
       {loading ? (
         <ActivityIndicator color={contentColor} />
       ) : (
         <>
-          {icon ? <Ionicons name={icon} size={18} color={contentColor} /> : null}
+          {chip ? (
+            <View
+              className="h-8 w-8 items-center justify-center rounded-[9px]"
+              style={{ backgroundColor: turned ? colors.primary : colors.ink }}
+            >
+              <Ionicons
+                name={icon}
+                size={17}
+                color={turned ? colors.primaryForeground : colors.primary}
+              />
+            </View>
+          ) : icon ? (
+            <Ionicons name={icon} size={18} color={contentColor} />
+          ) : null}
           <Text
             numberOfLines={1}
-            className={cn('shrink text-center text-base font-semibold', LABEL[variant])}
+            className={cn('shrink text-center text-base font-bold', LABEL[variant])}
+            style={turned ? { color: colors.onInk } : undefined}
           >
             {title}
           </Text>

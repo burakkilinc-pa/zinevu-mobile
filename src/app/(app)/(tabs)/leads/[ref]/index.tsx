@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { Screen, useDockClearance } from '@/components/ui/screen';
 import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/toast';
 import { useColors } from '@/lib/theme';
 import { useLocale, useT, useTFallback } from '@/lib/i18n';
@@ -204,17 +205,12 @@ export default function LeadDetailScreen() {
           </View>
 
           {dealId && canSend ? (
-            <Pressable
+            <Button
+              title={lead.offerSentAt ? t('offer.send.again') : t('offer.send.toCustomer')}
+              icon="paper-plane"
               onPress={() => router.push(`/leads/${lead.ref}/send`)}
-              accessibilityRole="button"
-              className="flex-row items-center justify-center gap-2 rounded-2xl py-4 active:opacity-90"
-              style={{ backgroundColor: c.primary }}
-            >
-              <Ionicons name="paper-plane" size={18} color={c.background} />
-              <Text className="text-base font-semibold" style={{ color: c.background }}>
-                {lead.offerSentAt ? t('offer.send.again') : t('offer.send.toCustomer')}
-              </Text>
-            </Pressable>
+              className="h-14"
+            />
           ) : null}
 
           {/* Corrections landed after the lines were priced — the offer now

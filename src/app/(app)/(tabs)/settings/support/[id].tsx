@@ -103,7 +103,7 @@ export default function TicketScreen() {
                 opacity: !draft.trim() || reply.isPending ? 0.4 : 1,
               }}
             >
-              <Ionicons name="arrow-up" size={20} color={c.background} />
+              <Ionicons name="arrow-up" size={20} color={c.primaryForeground} />
             </Pressable>
           </View>
         ) : (

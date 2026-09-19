@@ -31,7 +31,7 @@ import { useColors } from '@/lib/theme';
  * breaks the expo-router SDK 57 bundle (see expo-export-before-eas-build memo).
  */
 
-const DOCK = '#082D36'; // brand ink (Zinevu navy), the dock body
+const DOCK = '#082D36'; // brand deep teal — the site's dark surface — the dock body
 const ACTIVE_PILL = '#E7FFA4'; // brand lime — the portal's active-nav colour
 const INACTIVE_FG = 'rgba(246,247,249,0.6)'; // cloud, dimmed (inactive icons)
 
@@ -147,10 +147,12 @@ export function BrandTabBar({ state, descriptors, navigation, centerRoute }: Tab
           backgroundColor: DOCK,
           flexDirection: 'row',
           alignItems: 'center',
+          // zinevu.com never blurs a shadow: a floating slab stands on a solid
+          // plate. 2px, the weight the portal's sidebar settled on.
           shadowColor: '#000',
-          shadowOpacity: 0.22,
-          shadowRadius: 16,
-          shadowOffset: { width: 0, height: 8 },
+          shadowOpacity: 1,
+          shadowRadius: 0,
+          shadowOffset: { width: 0, height: 2 },
           elevation: 12,
         }}
       >
@@ -361,10 +363,13 @@ function CenterTab({
             backgroundColor: ACTIVE_PILL,
             alignItems: 'center',
             justifyContent: 'center',
+            // The site's lime button: a 1.5px black edge on a solid plate.
+            borderWidth: 1.5,
+            borderColor: '#000',
             shadowColor: '#000',
-            shadowOpacity: 0.24,
-            shadowRadius: 9,
-            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 1,
+            shadowRadius: 0,
+            shadowOffset: { width: 0, height: 2 },
             elevation: 10,
           }}
         >

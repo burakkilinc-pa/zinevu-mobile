@@ -17,6 +17,14 @@ export type ThemeColors = {
   mutedForeground: string;
   border: string;
   primary: string;
+  /** What to write ON the primary face — black on lime, in both schemes. */
+  primaryForeground: string;
+  /** The brand's structure colour: black edges, the pressed face of a button. */
+  ink: string;
+  /** What to write on an `ink` face — white on black (never lime). */
+  onInk: string;
+  /** Deep teal — the brand's dark surface, never body text. */
+  deep: string;
   destructive: string;
   warning: string;
   success: string;
@@ -24,13 +32,17 @@ export type ThemeColors = {
 };
 
 const LIGHT: ThemeColors = {
-  background: '#F6F7F9',
-  foreground: '#082D36',
+  background: '#F7F4ED',
+  foreground: '#000000',
   card: '#FFFFFF',
-  muted: '#EEF0F3',
-  mutedForeground: '#40606B',
-  border: '#E2E6E9',
-  primary: '#082D36',
+  muted: '#EFEBE1',
+  mutedForeground: '#5B6566',
+  border: '#D4D2CC',
+  primary: '#E7FFA4',
+  primaryForeground: '#000000',
+  ink: '#000000',
+  onInk: '#FFFFFF',
+  deep: '#082D36',
   destructive: '#B91C1C',
   warning: '#B45309',
   success: '#16A34A',
@@ -45,6 +57,11 @@ const DARK: ThemeColors = {
   mutedForeground: '#9AAFB5',
   border: '#1F444E',
   primary: '#E7FFA4',
+  primaryForeground: '#000000',
+  // Black edges vanish on a dark ground; the edge colour becomes paper.
+  ink: '#F7F4ED',
+  onInk: '#000000',
+  deep: '#082D36',
   destructive: '#B93030',
   warning: '#EFB13A',
   success: '#34C759',

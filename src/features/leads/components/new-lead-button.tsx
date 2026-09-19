@@ -2,8 +2,8 @@ import { useMemo, useRef, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 import { BottomSheet } from '@/components/ui/bottom-sheet';
+import { FloatingAction } from '@/components/ui/floating-action';
 import { useRouter } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
 import { useColors } from '@/lib/theme';
@@ -107,7 +107,6 @@ export function NewLeadButton() {
   const c = useColors();
   const locale = useLocale();
   const router = useRouter();
-  const insets = useSafeAreaInsets();
   const user = useAuthStore((s) => s.user);
   const canSeeForms = hasPermission(user, PERMISSIONS.formsView);
   const forms = useActiveForms(canSeeForms);
@@ -198,27 +197,7 @@ export function NewLeadButton() {
 
   return (
     <>
-      <Pressable
-        onPress={press}
-        accessibilityRole="button"
-        accessibilityLabel={t('leads.new.action')}
-        className="absolute right-5 flex-row items-center gap-2 rounded-full px-5 py-4 active:opacity-90"
-        style={{
-          // Clears the floating dock (~62pt + margin) so the two never overlap.
-          bottom: insets.bottom + 86,
-          backgroundColor: c.primary,
-          shadowColor: '#000',
-          shadowOpacity: 0.22,
-          shadowRadius: 12,
-          shadowOffset: { width: 0, height: 6 },
-          elevation: 10,
-        }}
-      >
-        <Ionicons name="add" size={22} color={c.background} />
-        <Text className="text-base font-semibold" style={{ color: c.background }}>
-          {t('leads.new.action')}
-        </Text>
-      </Pressable>
+      <FloatingAction label={t('leads.new.action')} onPress={press} />
 
       <BottomSheet
         visible={sheetOpen}
@@ -244,7 +223,7 @@ export function NewLeadButton() {
                   className="h-10 w-10 items-center justify-center rounded-full"
                   style={{ backgroundColor: c.primary }}
                 >
-                  <Ionicons name="scan" size={19} color={c.background} />
+                  <Ionicons name="scan" size={19} color={c.primaryForeground} />
                 </View>
                 <View className="flex-1">
                   <Text className="text-base font-semibold text-foreground">

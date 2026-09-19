@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
 import { BottomSheet } from '@/components/ui/bottom-sheet';
+import { FloatingAction } from '@/components/ui/floating-action';
 import { useColors } from '@/lib/theme';
 import { useT } from '@/lib/i18n';
 import { useFollowUpTypes } from '@/features/planning/hooks/use-planning';
@@ -29,9 +29,7 @@ import type { FollowUpTypeOption } from '@/features/planning/types';
  */
 export function NewVisitButton({ date }: { date: string }) {
   const t = useT();
-  const c = useColors();
   const router = useRouter();
-  const insets = useSafeAreaInsets();
   const types = useFollowUpTypes();
   const [open, setOpen] = useState(false);
 
@@ -57,27 +55,7 @@ export function NewVisitButton({ date }: { date: string }) {
 
   return (
     <>
-      <Pressable
-        onPress={() => setOpen(true)}
-        accessibilityRole="button"
-        accessibilityLabel={t('planning.new.action')}
-        className="absolute right-5 flex-row items-center gap-2 rounded-full px-5 py-4 active:opacity-90"
-        style={{
-          // Clears the floating dock (~62pt + margin), same as the leads button.
-          bottom: insets.bottom + 86,
-          backgroundColor: c.primary,
-          shadowColor: '#000',
-          shadowOpacity: 0.22,
-          shadowRadius: 12,
-          shadowOffset: { width: 0, height: 6 },
-          elevation: 10,
-        }}
-      >
-        <Ionicons name="add" size={22} color={c.background} />
-        <Text className="text-base font-semibold" style={{ color: c.background }}>
-          {t('planning.new.action')}
-        </Text>
-      </Pressable>
+      <FloatingAction label={t('planning.new.action')} onPress={() => setOpen(true)} />
 
       <BottomSheet visible={open} onClose={() => setOpen(false)}>
         <Text className="mb-2 mt-4 text-lg font-bold text-foreground">

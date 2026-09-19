@@ -13,15 +13,18 @@ module.exports = {
     extend: {
       colors: {
         // --- Fixed brand palette (from the Zinevu dealer portal) ---
+        // zinevu.com's palette. `ink` is black since the brand move
+        // (2026-09); the old navy lives on as `deep`, for dark surfaces only.
         brand: {
-          ink: '#082D36',
-          'ink-deep': '#04191F',
-          'ink-soft': '#0F3C48',
-          'ink-muted': '#40606B',
+          ink: '#000000',
+          deep: '#082D36',
+          'deep-950': '#04191F',
           lime: '#E7FFA4',
-          'lime-strong': '#D4F34C',
-          cloud: '#F6F7F9',
-          line: '#E2E6E9',
+          'lime-strong': '#C7EE5C',
+          paper: '#F7F4ED',
+          'paper-dim': '#EFEBE1',
+          smoke: '#5B6566',
+          line: '#D4D2CC',
         },
         // --- Semantic tokens (theme-aware via CSS vars) ---
         background: 'hsl(var(--background) / <alpha-value>)',
@@ -44,13 +47,18 @@ module.exports = {
         input: 'hsl(var(--input) / <alpha-value>)',
         ring: 'hsl(var(--ring) / <alpha-value>)',
       },
+      // DM Sans for text, Bricolage Grotesque for display — the site's pair.
+      // The default Text patch (lib/fonts.ts) picks the face by weight and
+      // size, so these classes are only needed to force one.
       fontFamily: {
-        sans: ['Sora', 'System'],
+        sans: ['DMSans', 'System'],
+        display: ['Bricolage-Bold', 'DMSans', 'System'],
       },
+      // The site's geometry: sm 12, md 18, lg 26.
       borderRadius: {
-        lg: '16px',
-        md: '12px',
-        sm: '8px',
+        lg: '26px',
+        md: '18px',
+        sm: '12px',
       },
     },
   },

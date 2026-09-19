@@ -7,23 +7,17 @@ import { cn } from '@/lib/cn';
  * a `<Card>` (or reuse {@link CARD_CLASS} / {@link CARD_SHADOW}) so radius,
  * border weight, background and elevation are tuned in exactly one place.
  *
- * The look mirrors the web card: a `rounded-2xl` surface with a hairline
- * `border-border/50` edge doing most of the visual lift, plus a deliberately
- * faint shadow — enough to separate the card from the cream background without
- * the heavy drop shadow it used to carry.
+ * zinevu.com's surfaces are flat and quiet at rest: a white face on the paper
+ * canvas, separated by a hairline and nothing else. Its shadows are solid
+ * offset plates, never blurred — and a plate belongs to something you press,
+ * not to a card you read — so a card carries no shadow at all.
  */
 
 /** Card radius / border / background — the class half of the card treatment. */
-export const CARD_CLASS = 'rounded-2xl border border-border/50 bg-card';
+export const CARD_CLASS = 'rounded-2xl border border-border bg-card';
 
-/** Faint elevation. Kept low on purpose; the border carries the separation. */
-export const CARD_SHADOW = {
-  shadowColor: '#092632',
-  shadowOpacity: 0.04,
-  shadowRadius: 6,
-  shadowOffset: { width: 0, height: 2 },
-  elevation: 1,
-} as const;
+/** Deliberately empty: flat at rest. Kept so existing spreads stay valid. */
+export const CARD_SHADOW = {} as const;
 
 export function Card({
   className,

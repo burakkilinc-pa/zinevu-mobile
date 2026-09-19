@@ -87,7 +87,7 @@ export default function SupportScreen() {
               className="mt-2 rounded-full px-5 py-3"
               style={{ backgroundColor: c.primary }}
             >
-              <Text className="text-sm font-semibold" style={{ color: c.background }}>
+              <Text className="text-sm font-semibold" style={{ color: c.primaryForeground }}>
                 {t('support.new.action')}
               </Text>
             </Pressable>

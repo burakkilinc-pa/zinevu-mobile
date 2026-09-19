@@ -2,33 +2,37 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Zinevu brand tokens (mirrors app.veranduo's tailwind.config.mjs + globals.css):
-   ink navy #082D36 as the foreground and primary, lime #E7FFA4 as the accent
-   surface, cloud #F6F7F9 as the app background. The web product tints its whole
-   grayscale toward ink via opacity modifiers, so the muted tokens here are
-   desaturated ink rather than neutral gray. Keep global.css, lib/theme.ts and
-   tailwind.config.js in sync. */
+/* Zinevu brand tokens — the zinevu.com design system (../zinevu.com/repo
+   src/app/globals.css), the same one the dealer portal moved to on 2026-09-13:
+   structure is black, energy is lime, depth is deep teal, and the canvas is
+   the site's warm paper rather than a clinical grey. Surfaces stay flat; a
+   hairline (black at 14%) separates them, sampled here over paper because
+   these tokens cannot carry alpha of their own.
+
+   The primary ACTION is the site's primary button: a LIME face with a black
+   label (pressed, it turns black with a white label — never lime text on
+   black, the portal tried that and dropped it).
+
+   Keep global.css, lib/theme.ts and tailwind.config.js in sync. */
 @layer base {
   :root {
-    --background: 220 17% 97%; /* zinevu-cloud #F6F7F9 */
-    --foreground: 191 74% 12%; /* zinevu-ink #082D36 */
+    --background: 42 38% 95%; /* paper #F7F4ED */
+    --foreground: 0 0% 0%; /* ink #000 */
 
-    --card: 0 0% 100%;
-    --card-foreground: 191 74% 12%;
+    --card: 0 0% 100%; /* chalk */
+    --card-foreground: 0 0% 0%;
 
-    /* Primary ACTION is solid ink with white text — the web portal's primary
-       button. Lime is an accent surface only; it has no contrast on white. */
-    --primary: 191 74% 12%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 76 100% 82%; /* lime #E7FFA4 */
+    --primary-foreground: 0 0% 0%;
 
-    --secondary: 191 65% 17%; /* zinevu-ink-soft #0F3C48 */
+    --secondary: 192 74% 12%; /* deep #082D36 — dark surfaces only */
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 220 17% 94%;
-    --muted-foreground: 194 25% 34%; /* ink-muted #40606B */
+    --muted: 43 30% 91%; /* paper-dim #EFEBE1 */
+    --muted-foreground: 185 6% 38%; /* smoke #5B6566 */
 
-    --accent: 74 100% 82%; /* zinevu-lime #E7FFA4 */
-    --accent-foreground: 191 74% 12%;
+    --accent: 76 100% 82%; /* lime */
+    --accent-foreground: 0 0% 0%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
@@ -36,9 +40,9 @@
     --success: 142 71% 40%;
     --warning: 38 92% 50%;
 
-    --border: 200 15% 89%;
-    --input: 200 15% 89%;
-    --ring: 191 74% 12%;
+    --border: 43 9% 82%; /* hairline: black 14% over paper, #D4D2CC */
+    --input: 43 9% 82%;
+    --ring: 0 0% 0%;
   }
 
   /* NativeWind resolves variable overrides on native through `.dark:root`,
@@ -52,8 +56,8 @@
 
     /* Ink is invisible on a dark ground, so the primary action inverts to the
        lime the brand already uses for its active-nav pill. */
-    --primary: 74 100% 82%;
-    --primary-foreground: 191 74% 12%;
+    --primary: 76 100% 82%;
+    --primary-foreground: 0 0% 0%;
 
     --secondary: 191 40% 20%;
     --secondary-foreground: 220 17% 97%;
@@ -72,6 +76,6 @@
 
     --border: 191 32% 21%;
     --input: 191 32% 21%;
-    --ring: 74 100% 82%;
+    --ring: 76 100% 82%;
   }
 }
