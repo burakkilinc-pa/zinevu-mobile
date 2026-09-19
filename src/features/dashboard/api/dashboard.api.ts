@@ -1,11 +1,5 @@
 import { request } from '@/lib/api/client';
-import type {
-  ActionSeverity,
-  DashboardAction,
-  DashboardSummary,
-  LiveVisitor,
-  Metric,
-} from '@/features/dashboard/types';
+import type { DashboardSummary, LiveVisitor, Metric } from '@/features/dashboard/types';
 
 /** Raw shapes from GET /portal/dealer/dashboard (only the parts we read). */
 type RawDashboard = {
@@ -25,39 +19,20 @@ type RawDashboard = {
   };
   sales?: { won_this_month?: number; sent_30d?: number; won_30d?: number };
   monthly?: { month?: string; leads?: number; sent?: number; won?: number }[];
-  actions?: {
-    key?: string;
-    count?: number;
-    severity?: string;
-    href?: string | null;
-  }[];
 };
-
-const SEVERITIES: ActionSeverity[] = ['critical', 'warning', 'info'];
 
 function metric(value: unknown, previous: unknown): Metric {
   return { value: Number(value ?? 0), previous: Number(previous ?? 0) };
-}
-
-function mapAction(raw: NonNullable<RawDashboard['actions']>[number]): DashboardAction {
-  return {
-    key: String(raw.key ?? ''),
-    count: Number(raw.count ?? 0),
-    // An unknown severity means the API grew a level this build doesn't know.
-    // 'info' is the quiet one, so a new level appears without shouting.
-    severity: SEVERITIES.includes(raw.severity as ActionSeverity)
-      ? (raw.severity as ActionSeverity)
-      : 'info',
-    href: raw.href ?? null,
-  };
 }
 
 /**
  * The dashboard.
  *
  * `preset=today` is what makes the range block cover today and yesterday; the
- * fixed-window sections (this month, last 30 days, the action list) are on the
- * response regardless of the preset, so this is still one round-trip.
+ * fixed-window sections (this month, last 30 days) are on the response
+ * regardless of the preset, so this is still one round-trip. The response's
+ * action list (the web's "Actie vereist") is deliberately not read — see the
+ * dashboard screen.
  *
  * Note the API's "today" is the portal's timezone, not the phone's. That is the
  * right answer even when they disagree: a dealer on holiday abroad still wants
@@ -97,9 +72,6 @@ export async function fetchDashboard(): Promise<DashboardSummary> {
       form: Number(d.leads?.sources_30d?.form ?? 0),
       manual: Number(d.leads?.sources_30d?.manual ?? 0),
     },
-    // The API already orders these by urgency and drops the zeroes, so the
-    // screen renders them as they arrive rather than re-deciding.
-    actions: (d.actions ?? []).map(mapAction).filter((a) => a.key !== ''),
     generatedAt: d.generated_at ?? null,
   };
 }

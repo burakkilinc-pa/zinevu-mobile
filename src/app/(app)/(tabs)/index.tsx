@@ -9,7 +9,6 @@ import { hasPermission, PERMISSIONS } from '@/lib/auth/roles';
 import { useColors } from '@/lib/theme';
 import { useDashboard, useLiveVisitors } from '@/features/dashboard/hooks/use-dashboard';
 import { StatTile } from '@/features/dashboard/components/stat-tile';
-import { ActionList } from '@/features/dashboard/components/action-list';
 import { VisitorList } from '@/features/dashboard/components/visitor-list';
 import {
   ConversionFunnel,
@@ -20,11 +19,13 @@ import {
 /**
  * The office landing screen: what came in today, and what is waiting.
  *
- * Deliberately short. Today's figures and the waiting work come first; three
- * small charts sit under them for the "how are we doing" question. What stays
- * on the web is revenue, pipeline value and a period picker — a phone is opened
- * between other things, and a screen you have to study is a screen you stop
- * opening.
+ * Deliberately short. Today's figures come first; three small charts sit
+ * under them for the "how are we doing" question. What stays on the web is
+ * revenue, pipeline value, a period picker and the "Actie vereist" work list —
+ * the list was dropped from the phone (2026-09): its rows are office work
+ * (invoicing, production documents, follow-up backlogs in the hundreds), not
+ * something acted on between site visits. A phone is opened between other
+ * things, and a screen you have to study is a screen you stop opening.
  */
 export default function DashboardScreen() {
   const t = useT();
@@ -126,15 +127,8 @@ export default function DashboardScreen() {
           />
         </View>
 
-        <Text className="mb-2 text-base font-semibold text-foreground">
-          {t('dash.actions.title')}
-        </Text>
-        <View className="mb-6">
-          <ActionList actions={summary?.actions ?? []} />
-        </View>
-
-        {/* Below the fold on purpose: the tiles and the action list are what the
-            screen is opened for, and the trend is what you look at once you are
+        {/* Below the fold on purpose: the tiles are what the screen is opened
+            for, and the trend is what you look at once you are
             already here. Each chart hides itself when its numbers are all zero,
             so a dealer in their first week doesn't scroll past three empty
             frames. */}

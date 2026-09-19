@@ -10,9 +10,6 @@
   "dash.tile.visitors": { "en": "Visitors", "nl": "Bezoekers", "de": "Besucher", "fr": "Visiteurs", "tr": "Ziyaretçi" },
   "dash.tile.requests": { "en": "Requests", "nl": "Aanvragen", "de": "Anfragen", "fr": "Demandes", "tr": "Talep" },
 
-  "dash.actions.title": { "en": "Action required", "nl": "Actie vereist", "de": "Aktion erforderlich", "fr": "Action requise", "tr": "Aksiyon gerekiyor" },
-  "dash.actions.clearTitle": { "en": "All caught up", "nl": "Alles bijgewerkt", "de": "Alles erledigt", "fr": "Tout est à jour", "tr": "Her şey tamam" },
-  "dash.actions.clearBody": { "en": "Nothing is waiting on you right now.", "nl": "Er staat niets open dat op jou wacht.", "de": "Im Moment wartet nichts auf dich.", "fr": "Rien n'attend après vous pour le moment.", "tr": "Şu an seni bekleyen bir şey yok." },
 
   "dash.visitors.title": { "en": "On your site now", "nl": "Nu op je site", "de": "Jetzt auf deiner Website", "fr": "Sur votre site en ce moment", "tr": "Şu an sitende" },
   "dash.visitors.empty": { "en": "Nobody is on your site right now.", "nl": "Er is nu niemand op je site.", "de": "Gerade ist niemand auf deiner Website.", "fr": "Personne n'est sur votre site en ce moment.", "tr": "Şu an sitende kimse yok." },

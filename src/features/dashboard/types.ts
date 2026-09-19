@@ -15,21 +15,6 @@
  * (this month, last 30 days) ride along on the same response.
  */
 
-/** Severity the API stamps on an action row; drives its colour. */
-export type ActionSeverity = 'critical' | 'warning' | 'info';
-
-export type DashboardAction = {
-  /** Stable key — the label is translated client-side (dash.action.*). */
-  key: string;
-  count: number;
-  severity: ActionSeverity;
-  /**
-   * Portal path the web dashboard links to. Kept because it names the rows the
-   * card counted; the app maps it onto its own routes rather than opening a
-   * browser. Rows it can't map stay inert instead of lying about where they go.
-   */
-  href: string | null;
-};
 
 /** A figure with the same figure for the preceding, equally long window. */
 export type Metric = {
@@ -84,8 +69,6 @@ export type DashboardSummary = {
   conversion30d: Conversion;
   /** Lead origin over the last 30 days. */
   sources30d: LeadSources;
-  /** Ordered most-urgent-first; zero-count rows never leave the server. */
-  actions: DashboardAction[];
   generatedAt: string | null;
 };
 
