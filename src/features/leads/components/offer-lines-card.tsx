@@ -84,7 +84,7 @@ export function OfferLinesCard({
             <TotalRow label={t('offer.total.subtotal')} value={formatMoney(totals.subtotal)} />
             {totals.discount > 0 ? (
               <TotalRow
-                label={settings.discountNote || t('offer.total.discount')}
+                label={noteHeadline(settings.discountNote) || t('offer.total.discount')}
                 value={`− ${formatMoney(totals.discount)}`}
               />
             ) : null}
@@ -97,6 +97,20 @@ export function OfferLinesCard({
   );
 }
 
+/**
+ * A discount note is the dealer's campaign text — often several paragraphs
+ * ("🎉 EXTRA KORTING! 🎉", a pitch, a deadline) written for the customer's PDF.
+ * A totals row has room for its headline only.
+ */
+function noteHeadline(note: string | null | undefined): string {
+  return (note ?? '').split('\n').map((part) => part.trim()).find(Boolean) ?? '';
+}
+
+/**
+ * Label left, amount right. The label is the one that gives way (flex-1, at
+ * most two lines): with its natural width a long label pushed the amount past
+ * the card's edge, leaving a stray "– €8" hanging outside it.
+ */
 function TotalRow({
   label,
   value,
@@ -109,7 +123,8 @@ function TotalRow({
   return (
     <View className="flex-row items-start justify-between gap-4">
       <Text
-        className={`text-sm ${strong ? 'font-semibold text-foreground' : 'text-muted-foreground'}`}
+        numberOfLines={2}
+        className={`flex-1 text-sm ${strong ? 'font-semibold text-foreground' : 'text-muted-foreground'}`}
       >
         {label}
       </Text>

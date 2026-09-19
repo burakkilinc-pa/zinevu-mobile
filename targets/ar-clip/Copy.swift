@@ -47,6 +47,10 @@ struct Copy {
     /// with no URL: no design was ever involved, so "we could not find it"
     /// would be a false alarm.
     let keptOnPhone: String
+    /// The app's own "new lead" flow only — the clip never shows these. The
+    /// dealer measured first; next they pick which veranda, and the form opens
+    /// with the size already in it.
+    let useMeasurement, continueHint: String
 
     /**
      The UI language. Our links always carry `lang` — the one the visitor
@@ -101,7 +105,9 @@ struct Copy {
         errorPermission: "We hebben toegang tot je camera nodig om te kunnen meten. Sta dit toe in Instellingen en probeer het opnieuw.",
         noDraftTitle: "Meet je veranda",
         noDraftBody: "Er hoort een ontwerp bij deze meting, maar we konden het niet vinden. Je kunt gewoon meten — noteer de maten zelf.",
-        keptOnPhone: "Je maten zijn bewaard op deze telefoon."
+        keptOnPhone: "Je maten zijn bewaard op deze telefoon.",
+        useMeasurement: "Verder met deze maten",
+        continueHint: "Kies hierna het type veranda. De maten staan dan al in het formulier."
     )
 
     static let english = Copy(
@@ -137,7 +143,9 @@ struct Copy {
         errorPermission: "We need camera access to measure. Allow it in Settings and try again.",
         noDraftTitle: "Measure your veranda",
         noDraftBody: "There should be a design with this measurement, but we could not find it. You can still measure — just note the sizes down.",
-        keptOnPhone: "Your measurements are kept on this phone."
+        keptOnPhone: "Your measurements are kept on this phone.",
+        useMeasurement: "Continue with these sizes",
+        continueHint: "Next, pick the veranda type. The sizes will already be in the form."
     )
 
     static let german = Copy(
@@ -173,7 +181,9 @@ struct Copy {
         errorPermission: "Wir brauchen Zugriff auf Ihre Kamera. Erlauben Sie ihn in den Einstellungen und versuchen Sie es erneut.",
         noDraftTitle: "Messen Sie Ihre Veranda",
         noDraftBody: "Zu dieser Messung gehört ein Entwurf, den wir nicht finden konnten. Sie können trotzdem messen — notieren Sie die Maße selbst.",
-        keptOnPhone: "Ihre Maße sind auf diesem Handy gespeichert."
+        keptOnPhone: "Ihre Maße sind auf diesem Handy gespeichert.",
+        useMeasurement: "Mit diesen Maßen weiter",
+        continueHint: "Wählen Sie danach den Verandatyp. Die Maße stehen dann schon im Formular."
     )
 
     static let french = Copy(
@@ -209,7 +219,9 @@ struct Copy {
         errorPermission: "Nous avons besoin d'accéder à votre caméra. Autorisez-le dans les Réglages puis réessayez.",
         noDraftTitle: "Mesurez votre véranda",
         noDraftBody: "Un projet est associé à cette mesure, mais nous ne l'avons pas trouvé. Vous pouvez mesurer quand même — notez les dimensions.",
-        keptOnPhone: "Vos dimensions sont conservées sur ce téléphone."
+        keptOnPhone: "Vos dimensions sont conservées sur ce téléphone.",
+        useMeasurement: "Continuer avec ces dimensions",
+        continueHint: "Choisissez ensuite le type de véranda. Les dimensions seront déjà dans le formulaire."
     )
 
     static let turkish = Copy(
@@ -245,6 +257,8 @@ struct Copy {
         errorPermission: "Ölçüm için kamera iznine ihtiyacımız var. Ayarlar'dan izin verip tekrar dene.",
         noDraftTitle: "Verandanı ölç",
         noDraftBody: "Bu ölçüme ait bir tasarım olmalıydı ama bulamadık. Yine de ölçebilirsin — ölçüleri kendin not al.",
-        keptOnPhone: "Ölçülerin bu telefonda saklandı."
+        keptOnPhone: "Ölçülerin bu telefonda saklandı.",
+        useMeasurement: "Bu ölçülerle devam et",
+        continueHint: "Sonra veranda tipini seç. Ölçüler formda hazır olacak."
     )
 }

@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { ActivityIndicator, Alert, Linking, Pressable, ScrollView, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
@@ -21,7 +21,6 @@ import { useDealerForm } from '@/features/leads/hooks/use-leads';
 import { lead3dTarget } from '@/features/leads/lead-3d';
 import { OfferLinesCard } from '@/features/leads/components/offer-lines-card';
 import { ScreenHeader } from '@/features/leads/components/screen-header';
-import { canMeasure, openMeasure } from '@/features/ar-measure/ar-measure';
 import {
   useEngagement,
   useOfferPdf,
@@ -56,10 +55,6 @@ export default function LeadDetailScreen() {
   const canSend = hasPermission(user, PERMISSIONS.offersSend);
   const canSeePrices = hasPermission(user, PERMISSIONS.pricingView);
   const canSeeForms = hasPermission(user, PERMISSIONS.formsView);
-  // The App Clip's veranda measurement (modules/ar-measure): an iPhone with
-  // world tracking only — Android has no native half. Asked once; the
-  // hardware does not change under a mounted screen.
-  const [measurable] = useState(canMeasure);
 
   const query = useQuery({
     queryKey: offerKeys.detail(String(ref)),
@@ -207,25 +202,6 @@ export default function LeadDetailScreen() {
               }
             />
           </View>
-
-          {/* The App Clip's measurement, for the dealer standing where the
-              veranda goes. Its own full-width row: a fifth button would squeeze
-              every label above it past legibility. A lead has no draft to
-              write to, so the result stays on screen. This button is also
-              what satisfies App Store Guideline 2.5.16 — every App Clip
-              feature must exist in the main app. */}
-          {measurable ? (
-            <Pressable
-              onPress={() => void openMeasure({ language: locale })}
-              accessibilityRole="button"
-              className="flex-row items-center justify-center gap-2 rounded-2xl border border-border bg-card py-3.5 active:bg-muted"
-            >
-              <Ionicons name="scan" size={18} color={c.foreground} />
-              <Text className="text-sm font-semibold text-foreground">
-                {t('leads.detail.measure')}
-              </Text>
-            </Pressable>
-          ) : null}
 
           {dealId && canSend ? (
             <Pressable

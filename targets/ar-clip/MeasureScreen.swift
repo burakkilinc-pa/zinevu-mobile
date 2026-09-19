@@ -74,6 +74,13 @@ struct Palette {
  */
 struct MeasureFlowView: View {
     let invocation: Invocation
+    /**
+     Hands the finished measurement back to whoever opened the flow — the
+     app's "new lead" sheet, which then asks which veranda and opens that form
+     with the size filled in. Nil in the clip, and nil must keep the clip
+     exactly as it is: no extra button, no different sentence.
+     */
+    var onUse: ((Measurement) -> Void)? = nil
 
     @StateObject private var engine = MeasureEngine()
     @State private var stage: Stage = .intro
@@ -619,6 +626,20 @@ struct MeasureFlowView: View {
                 }
             }
 
+            if let onUse, let saved {
+                Button {
+                    onUse(saved)
+                } label: {
+                    Text(copy.useMeasurement)
+                        .font(.headline)
+                        .foregroundStyle(onAccent)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 16)
+                        .background(accent, in: RoundedRectangle(cornerRadius: 16))
+                }
+                .padding(.bottom, 4)
+            }
+
             Button {
                 engine.reset()
                 saved = nil
@@ -696,6 +717,7 @@ struct MeasureFlowView: View {
 
     private var message: String {
         if saveFailed { return copy.notSaved }
+        if onUse != nil { return copy.continueHint }
         if invocation.draftUuid == nil {
             return invocation.expectsDraft ? copy.noDraftBody : copy.keptOnPhone
         }

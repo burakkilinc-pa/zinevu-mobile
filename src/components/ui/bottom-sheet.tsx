@@ -32,10 +32,17 @@ const TRAVEL = 700;
 export function BottomSheet({
   visible,
   onClose,
+  onDismissed,
   children,
 }: {
   visible: boolean;
   onClose: () => void;
+  /**
+   * After the sheet is fully off screen (iOS). For what must not start while
+   * it is still up — a native full-screen modal presented over a closing
+   * sheet is torn down with it.
+   */
+  onDismissed?: () => void;
   children: ReactNode;
 }) {
   const c = useColors();
@@ -73,6 +80,7 @@ export function BottomSheet({
       animationType="none"
       statusBarTranslucent
       onRequestClose={onClose}
+      onDismiss={onDismissed}
     >
       <View style={{ flex: 1, justifyContent: 'flex-end' }}>
         <Animated.View

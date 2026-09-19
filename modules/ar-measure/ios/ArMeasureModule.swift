@@ -9,7 +9,9 @@ import SwiftUI
 
  1. App Store Review Guideline 2.5.16(a): "all App Clip features and
     functionality must be included in the main app binary." The clip shipped
-    inside this app on its own would be rejected for it.
+    inside this app on its own would be rejected for it. In the app it is how a
+    new lead can start: Leads → New lead → measure first, then pick the veranda
+    and its form opens with the size in it (`measure` below).
  2. Once this app is installed, iOS opens IT instead of the clip for an App
     Clip invocation. A dealer who scans a customer's QR would otherwise land on
     the lead list with the URL thrown away — so the app hands that URL to the
@@ -31,11 +33,10 @@ public class ArMeasureModule: Module {
     /**
      Put the measuring flow on screen, full-screen, over whatever is showing.
 
-     - `url`: an App Clip invocation (`https://app.zinevu.com/ar/…`) when the
-       app was opened by one; the measurement then lands in that visitor's
-       design exactly as it would from the clip. Nil when a dealer measures
-       on-site from a lead — no design to write to, so the result stays on
-       the screen.
+     - `url`: the App Clip invocation (`https://app.zinevu.com/ar/…`) the app
+       was opened by; the measurement then lands in that visitor's design
+       exactly as it would from the clip. Nil opens the flow with no design to
+       write to, and the result stays on the screen.
      - `language`: the app's own UI language. A URL's `?lang=` still wins.
 
      Resolves `false` only when there is nothing to present from.
@@ -53,17 +54,66 @@ public class ArMeasureModule: Module {
       }
 
       let presented = PresentedController()
-      let controller = UIHostingController(
-        rootView: MeasureModal(invocation: invocation) { presented.controller?.dismiss(animated: true) }
+      presented.controller = ArMeasureModule.show(
+        MeasureModal(invocation: invocation) { presented.controller?.dismiss(animated: true) },
+        over: presenter
       )
-      presented.controller = controller
-      controller.modalPresentationStyle = .fullScreen
-      // The flow is drawn for a camera feed: dark, whatever the app is set to.
-      controller.overrideUserInterfaceStyle = .dark
-      presenter.present(controller, animated: true)
       return true
     }
     .runOnQueue(.main)
+
+    /**
+     Measure for a new lead: the flow, and then the size back to JavaScript.
+
+     The done screen gets a "continue with these sizes" button; pressing it
+     closes the flow and resolves `{ widthCm, depthCm, clamped }` — the numbers
+     the screen showed. Closing with the ✕ resolves null. Either way it
+     resolves once, and only after the modal is gone, so the caller can put the
+     next sheet up straight away.
+     */
+    AsyncFunction("measure") { (language: String, promise: Promise) in
+      guard let presenter = self.appContext?.utilities?.currentViewController() else {
+        promise.resolve(nil)
+        return
+      }
+
+      let invocation = Invocation(
+        slug: nil, draftUuid: nil, language: Copy.normalize(language), fromQR: false
+      )
+      let presented = PresentedController()
+      var settled = false
+      let finish: ([String: Any]?) -> Void = { value in
+        guard !settled else { return }
+        settled = true
+        if let controller = presented.controller {
+          controller.dismiss(animated: true) { promise.resolve(value) }
+        } else {
+          promise.resolve(value)
+        }
+      }
+
+      presented.controller = ArMeasureModule.show(
+        MeasureModal(
+          invocation: invocation,
+          close: { finish(nil) },
+          onUse: { m in
+            finish(["widthCm": m.widthCm, "depthCm": m.depthCm, "clamped": m.clamped == true])
+          }
+        ),
+        over: presenter
+      )
+    }
+    .runOnQueue(.main)
+  }
+
+  /// Full-screen and dark: the flow is drawn for a camera feed, whatever the
+  /// app is set to.
+  private static func show(_ modal: MeasureModal, over presenter: UIViewController) -> UIViewController {
+    let controller = UIHostingController(rootView: modal)
+    controller.modalPresentationStyle = .fullScreen
+    controller.overrideUserInterfaceStyle = .dark
+    presenter.present(controller, animated: true)
+    return controller
   }
 }
 
@@ -90,9 +140,10 @@ private final class PresentedController {
 private struct MeasureModal: View {
   let invocation: Invocation
   let close: () -> Void
+  var onUse: ((Measurement) -> Void)? = nil
 
   var body: some View {
-    MeasureFlowView(invocation: invocation)
+    MeasureFlowView(invocation: invocation, onUse: onUse)
       .overlay(alignment: .topLeading) {
         Button(action: close) {
           Image(systemName: "xmark")

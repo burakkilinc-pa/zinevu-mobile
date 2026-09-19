@@ -153,6 +153,34 @@
     "fr": "Formulaire court",
     "tr": "Kısa form"
   },
+  "leads.new.measure": {
+    "en": "Start by measuring",
+    "nl": "Begin met meten",
+    "de": "Zuerst messen",
+    "fr": "Commencer par mesurer",
+    "tr": "Önce ölç"
+  },
+  "leads.new.measureHint": {
+    "en": "Measure the veranda with the camera, then pick the type.",
+    "nl": "Meet de veranda met de camera en kies daarna het type.",
+    "de": "Messen Sie die Veranda mit der Kamera und wählen Sie dann den Typ.",
+    "fr": "Mesurez la véranda avec la caméra, puis choisissez le type.",
+    "tr": "Verandayı kamerayla ölç, sonra tipini seç."
+  },
+  "leads.new.pickType": {
+    "en": "Which veranda?",
+    "nl": "Welke veranda?",
+    "de": "Welche Veranda?",
+    "fr": "Quelle véranda ?",
+    "tr": "Hangi veranda?"
+  },
+  "leads.new.measured": {
+    "en": "Measured {width} × {depth} m — the form opens with this size.",
+    "nl": "Gemeten {width} × {depth} m — het formulier opent met deze maat.",
+    "de": "Gemessen {width} × {depth} m — das Formular öffnet mit diesem Maß.",
+    "fr": "Mesuré {width} × {depth} m — le formulaire s'ouvre avec ces dimensions.",
+    "tr": "Ölçülen {width} × {depth} m — form bu ölçüyle açılır."
+  },
   "leads.new.noForms": {
     "en": "No funnel is switched on yet. Turn one on in the portal first.",
     "nl": "Er staat nog geen funnel aan. Zet er eerst één aan in het portaal.",
@@ -229,13 +257,6 @@
     "de": "3D-Ansicht",
     "fr": "Vue 3D",
     "tr": "3D görünüm"
-  },
-  "leads.detail.measure": {
-    "en": "Measure veranda",
-    "nl": "Veranda meten",
-    "de": "Veranda messen",
-    "fr": "Mesurer la véranda",
-    "tr": "Verandayı ölç"
   },
   "leads.detail.total": {
     "en": "Total",

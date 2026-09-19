@@ -10,11 +10,15 @@ import { requireOptionalNativeModule } from 'expo';
 type ArMeasureNative = {
   isSupported(): boolean;
   present(url: string | null, language: string): Promise<boolean>;
+  measure(language: string): Promise<MeasuredSize | null>;
 };
+
+/** What a measurement for a new lead comes back as — the size on the screen. */
+export type MeasuredSize = { widthCm: number; depthCm: number; clamped: boolean };
 
 const native = requireOptionalNativeModule<ArMeasureNative>('ArMeasure');
 
-/** Whether to show a measure button at all: an iPhone with world tracking. */
+/** Whether to offer measuring at all: an iPhone with world tracking. */
 export function canMeasure(): boolean {
   try {
     return native?.isSupported() ?? false;
@@ -24,12 +28,9 @@ export function canMeasure(): boolean {
 }
 
 /**
- * Open the measuring flow full-screen.
- *
- * With no `url` a dealer is measuring on-site and the result stays on screen.
- * With an App Clip invocation URL the measurement is written into that
- * visitor's design — the same thing the clip would have done, had iOS not
- * opened this app instead.
+ * Open the measuring flow full-screen for an App Clip invocation URL: the
+ * measurement is written into that visitor's design — the same thing the clip
+ * would have done, had iOS not opened this app instead.
  */
 export async function openMeasure({
   url,
@@ -40,6 +41,38 @@ export async function openMeasure({
 }): Promise<boolean> {
   if (!native) return false;
   return native.present(url ?? null, language);
+}
+
+/**
+ * Measure first, for a new lead. Resolves with the size once the dealer taps
+ * "continue with these sizes", or null when they close the flow. The modal is
+ * already gone when it resolves.
+ */
+export async function measureForLead(language: string): Promise<MeasuredSize | null> {
+  if (!native) return null;
+  const size = await native.measure(language);
+  if (!size || !(size.widthCm > 0) || !(size.depthCm > 0)) return null;
+  return size;
+}
+
+/**
+ * A public form address, carrying a measured size as answers.
+ *
+ * `zv_width` / `zv_depth` (cm) are the funnel's own seed contract
+ * (app.veranduo `src/lib/formSeedParams.js`): resolved on the server into the
+ * form's width and depth, clamped into what that dealer sells, never an error.
+ * No `zv_step` — the form starts at its first question as always, and the size
+ * is simply already there when the dealer reaches it.
+ */
+export function withMeasuredSize(url: string, size: MeasuredSize): string {
+  try {
+    const parsed = new URL(url);
+    parsed.searchParams.set('zv_width', String(Math.round(size.widthCm)));
+    parsed.searchParams.set('zv_depth', String(Math.round(size.depthCm)));
+    return parsed.toString();
+  } catch {
+    return url;
+  }
 }
 
 /** `https://app.zinevu.com/ar/…` — the one URL shape the clip answers to. */
