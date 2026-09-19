@@ -173,6 +173,7 @@ export const tr: Record<MessageKey, string> = {
   'leads.detail.call': 'Ara',
   'leads.detail.configuration': 'Konfigürasyon',
   'leads.detail.email': 'E-posta',
+  'leads.detail.measure': 'Ölç',
   'leads.detail.note': 'Müşteri şunu yazdı',
   'leads.detail.offer': 'Teklif',
   'leads.detail.offerNo': 'Teklif no',

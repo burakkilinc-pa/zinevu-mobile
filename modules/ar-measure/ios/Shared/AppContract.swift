@@ -1,0 +1,1 @@
+../../../../targets/ar-clip/AppContract.swift

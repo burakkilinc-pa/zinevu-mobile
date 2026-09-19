@@ -1,4 +1,5 @@
 import { ActivityIndicator, Linking, Pressable, ScrollView, Text, View } from 'react-native';
+import { useState } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { Image } from 'expo-image';
@@ -8,10 +9,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { Screen } from '@/components/ui/screen';
 import { Card } from '@/components/ui/card';
 import { useColors } from '@/lib/theme';
-import { useT, useTFallback } from '@/lib/i18n';
+import { useLocale, useT, useTFallback } from '@/lib/i18n';
 import { formatDateTime } from '@/lib/time';
 import { formatMoney } from '@/lib/money';
 import { fetchLeadDetail } from '@/features/leads/api/lead-detail.api';
+import { canMeasure, openMeasure } from '@/features/ar-measure/ar-measure';
 
 /**
  * One lead, on a phone.
@@ -29,6 +31,10 @@ export default function LeadDetailScreen() {
   const tf = useTFallback();
   const c = useColors();
   const router = useRouter();
+  const locale = useLocale();
+  // An iPhone with world tracking; never on Android, where there is no native
+  // half. Asked once — the hardware does not change under a mounted screen.
+  const [measurable] = useState(canMeasure);
 
   const query = useQuery({
     queryKey: ['leads', 'detail', ref],
@@ -77,7 +83,10 @@ export default function LeadDetailScreen() {
             />
           ) : null}
 
-          {/* The two things you do from a phone. Big, side by side, no menu. */}
+          {/* What you do from a phone — at the customer's door, often. Big,
+              side by side, no menu. "Measure" is the App Clip's own terrace
+              measurement (modules/ar-measure), for the dealer on-site; the
+              result stays on screen, since a lead has no draft to write to. */}
           <View className="flex-row gap-3">
             <ActionButton
               icon="call"
@@ -100,6 +109,13 @@ export default function LeadDetailScreen() {
               disabled={!lead.pdfUrl}
               onPress={() => lead.pdfUrl && WebBrowser.openBrowserAsync(lead.pdfUrl)}
             />
+            {measurable ? (
+              <ActionButton
+                icon="scan"
+                label={t('leads.detail.measure')}
+                onPress={() => void openMeasure({ language: locale })}
+              />
+            ) : null}
           </View>
 
           <Card className="gap-3 p-4">

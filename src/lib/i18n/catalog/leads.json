@@ -34,6 +34,7 @@
 
   "leads.detail.call": { "en": "Call", "nl": "Bellen", "de": "Anrufen", "fr": "Appeler", "tr": "Ara" },
   "leads.detail.offer": { "en": "Offer", "nl": "Offerte", "de": "Angebot", "fr": "Devis", "tr": "Teklif" },
+  "leads.detail.measure": { "en": "Measure", "nl": "Meten", "de": "Messen", "fr": "Mesurer", "tr": "Ölç" },
   "leads.detail.total": { "en": "Total", "nl": "Totaal", "de": "Gesamt", "fr": "Total", "tr": "Toplam" },
   "leads.detail.offerNo": { "en": "Offer no.", "nl": "Offertenr.", "de": "Angebotsnr.", "fr": "N° de devis", "tr": "Teklif no" },
   "leads.detail.phone": { "en": "Phone", "nl": "Telefoon", "de": "Telefon", "fr": "Téléphone", "tr": "Telefon" },

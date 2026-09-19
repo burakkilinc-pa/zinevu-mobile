@@ -73,7 +73,7 @@
         "expo-image-picker",
         {
           "photosPermission": "Zinevu uses your photo library so you can attach photos to leads, planning visits and chats.",
-          "cameraPermission": "Zinevu uses the camera so you can take photos for leads, planning visits and chats."
+          "cameraPermission": "Zinevu uses the camera so you can take photos for leads, planning visits and chats, and to measure a terrace in augmented reality."
         }
       ],
       "@react-native-community/datetimepicker",

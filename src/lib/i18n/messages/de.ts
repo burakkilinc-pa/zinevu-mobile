@@ -173,6 +173,7 @@ export const de: Record<MessageKey, string> = {
   'leads.detail.call': 'Anrufen',
   'leads.detail.configuration': 'Konfiguration',
   'leads.detail.email': 'E-Mail',
+  'leads.detail.measure': 'Messen',
   'leads.detail.note': 'Der Kunde schrieb',
   'leads.detail.offer': 'Angebot',
   'leads.detail.offerNo': 'Angebotsnr.',

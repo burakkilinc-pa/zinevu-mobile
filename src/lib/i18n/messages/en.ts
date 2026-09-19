@@ -178,6 +178,7 @@ export const en = {
   'leads.detail.call': 'Call',
   'leads.detail.configuration': 'Configuration',
   'leads.detail.email': 'E-mail',
+  'leads.detail.measure': 'Measure',
   'leads.detail.note': 'The customer wrote',
   'leads.detail.offer': 'Offer',
   'leads.detail.offerNo': 'Offer no.',

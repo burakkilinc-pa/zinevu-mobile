@@ -9,7 +9,9 @@ import { useFonts } from 'expo-font';
 import { Providers } from '@/components/providers';
 import { AnimatedSplash } from '@/components/animated-splash';
 import { useAuthStore } from '@/features/auth/store';
+import { releaseHeldMeasure } from '@/features/ar-measure/ar-measure';
 import { fontMap, installDefaultFont } from '@/lib/fonts';
+import { currentLocale } from '@/lib/i18n';
 
 SplashScreen.preventAutoHideAsync();
 // Make the brand sans the default for every Text before the first render.
@@ -24,6 +26,12 @@ export default function RootLayout() {
   useEffect(() => {
     void bootstrap();
   }, [bootstrap]);
+
+  // An App Clip invocation that cold-started the app was parked by
+  // +native-intent until there is a screen to present the measuring flow over.
+  useEffect(() => {
+    if (splashDone) releaseHeldMeasure(currentLocale());
+  }, [splashDone]);
 
   return (
     <Providers>
