@@ -27,16 +27,22 @@
 		<key>NSAppClipRequestLocationConfirmation</key>
 		<false/>
 	</dict>
-	<!-- A clip may demand MORE of a device than its parent app, never less:
-	     Apple rejects the build outright unless this list is a superset of the
-	     app's. The app asks for arm64, so arm64 has to be repeated here even
-	     though every arkit device is already arm64 — the check compares the
-	     lists, not what they imply. -->
-	<key>UIRequiredDeviceCapabilities</key>
-	<array>
-		<string>arm64</string>
-		<string>arkit</string>
-	</array>
+	<!-- UIRequiredDeviceCapabilities is deliberately ABSENT.
+	     A clip's list must be EQUAL to its parent app's — not a superset — and
+	     Xcode drops architecture keys before comparing, so the app's `arm64`
+	     leaves it comparing against an empty list. Declaring `arkit` here, the
+	     obvious thing to do for something that cannot work without it, fails
+	     the archive:
+
+	         error: The UIRequiredDeviceCapabilities of an App Clip
+	         ('(arkit)') must be equal to the UIRequiredDeviceCapabilities of
+	         its containing parent app ('()').
+
+	     Nothing is lost. The key only asks the App Store to hide the bundle
+	     from devices that lack the feature, and every phone that can run
+	     iOS 16 supports world tracking anyway; a device that somehow cannot is
+	     caught by ARWorldTrackingConfiguration.isSupported in MeasureEngine,
+	     which shows the customer a sentence instead of a black screen. -->
 	<key>UIUserInterfaceStyle</key>
 	<string>Dark</string>
 </dict>
