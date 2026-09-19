@@ -223,6 +223,20 @@
     "fr": "Parois coulissantes en verre",
     "tr": "Cam sürme duvarlar"
   },
+  "leads.formType.zonwering": {
+    "en": "Sun shading",
+    "nl": "Zonwering",
+    "de": "Sonnenschutz",
+    "fr": "Protection solaire",
+    "tr": "Güneşlik"
+  },
+  "leads.formType.rolluik": {
+    "en": "Roller shutters",
+    "nl": "Rolluiken",
+    "de": "Rollläden",
+    "fr": "Volets roulants",
+    "tr": "Panjur"
+  },
   "leads.noAccess.title": {
     "en": "No access to leads",
     "nl": "Geen toegang tot leads",
