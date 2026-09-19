@@ -41,8 +41,14 @@ module.exports = () => ({
   // show. Resolved relative to THIS folder, and it is the icon the measuring
   // app carried, so nothing a customer has already seen changes.
   icon: 'icon.png',
-  // ARKit plane detection and the SwiftUI the flow is written in.
-  deploymentTarget: '16.0',
+  // 16.4 rather than the 16.0 the code needs: Apple refuses to process an
+  // upload whose CLIP asks for less, even when the parent app does not —
+  //
+  //   ITMS-90838: Invalid MinimumOSVersion ... has an invalid MinimumOSVersion
+  //   value of '16.0' ... with a minimum OS of '16.4' or later.
+  //
+  // which also happens to be the parent app's own target, so the two now agree.
+  deploymentTarget: '16.4',
   frameworks: ['ARKit', 'RealityKit'],
   entitlements: {
     // `appclips:` is what lets this domain hand a visitor the clip at all.
