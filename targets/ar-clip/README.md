@@ -1,8 +1,8 @@
-# The AR terrace measurement — App Clip
+# The AR veranda measurement — App Clip
 
 A customer in a veranda funnel taps "Weet je je maten niet?", scans a QR code (or
 gets the App Clip card on their own phone), and iOS puts **this** on screen with
-nothing installed. It measures the terrace with ARKit and writes the size onto
+nothing installed. It measures the veranda with ARKit and writes the size onto
 the configurator draft the funnel is already holding. Android measures in the
 browser with WebXR instead — Safari has no `immersive-ar` at all, which is the
 whole reason this exists.
@@ -29,10 +29,10 @@ CDN caches the wrong answer for hours.
 
 **`appclips:` only, never `applinks:`.** An `applinks` claim on `/ar/*` would
 mean "somebody with the app installed opens the app instead of the clip", and
-this app is the dealer portal — it cannot measure a terrace. It also used to
-make the clip untestable: whoever installed the old measuring app had every
-scanned QR open that app, so the clip could never be seen on the one device it
-was being tested on.
+this app is the dealer portal, and the visitor who scanned the QR wants the
+measuring clip, not it. It also used to make the clip untestable: whoever
+installed the old measuring app had every scanned QR open that app, so the clip
+could never be seen on the one device it was being tested on.
 
 ## Running it from Xcode
 

@@ -1,7 +1,7 @@
 import { requireOptionalNativeModule } from 'expo';
 
 /**
- * The terrace measurement the App Clip runs, opened from inside this app.
+ * The veranda measurement the App Clip runs, opened from inside this app.
  *
  * iOS only. It is the clip's own ARKit + RealityKit Swift (modules/ar-measure),
  * and Android builds carry no native half at all — so the module is optional

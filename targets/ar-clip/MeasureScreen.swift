@@ -511,8 +511,8 @@ struct MeasureFlowView: View {
             if let saved {
                 Text("\(metres(saved.widthCm)) × \(metres(saved.depthCm)) m")
                     .font(.system(size: 34, weight: .bold))
-                // The area of the TERRACE, which is only the same thing as the
-                // size above while nothing was clamped. Printed under a capped
+                // The MEASURED area, labelled as the veranda's — which it only is
+                // while nothing was clamped. Printed under a capped
                 // number it reads as broken arithmetic — "1.16 × 1.00 m" over
                 // "0.6 m²" — so when the funnel could not sell what was
                 // measured, the orange line below carries the real numbers and

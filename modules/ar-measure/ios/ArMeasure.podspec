@@ -7,7 +7,7 @@
 Pod::Spec.new do |s|
   s.name           = 'ArMeasure'
   s.version        = '1.0.0'
-  s.summary        = 'Terrace measurement with ARKit, shared with the App Clip'
+  s.summary        = 'Veranda measurement with ARKit, shared with the App Clip'
   s.description    = s.summary
   s.license        = 'UNLICENSED'
   s.author         = 'Zinevu'

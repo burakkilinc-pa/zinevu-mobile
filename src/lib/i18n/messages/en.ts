@@ -214,7 +214,7 @@ export const en = {
   'leads.detail.call': 'Call',
   'leads.detail.configuration': 'Configuration',
   'leads.detail.email': 'E-mail',
-  'leads.detail.measure': 'Measure terrace',
+  'leads.detail.measure': 'Measure veranda',
   'leads.detail.note': 'The customer wrote',
   'leads.detail.offerNo': 'Offer no.',
   'leads.detail.pdf': 'PDF',

@@ -209,7 +209,7 @@ export const fr: Record<MessageKey, string> = {
   'leads.detail.call': 'Appeler',
   'leads.detail.configuration': 'Configuration',
   'leads.detail.email': 'E-mail',
-  'leads.detail.measure': 'Mesurer la terrasse',
+  'leads.detail.measure': 'Mesurer la véranda',
   'leads.detail.note': 'Le client a écrit',
   'leads.detail.offerNo': 'N° de devis',
   'leads.detail.pdf': 'PDF',

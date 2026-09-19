@@ -3,7 +3,7 @@ import ExpoModulesCore
 import SwiftUI
 
 /**
- The App Clip's terrace measurement, inside the Zinevu app.
+ The App Clip's veranda measurement, inside the Zinevu app.
 
  Two reasons it lives here too, and either would be enough:
 

@@ -231,11 +231,11 @@
     "tr": "3D görünüm"
   },
   "leads.detail.measure": {
-    "en": "Measure terrace",
-    "nl": "Terras meten",
-    "de": "Terrasse messen",
-    "fr": "Mesurer la terrasse",
-    "tr": "Terası ölç"
+    "en": "Measure veranda",
+    "nl": "Veranda meten",
+    "de": "Veranda messen",
+    "fr": "Mesurer la véranda",
+    "tr": "Verandayı ölç"
   },
   "leads.detail.total": {
     "en": "Total",

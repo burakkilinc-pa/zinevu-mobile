@@ -1,9 +1,9 @@
 /**
- * The AR terrace measurement, as an App Clip of THIS app.
+ * The AR veranda measurement, as an App Clip of THIS app.
  *
  * A customer scans a QR code in their veranda funnel, iOS fetches this bundle
  * in the background and puts it on screen — no App Store, no install, no
- * account. It measures the terrace with ARKit and writes the size onto the
+ * account. It measures the veranda with ARKit and writes the size onto the
  * configurator draft the funnel is already holding, which is the whole
  * contract; see AppContract.swift.
  *

@@ -209,7 +209,7 @@ export const nl: Record<MessageKey, string> = {
   'leads.detail.call': 'Bellen',
   'leads.detail.configuration': 'Configuratie',
   'leads.detail.email': 'E-mail',
-  'leads.detail.measure': 'Terras meten',
+  'leads.detail.measure': 'Veranda meten',
   'leads.detail.note': 'De klant schreef',
   'leads.detail.offerNo': 'Offertenr.',
   'leads.detail.pdf': 'PDF',

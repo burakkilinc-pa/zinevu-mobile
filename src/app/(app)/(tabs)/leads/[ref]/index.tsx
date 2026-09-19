@@ -56,7 +56,7 @@ export default function LeadDetailScreen() {
   const canSend = hasPermission(user, PERMISSIONS.offersSend);
   const canSeePrices = hasPermission(user, PERMISSIONS.pricingView);
   const canSeeForms = hasPermission(user, PERMISSIONS.formsView);
-  // The App Clip's terrace measurement (modules/ar-measure): an iPhone with
+  // The App Clip's veranda measurement (modules/ar-measure): an iPhone with
   // world tracking only — Android has no native half. Asked once; the
   // hardware does not change under a mounted screen.
   const [measurable] = useState(canMeasure);
@@ -208,8 +208,8 @@ export default function LeadDetailScreen() {
             />
           </View>
 
-          {/* The App Clip's measurement, for the dealer standing on the
-              terrace. Its own full-width row: a fifth button would squeeze
+          {/* The App Clip's measurement, for the dealer standing where the
+              veranda goes. Its own full-width row: a fifth button would squeeze
               every label above it past legibility. A lead has no draft to
               write to, so the result stays on screen. This button is also
               what satisfies App Store Guideline 2.5.16 — every App Clip
