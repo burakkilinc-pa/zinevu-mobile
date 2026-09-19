@@ -27,8 +27,14 @@
 		<key>NSAppClipRequestLocationConfirmation</key>
 		<false/>
 	</dict>
+	<!-- A clip may demand MORE of a device than its parent app, never less:
+	     Apple rejects the build outright unless this list is a superset of the
+	     app's. The app asks for arm64, so arm64 has to be repeated here even
+	     though every arkit device is already arm64 — the check compares the
+	     lists, not what they imply. -->
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
+		<string>arm64</string>
 		<string>arkit</string>
 	</array>
 	<key>UIUserInterfaceStyle</key>
