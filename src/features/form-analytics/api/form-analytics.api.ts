@@ -4,7 +4,6 @@ import {
   type AnalyticsRange,
   type BreakdownRow,
   type FormAnalyticsOverview,
-  type FunnelStep,
   type LiveSnapshot,
   type TimelineEvent,
   type Visit,
@@ -13,8 +12,10 @@ import {
 } from '@/features/form-analytics/types';
 
 /**
- * The dealer's funnel analytics — the four reads behind the portal's form
- * analytics page, all under `analytics.view`.
+ * The dealer's funnel analytics — three of the reads behind the portal's form
+ * analytics page, all under `analytics.view`. The fourth, the per-form step
+ * drop-off (`/forms/analytics/funnel`), was left out of the phone on purpose
+ * (2026-09): the dealer asked for it to go.
  *
  * Every call takes the same scope the web page sends, so a number on the phone
  * and the one on the desk describe the same visits. Two parameters the web
@@ -80,22 +81,11 @@ type RawOverview = {
     conversions?: number;
     conversion_rate?: number;
   } | null;
-  forms?: (RawRate & { form_type?: string })[];
   sources?: (RawRate & { source?: string })[];
   devices?: (RawRate & { device?: string })[];
   recent_sessions?: RawVisit[];
   ignored?: { hidden_visits?: number };
   bots?: { hidden_visits?: number };
-};
-
-type RawStep = {
-  step_index?: number | null;
-  step_key?: string | null;
-  reached?: number;
-  pct_of_first?: number;
-  stopped?: number;
-  is_conversion?: boolean;
-  parts?: { step_key?: string | null; reached?: number; pct_of_first?: number }[];
 };
 
 type RawEvent = {
@@ -193,8 +183,8 @@ function rangeParams(range: AnalyticsRange) {
 }
 
 /**
- * The overview: headline, per-form split, sources, devices and the latest
- * visits, for one period.
+ * The overview: headline, sources, devices and the latest visits, for one
+ * period.
  *
  * The heavy one — the server reads the whole window of tracking for it — so
  * it is asked for once per period and kept, not polled.
@@ -234,14 +224,6 @@ export async function fetchFormAnalytics(range: AnalyticsRange): Promise<FormAna
           conversionRate: num(previous.conversion_rate),
         }
       : null,
-    // Already busiest-first and zero-filled with every form the dealer runs,
-    // so a form nobody opened this week is still offered in the picker.
-    forms: mapRate(d.forms, 'form_type').map((row) => ({
-      formType: row.key,
-      visits: row.visits,
-      conversions: row.conversions,
-      conversionRate: row.conversionRate,
-    })),
     sources: mapRate(d.sources, 'source'),
     devices: mapRate(d.devices, 'device'),
     visits: (d.recent_sessions ?? [])
@@ -250,38 +232,6 @@ export async function fetchFormAnalytics(range: AnalyticsRange): Promise<FormAna
     hiddenBotVisits: num(d.bots?.hidden_visits),
     hiddenIgnoredVisits: num(d.ignored?.hidden_visits),
   };
-}
-
-/**
- * ONE form's step drop-off.
- *
- * Always asked per form, even for a dealer who runs only one: the overview
- * carries a blended funnel in that case, but two code paths for one chart is
- * one more place for the phone to disagree with itself. Forms are not
- * comparable to each other — their questions differ — which is why the server
- * refuses to blend several into one chart and why this takes a form type.
- */
-export async function fetchFormFunnel(
-  range: AnalyticsRange,
-  formType: string
-): Promise<FunnelStep[]> {
-  const d = await request<{ steps?: RawStep[] }>('/portal/dealer/forms/analytics/funnel', {
-    params: { ...rangeParams(range), form_type: formType },
-  });
-
-  return (d.steps ?? []).map((step) => ({
-    key: text(step.step_key),
-    index: typeof step.step_index === 'number' ? step.step_index : null,
-    reached: num(step.reached),
-    pctOfFirst: num(step.pct_of_first),
-    stopped: num(step.stopped),
-    isConversion: !!step.is_conversion,
-    parts: (step.parts ?? []).map((part) => ({
-      key: text(part.step_key),
-      reached: num(part.reached),
-      pctOfFirst: num(part.pct_of_first),
-    })),
-  }));
 }
 
 /**

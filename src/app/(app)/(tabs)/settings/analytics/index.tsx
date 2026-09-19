@@ -24,7 +24,6 @@ import { KpiGrid } from '@/features/form-analytics/components/kpi-grid';
 import { LiveNowCard } from '@/features/form-analytics/components/live-now';
 import { PeriodSwitch } from '@/features/form-analytics/components/period-switch';
 import { Section, SectionState } from '@/features/form-analytics/components/section';
-import { StepFunnelSection } from '@/features/form-analytics/components/step-funnel';
 import { VisitList } from '@/features/form-analytics/components/visit-list';
 import type { AnalyticsPeriod } from '@/features/form-analytics/types';
 
@@ -32,10 +31,11 @@ import type { AnalyticsPeriod } from '@/features/form-analytics/types';
  * Form analytics — how the dealer's public funnels are doing.
  *
  * The phone's cut of the portal's analytics page: who is on a form right now,
- * the period's four headline figures, one form's step drop-off, where the
- * traffic came from, and the latest visits, each of which opens its own
- * timeline. What stays on the web is what you study at a desk: the daily
- * chart, the surface and entry tables, the IP ignore rules, the export.
+ * the period's four headline figures, where the traffic came from, and the
+ * latest visits, each of which opens its own timeline. What stays on the web
+ * is what you study at a desk: the daily chart, the step drop-off (the dealer
+ * asked for it off the phone), the surface and entry tables, the IP ignore
+ * rules, the export.
  *
  * Reached from the More sheet, and only with `analytics.view`.
  */
@@ -84,8 +84,8 @@ function FormAnalyticsBody() {
   const onRefresh = async () => {
     setPulling(true);
     try {
-      // Every analytics read on screen — overview, the open funnel, the live
-      // panel — in one go, without this screen having to hold each query.
+      // Every analytics read on screen — the overview and the live panel — in
+      // one go, without this screen having to hold each query.
       await queryClient.invalidateQueries({ queryKey: formAnalyticsKeys.all });
     } finally {
       setPulling(false);
@@ -169,8 +169,6 @@ function FormAnalyticsBody() {
 
         {data && data.totals.visits > 0 ? (
           <>
-            <StepFunnelSection range={range} forms={data.forms} />
-
             <BreakdownCard
               title={t('formAnalytics.sources.title')}
               rows={data.sources}

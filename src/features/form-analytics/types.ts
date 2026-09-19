@@ -5,8 +5,8 @@
  * headline tiles, a daily line chart, per-surface and per-entry tables, a
  * visitor table grouped by IP with a CSV export, and the IP ignore rules. A
  * phone gets the questions a dealer asks between two appointments — how many
- * came, how many sent something, where do they drop off, who is on it right
- * now, and what did that one visit actually do. Everything else stays on the
+ * came, how many sent something, who is on it right now, and what did that
+ * one visit actually do. Everything else stays on the
  * web, so the mappers read the fields below and drop the rest.
  *
  * Every figure is one the API computes. Nothing here re-derives a rate or a
@@ -55,14 +55,6 @@ export type PreviousTotals = {
   visits: number;
   visitors: number;
   starts: number;
-  conversions: number;
-  conversionRate: number;
-};
-
-/** One of the dealer's forms, with what it saw this period (zero-filled). */
-export type FormSplit = {
-  formType: string;
-  visits: number;
   conversions: number;
   conversionRate: number;
 };
@@ -131,8 +123,6 @@ export type Visit = {
 export type FormAnalyticsOverview = {
   totals: FormTotals;
   previous: PreviousTotals | null;
-  /** Every form the dealer runs, busiest first — including the silent ones. */
-  forms: FormSplit[];
   sources: BreakdownRow[];
   devices: BreakdownRow[];
   /** Up to 50 visits, most recent activity first. */
@@ -144,31 +134,11 @@ export type FormAnalyticsOverview = {
 };
 
 /**
- * The step key of the funnel's closing bar — the request that was actually
- * sent, not a question of any form. Mirrors FormAnalyticsService::STEP_SUBMITTED.
+ * The step key the server gives the request that was actually sent — not a
+ * question of any form. A visit timeline ends on it. Mirrors
+ * FormAnalyticsService::STEP_SUBMITTED.
  */
 export const STEP_SUBMITTED = '__submitted';
-
-/** One bay of a question asked per part (front side 1, 2, 3). */
-export type FunnelStepPart = {
-  key: string | null;
-  reached: number;
-  pctOfFirst: number;
-};
-
-export type FunnelStep = {
-  key: string | null;
-  index: number | null;
-  /** Visits that got at least this far. */
-  reached: number;
-  /** `reached` as a percent of the first step's. */
-  pctOfFirst: number;
-  /** Visits whose furthest point was this step. */
-  stopped: number;
-  /** True for the closing bar: the request that was actually sent. */
-  isConversion: boolean;
-  parts: FunnelStepPart[];
-};
 
 /**
  * Who is on a form this second. The rows are ordinary visits — the live

@@ -29,16 +29,7 @@
   "formAnalytics.live.justArrived": { "en": "Just arrived", "nl": "Net aangekomen", "de": "Gerade angekommen", "fr": "Vient d'arriver", "tr": "Yeni geldi" },
   "formAnalytics.live.more": { "en": "+{n} more", "nl": "+{n} meer", "de": "+{n} weitere", "fr": "+{n} de plus", "tr": "+{n} kişi daha" },
 
-  "formAnalytics.funnel.title": { "en": "Step drop-off", "nl": "Uitval per stap", "de": "Abbruch je Schritt", "fr": "Abandon par étape", "tr": "Adım bazlı terk" },
-  "formAnalytics.funnel.hint": { "en": "How many visits reached each step, and the share of the first step that is.", "nl": "Hoeveel bezoeken elke stap bereikten, en welk deel van de eerste stap dat is.", "de": "Wie viele Besuche jeden Schritt erreicht haben, als Anteil am ersten Schritt.", "fr": "Combien de visites ont atteint chaque étape, en part de la première étape.", "tr": "Her adıma kaç ziyaretin ulaştığı ve bunun ilk adıma oranı." },
-  "formAnalytics.funnel.continued": { "en": "Continued", "nl": "Verder gegaan", "de": "Weitergegangen", "fr": "Ont continué", "tr": "Devam etti" },
-  "formAnalytics.funnel.stoppedLegend": { "en": "Stopped here", "nl": "Hier gestopt", "de": "Hier gestoppt", "fr": "Arrêtés ici", "tr": "Burada durdu" },
-  "formAnalytics.funnel.stopped": { "en": "{n} stopped here", "nl": "{n} hier gestopt", "de": "{n} hier gestoppt", "fr": "{n} arrêtés ici", "tr": "{n} kişi burada durdu" },
   "formAnalytics.funnel.submitted": { "en": "Request sent", "nl": "Aanvraag verstuurd", "de": "Anfrage gesendet", "fr": "Demande envoyée", "tr": "Talep gönderildi" },
-  "formAnalytics.funnel.empty": { "en": "No step data yet.", "nl": "Nog geen stap-data.", "de": "Noch keine Schritt-Daten.", "fr": "Pas encore de données d'étape.", "tr": "Henüz adım verisi yok." },
-  "formAnalytics.funnel.noForms": { "en": "No form is switched on yet.", "nl": "Er staat nog geen formulier aan.", "de": "Es ist noch kein Formular aktiv.", "fr": "Aucun formulaire n'est encore activé.", "tr": "Henüz açık form yok." },
-  "formAnalytics.funnel.showParts": { "en": "Show each part", "nl": "Toon elk deel", "de": "Jeden Teil zeigen", "fr": "Voir chaque partie", "tr": "Her parçayı göster" },
-  "formAnalytics.funnel.hideParts": { "en": "Hide the parts", "nl": "Verberg de delen", "de": "Teile ausblenden", "fr": "Masquer les parties", "tr": "Parçaları gizle" },
 
   "formAnalytics.step.numbered": { "en": "{title} {n}", "nl": "{title} {n}", "de": "{title} {n}", "fr": "{title} {n}", "tr": "{title} {n}" },
   "formAnalytics.step.unnamed": { "en": "Step {n}", "nl": "Stap {n}", "de": "Schritt {n}", "fr": "Étape {n}", "tr": "Adım {n}" },

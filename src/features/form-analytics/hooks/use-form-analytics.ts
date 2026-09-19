@@ -5,7 +5,6 @@ import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-quer
 
 import {
   fetchFormAnalytics,
-  fetchFormFunnel,
   fetchLiveFormVisitors,
   fetchSessionTimeline,
 } from '@/features/form-analytics/api/form-analytics.api';
@@ -24,8 +23,6 @@ export const formAnalyticsKeys = {
   overviews: ['form-analytics', 'overview'] as const,
   overview: (range: AnalyticsRange) =>
     ['form-analytics', 'overview', range.from, range.to] as const,
-  funnel: (range: AnalyticsRange, formType: string) =>
-    ['form-analytics', 'funnel', formType, range.from, range.to] as const,
   live: ['form-analytics', 'live'] as const,
   session: (sessionId: string) => ['form-analytics', 'session', sessionId] as const,
 };
@@ -78,26 +75,6 @@ export function useFormAnalytics(range: AnalyticsRange) {
     enabled: allowed,
     staleTime: 60_000,
     placeholderData: keepPreviousData,
-  });
-}
-
-/**
- * One form's step drop-off.
- *
- * The previous answer is kept only while the SAME form reloads for a new
- * period. Switching forms clears it: one form's steps under another form's
- * name would be a chart that confidently describes the wrong funnel.
- */
-export function useFormFunnel(range: AnalyticsRange, formType: string | null) {
-  const allowed = useCanViewAnalytics();
-
-  return useQuery({
-    queryKey: formAnalyticsKeys.funnel(range, formType ?? ''),
-    queryFn: () => fetchFormFunnel(range, formType ?? ''),
-    enabled: allowed && !!formType,
-    staleTime: 60_000,
-    placeholderData: (previous, previousQuery) =>
-      previousQuery?.queryKey[2] === formType ? previous : undefined,
   });
 }
 
