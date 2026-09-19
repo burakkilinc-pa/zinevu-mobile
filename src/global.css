@@ -40,6 +40,10 @@
     --success: 142 71% 40%;
     --warning: 38 92% 50%;
 
+    /* Data ink — bars and fills in charts. Deep teal: lime has no contrast on
+       a white card, and the dashboard's own charts already lead with it. */
+    --chart: 192 74% 12%;
+
     --border: 43 9% 82%; /* hairline: black 14% over paper, #D4D2CC */
     --input: 43 9% 82%;
     --ring: 0 0% 0%;
@@ -73,6 +77,8 @@
 
     --success: 142 60% 45%;
     --warning: 38 85% 55%;
+
+    --chart: 76 100% 82%;
 
     --border: 191 32% 21%;
     --input: 191 32% 21%;

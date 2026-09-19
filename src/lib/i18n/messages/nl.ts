@@ -253,7 +253,7 @@ export const nl: Record<MessageKey, string> = {
   'formAnalytics.sources.title': 'Verkeersbronnen',
   'formAnalytics.status.abandoned': 'Afgehaakt',
   'formAnalytics.status.active': 'Nu bezig',
-  'formAnalytics.status.bounced': 'Direct vertrokken',
+  'formAnalytics.status.bounced': 'Nooit begonnen',
   'formAnalytics.status.converted': 'Geconverteerd',
   'formAnalytics.status.looking': 'Kijkt rond',
   'formAnalytics.step.appointment': 'Wanneer komt het u uit?',

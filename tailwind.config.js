@@ -43,6 +43,7 @@ module.exports = {
         'destructive-foreground': 'hsl(var(--destructive-foreground) / <alpha-value>)',
         success: 'hsl(var(--success) / <alpha-value>)',
         warning: 'hsl(var(--warning) / <alpha-value>)',
+        chart: 'hsl(var(--chart) / <alpha-value>)',
         border: 'hsl(var(--border) / <alpha-value>)',
         input: 'hsl(var(--input) / <alpha-value>)',
         ring: 'hsl(var(--ring) / <alpha-value>)',

@@ -68,7 +68,7 @@ export function BreakdownCard({
                   </Text>
                 </View>
                 <View className="h-1.5 overflow-hidden rounded-full bg-muted">
-                  <View className="h-1.5 rounded-full bg-primary" style={{ width: `${share}%` }} />
+                  <View className="h-1.5 rounded-full bg-chart" style={{ width: `${share}%` }} />
                 </View>
                 <Text className="text-xs text-muted-foreground">
                   {t('formAnalytics.breakdown.requests', { n: formatCount(row.conversions) })}

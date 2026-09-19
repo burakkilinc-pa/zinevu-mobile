@@ -106,7 +106,9 @@ export function Button({
           {chip ? (
             <View
               className="h-8 w-8 items-center justify-center rounded-[9px]"
-              style={{ backgroundColor: turned ? colors.primary : colors.ink }}
+              // The lime face's own ink — black in both schemes. `ink` turns
+              // paper in dark mode, where it would swallow the lime icon.
+              style={{ backgroundColor: turned ? colors.primary : colors.primaryForeground }}
             >
               <Ionicons
                 name={icon}

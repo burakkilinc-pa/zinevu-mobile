@@ -89,7 +89,7 @@
   "formAnalytics.status.active": { "en": "Filling in now", "nl": "Nu bezig", "de": "Füllt gerade aus", "fr": "En cours de saisie", "tr": "Şu an dolduruyor" },
   "formAnalytics.status.looking": { "en": "Looking around", "nl": "Kijkt rond", "de": "Schaut sich um", "fr": "Regarde le formulaire", "tr": "Bakınıyor" },
   "formAnalytics.status.abandoned": { "en": "Abandoned", "nl": "Afgehaakt", "de": "Abgebrochen", "fr": "Abandonné", "tr": "Yarıda bıraktı" },
-  "formAnalytics.status.bounced": { "en": "Left immediately", "nl": "Direct vertrokken", "de": "Sofort verlassen", "fr": "Parti immédiatement", "tr": "Hemen ayrıldı" },
+  "formAnalytics.status.bounced": { "en": "Never started", "nl": "Nooit begonnen", "de": "Nie begonnen", "fr": "Jamais commencé", "tr": "Hiç başlamadı" },
 
   "formAnalytics.surface.3d": { "en": "3D configurator", "nl": "3D-configurator", "de": "3D-Konfigurator", "fr": "Configurateur 3D", "tr": "3D yapılandırıcı" },
   "formAnalytics.surface.flat": { "en": "Step form", "nl": "Stappenformulier", "de": "Schritt-Formular", "fr": "Formulaire par étapes", "tr": "Adımlı form" },

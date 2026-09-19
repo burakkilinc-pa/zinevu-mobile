@@ -58,7 +58,7 @@ export function FloatingAction({
     >
       <View
         className="h-9 w-9 items-center justify-center rounded-full"
-        style={{ backgroundColor: pressed ? c.primary : c.ink }}
+        style={{ backgroundColor: pressed ? c.primary : c.primaryForeground }}
       >
         <Ionicons name={icon} size={20} color={pressed ? c.primaryForeground : c.primary} />
       </View>

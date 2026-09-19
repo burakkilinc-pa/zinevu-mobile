@@ -258,7 +258,7 @@ export const en = {
   'formAnalytics.sources.title': 'Traffic sources',
   'formAnalytics.status.abandoned': 'Abandoned',
   'formAnalytics.status.active': 'Filling in now',
-  'formAnalytics.status.bounced': 'Left immediately',
+  'formAnalytics.status.bounced': 'Never started',
   'formAnalytics.status.converted': 'Converted',
   'formAnalytics.status.looking': 'Looking around',
   'formAnalytics.step.appointment': 'When suits you?',

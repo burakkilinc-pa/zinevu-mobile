@@ -253,7 +253,7 @@ export const tr: Record<MessageKey, string> = {
   'formAnalytics.sources.title': 'Trafik kaynakları',
   'formAnalytics.status.abandoned': 'Yarıda bıraktı',
   'formAnalytics.status.active': 'Şu an dolduruyor',
-  'formAnalytics.status.bounced': 'Hemen ayrıldı',
+  'formAnalytics.status.bounced': 'Hiç başlamadı',
   'formAnalytics.status.converted': 'Dönüştü',
   'formAnalytics.status.looking': 'Bakınıyor',
   'formAnalytics.step.appointment': 'Size ne zaman uygun?',

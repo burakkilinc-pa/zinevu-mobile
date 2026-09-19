@@ -100,6 +100,12 @@ export function BottomSheet({
               backgroundColor: c.card,
               borderTopLeftRadius: 32,
               borderTopRightRadius: 32,
+              // The portal's phone sheets: a 1.5px black edge along the top
+              // only — a full slab edge and plate would run off the screen.
+              borderTopWidth: 1.5,
+              borderLeftWidth: 1.5,
+              borderRightWidth: 1.5,
+              borderColor: c.ink,
               overflow: 'hidden',
               paddingHorizontal: 20,
               paddingTop: 10,

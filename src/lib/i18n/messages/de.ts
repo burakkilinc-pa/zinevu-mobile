@@ -253,7 +253,7 @@ export const de: Record<MessageKey, string> = {
   'formAnalytics.sources.title': 'Traffic-Quellen',
   'formAnalytics.status.abandoned': 'Abgebrochen',
   'formAnalytics.status.active': 'Füllt gerade aus',
-  'formAnalytics.status.bounced': 'Sofort verlassen',
+  'formAnalytics.status.bounced': 'Nie begonnen',
   'formAnalytics.status.converted': 'Konvertiert',
   'formAnalytics.status.looking': 'Schaut sich um',
   'formAnalytics.step.appointment': 'Wann passt es Ihnen?',

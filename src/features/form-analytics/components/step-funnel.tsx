@@ -144,7 +144,7 @@ function FunnelBars({ steps }: { steps: FunnelStep[] }) {
     <Card className="gap-4 p-4">
       {anyStopped ? (
         <View className="flex-row flex-wrap gap-x-4 gap-y-1">
-          <Legend className="bg-primary" label={t('formAnalytics.funnel.continued')} />
+          <Legend className="bg-chart" label={t('formAnalytics.funnel.continued')} />
           <Legend className="bg-destructive/70" label={t('formAnalytics.funnel.stoppedLegend')} />
         </View>
       ) : null}
@@ -254,7 +254,7 @@ function StepBar({
       <View className="h-2.5 overflow-hidden rounded-full bg-muted">
         <View className="h-2.5 flex-row overflow-hidden rounded-full" style={{ width: `${width}%` }}>
           <View
-            className={step.isConversion ? 'bg-success' : 'bg-primary'}
+            className={step.isConversion ? 'bg-success' : 'bg-chart'}
             style={{ flex: step.reached - stopped }}
           />
           {stopped > 0 ? <View className="bg-destructive/70" style={{ flex: stopped }} /> : null}
@@ -291,7 +291,7 @@ function PartBar({ part, widest }: { part: FunnelStepPart; widest: number }) {
         </Text>
       </View>
       <View className="h-1.5 overflow-hidden rounded-full bg-muted">
-        <View className="h-1.5 rounded-full bg-primary/40" style={{ width: `${width}%` }} />
+        <View className="h-1.5 rounded-full bg-chart/40" style={{ width: `${width}%` }} />
       </View>
     </View>
   );
