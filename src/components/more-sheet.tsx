@@ -6,6 +6,7 @@ import { Avatar } from '@/components/ui/avatar';
 import { BottomSheet } from '@/components/ui/bottom-sheet';
 import { useAuthStore } from '@/features/auth/store';
 import { useSupportUnread } from '@/features/support/hooks/use-support';
+import { hasPermission, PERMISSIONS } from '@/lib/auth/roles';
 import { useT } from '@/lib/i18n';
 import { useColors } from '@/lib/theme';
 
@@ -13,9 +14,10 @@ import { useColors } from '@/lib/theme';
  * "All sections" — the sheet behind the dock's last tab.
  *
  * The dock holds four side icons around the brand Z so the mark sits dead
- * centre; everything rarer than that (support, the platform back-office, the
- * settings screen itself) lives here, over a card that names who is signed in
- * and offers the way out. Mirrors the web portal's own overflow menu.
+ * centre; everything rarer than that (form analytics, support, the platform
+ * back-office, the settings screen itself) lives here, over a card that names
+ * who is signed in and offers the way out. Mirrors the web portal's own
+ * overflow menu.
  */
 export function MoreSheet({ visible, onClose }: { visible: boolean; onClose: () => void }) {
   const router = useRouter();
@@ -61,6 +63,16 @@ export function MoreSheet({ visible, onClose }: { visible: boolean; onClose: () 
               icon="shield-checkmark-outline"
               label={t('tabs.admin')}
               onPress={() => go('/platform')}
+            />
+          ) : null}
+          {/* Only with analytics.view: every endpoint behind the screen
+              refuses without it, and a row that opens onto a lock screen is
+              a row that should not have been offered. */}
+          {hasPermission(user, PERMISSIONS.analyticsView) ? (
+            <SheetRow
+              icon="stats-chart-outline"
+              label={t('formAnalytics.title')}
+              onPress={() => go('/settings/analytics')}
             />
           ) : null}
           <SheetRow
