@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Only the keys Xcode does NOT generate for this target live here. The
+	     App Clip configuration list sets GENERATE_INFOPLIST_FILE, so the
+	     bundle name, identifier, versions, scene manifest, launch screen and
+	     orientations arrive as INFOPLIST_KEY_* build settings; repeating any
+	     of them here is a build error, not a duplicate. -->
+	<key>CFBundleDevelopmentRegion</key>
+	<string>nl</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<!-- Shown verbatim in the system prompt, so it answers the only two
+	     questions a customer standing in their garden actually has: what for,
+	     and where do the pictures go. -->
+	<key>NSCameraUsageDescription</key>
+	<string>Om je terras op te meten kijkt de app door je camera. Er worden geen foto's opgeslagen of verstuurd.</string>
+	<!-- The dictionary that makes this bundle a clip rather than an app. Both
+	     keys are deliberately false: the clip asks for the camera and nothing
+	     else — no location confirmation, no notification permission. Every
+	     extra prompt between a QR code and a measurement is a customer lost. -->
+	<key>NSAppClip</key>
+	<dict>
+		<key>NSAppClipRequestEphemeralUserNotification</key>
+		<false/>
+		<key>NSAppClipRequestLocationConfirmation</key>
+		<false/>
+	</dict>
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>arkit</string>
+	</array>
+	<key>UIUserInterfaceStyle</key>
+	<string>Dark</string>
+</dict>
+</plist>

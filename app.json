@@ -14,7 +14,10 @@
       "appleTeamId": "MPM7UW8NS4",
       "config": {
         "usesNonExemptEncryption": false
-      }
+      },
+      "associatedDomains": [
+        "appclips:app.zinevu.com"
+      ]
     },
     "android": {
       "package": "com.zinevu.mobile",

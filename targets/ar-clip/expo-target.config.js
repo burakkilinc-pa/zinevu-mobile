@@ -1,0 +1,62 @@
+/**
+ * The AR terrace measurement, as an App Clip of THIS app.
+ *
+ * A customer scans a QR code in their veranda funnel, iOS fetches this bundle
+ * in the background and puts it on screen — no App Store, no install, no
+ * account. It measures the terrace with ARKit and writes the size onto the
+ * configurator draft the funnel is already holding, which is the whole
+ * contract; see AppContract.swift.
+ *
+ * It used to be an app of its own (`com.zinevu.measure`, "Zinevu AR Meten").
+ * It moved here because an App Clip cannot ship without a parent app ON the
+ * App Store, and that parent had never been submitted: a single-purpose AR
+ * utility that exists to serve one website is exactly the shape Guideline 4.2
+ * reviews hardest, and the whole feature was waiting behind that review. This
+ * app is already approved and ships updates, so the clip rides along. Nothing
+ * of the customer's experience is borrowed from the parent — the App Clip card
+ * shows this target's own CFBundleDisplayName and the card configured in App
+ * Store Connect.
+ *
+ * NOT React Native: the clip is pure SwiftUI + ARKit and must launch in the
+ * time it takes to lower a phone from a QR code. No JS bundle is exported.
+ *
+ * @type {import('@bacons/apple-targets/app.plugin').ConfigFunction}
+ */
+module.exports = () => ({
+  type: 'clip',
+  name: 'ZinevuMeasureClip',
+  // The plugin assumes an App Clip is a React Native one and bolts the
+  // "Bundle React Native code and images" phase onto it. This clip has no JS at
+  // all, and that phase fails the build outright — it runs before anything is
+  // compiled, so the symptom is a script error with no Swift in sight.
+  exportJs: false,
+  // What the customer reads on the App Clip card and under the icon.
+  displayName: 'Zinevu Meten',
+  // Leading dot = appended to this app's bundle id → com.zinevu.mobile.Clip.
+  // The `.Clip` suffix is load-bearing beyond convention: AppContract.isClip
+  // reads it to decide whether a missing draft is a failure or just someone
+  // who opened the app from their home screen.
+  bundleIdentifier: '.Clip',
+  // The clip's own icon — the one the Smart App Banner and the App Library
+  // show. Resolved relative to THIS folder, and it is the icon the measuring
+  // app carried, so nothing a customer has already seen changes.
+  icon: 'icon.png',
+  // ARKit plane detection and the SwiftUI the flow is written in.
+  deploymentTarget: '16.0',
+  frameworks: ['ARKit', 'RealityKit'],
+  entitlements: {
+    // `appclips:` is what lets this domain hand a visitor the clip at all.
+    //
+    // Deliberately WITHOUT `applinks:` — here and on the parent app. An
+    // `applinks` claim means "somebody who has the app installed opens the app
+    // instead of the clip", and the app they would open is the dealer portal,
+    // which cannot measure anything. Leaving it off is what makes a scanned QR
+    // open the clip for everyone, dealers included.
+    'com.apple.developer.associated-domains': ['appclips:app.zinevu.com'],
+    // Apple refuses to build a clip whose parent identifier does not match the
+    // app embedding it.
+    'com.apple.developer.parent-application-identifiers': [
+      '$(AppIdentifierPrefix)com.zinevu.mobile',
+    ],
+  },
+});

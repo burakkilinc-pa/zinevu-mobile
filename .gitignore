@@ -47,6 +47,10 @@ example
 
 # generated native folders
 /ios
+
+# Icon sets @bacons/apple-targets redraws from targets/*/icon.png on every
+# prebuild — derived output, like /ios itself.
+targets/*/Assets.xcassets/
 /android
 
 # native build artifacts (Xcode archives, dSYMs, etc.)
