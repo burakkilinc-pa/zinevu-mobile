@@ -18,8 +18,13 @@ type RawDashboard = {
     form_views?: number;
     form_conversions?: number;
   };
-  leads?: { this_month?: number };
-  sales?: { won_this_month?: number };
+  leads?: {
+    this_month?: number;
+    last_30d?: number;
+    sources_30d?: { meta?: number; form?: number; manual?: number };
+  };
+  sales?: { won_this_month?: number; sent_30d?: number; won_30d?: number };
+  monthly?: { month?: string; leads?: number; sent?: number; won?: number }[];
   actions?: {
     key?: string;
     count?: number;
@@ -74,6 +79,24 @@ export async function fetchDashboard(): Promise<DashboardSummary> {
     requestsToday: Number(r.form_conversions ?? 0),
     leadsThisMonth: Number(d.leads?.this_month ?? 0),
     wonThisMonth: Number(d.sales?.won_this_month ?? 0),
+    // Already oldest-first and zero-filled server-side, so a month with no
+    // business is a gap in the bars rather than a hole in the axis.
+    monthly: (d.monthly ?? []).map((m) => ({
+      month: String(m.month ?? ''),
+      leads: Number(m.leads ?? 0),
+      sent: Number(m.sent ?? 0),
+      won: Number(m.won ?? 0),
+    })).filter((m) => m.month !== ''),
+    conversion30d: {
+      leads: Number(d.leads?.last_30d ?? 0),
+      offersSent: Number(d.sales?.sent_30d ?? 0),
+      won: Number(d.sales?.won_30d ?? 0),
+    },
+    sources30d: {
+      meta: Number(d.leads?.sources_30d?.meta ?? 0),
+      form: Number(d.leads?.sources_30d?.form ?? 0),
+      manual: Number(d.leads?.sources_30d?.manual ?? 0),
+    },
     // The API already orders these by urgency and drops the zeroes, so the
     // screen renders them as they arrive rather than re-deciding.
     actions: (d.actions ?? []).map(mapAction).filter((a) => a.key !== ''),

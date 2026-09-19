@@ -8,6 +8,7 @@ import { WebView } from 'react-native-webview';
 
 import { useColors } from '@/lib/theme';
 import { useT } from '@/lib/i18n';
+import { LEAD_3D_IN_KEY } from '@/features/leads/lead-3d';
 
 /**
  * The configurator, full screen.
@@ -28,7 +29,11 @@ import { useT } from '@/lib/i18n';
  * save" and gets entered a second time.
  */
 export default function ConfiguratorScreen() {
-  const { url, title } = useLocalSearchParams<{ url: string; title?: string }>();
+  const { url, title, handoff } = useLocalSearchParams<{
+    url: string;
+    title?: string;
+    handoff?: string;
+  }>();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const c = useColors();
@@ -42,6 +47,15 @@ export default function ConfiguratorScreen() {
     void queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     router.back();
   }
+
+  // Viewing an existing lead in 3D. The configurator takes no lead id in its
+  // URL — it reads a handoff blob out of sessionStorage — so the blob is
+  // written before the page's own scripts run. See lead-3d.ts.
+  const injected = handoff
+    ? `try{sessionStorage.setItem(${JSON.stringify(LEAD_3D_IN_KEY)},${JSON.stringify(
+        String(handoff)
+      )})}catch(e){};true;`
+    : undefined;
 
   return (
     <View className="flex-1 bg-background" style={{ paddingTop: insets.top }}>
@@ -78,6 +92,7 @@ export default function ConfiguratorScreen() {
         <WebView
           ref={webview}
           source={{ uri: String(url) }}
+          injectedJavaScriptBeforeContentLoaded={injected}
           onLoadEnd={() => setLoading(false)}
           sharedCookiesEnabled
           thirdPartyCookiesEnabled

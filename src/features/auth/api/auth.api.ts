@@ -47,6 +47,47 @@ export async function login(email: string, password: string): Promise<AuthSessio
 }
 
 /**
+ * Exchanges a Google ID token for a portal session — the same endpoint the web
+ * portal's NextAuth callback posts to.
+ *
+ * `allow_signup: false` is the one difference from the web: there, an unknown
+ * address is a sign-up and mints a whole new dealer tenant. On a phone that is
+ * almost never what happened — it is the wrong Google account in the picker —
+ * so the backend answers 404 instead of quietly creating an empty company.
+ */
+export async function loginWithGoogle(idToken: string): Promise<AuthSession> {
+  const data = await request<TokenPayload>('/portal/auth/google', {
+    method: 'POST',
+    auth: false,
+    body: { id_token: idToken, allow_signup: false },
+  });
+  return toSession(data);
+}
+
+/**
+ * Exchanges an Apple identity token for a portal session.
+ *
+ * `fullName` is sent because Apple hands the name to the client exactly once,
+ * on the very first sign-in, and never again — if we drop it there, no later
+ * request can recover it. It is ignored for an account that already exists.
+ */
+export async function loginWithApple(
+  identityToken: string,
+  fullName?: string | null
+): Promise<AuthSession> {
+  const data = await request<TokenPayload>('/portal/auth/apple', {
+    method: 'POST',
+    auth: false,
+    body: {
+      identity_token: identityToken,
+      full_name: fullName || undefined,
+      allow_signup: false,
+    },
+  });
+  return toSession(data);
+}
+
+/**
  * Redeems a one-time magic-link token for a session — the same token the web
  * portal consumes at /portal/magic. Zinevu support mints one from the admin
  * panel and opens it on this phone as `zinevumobile://magic?token=…`; the
@@ -145,6 +186,21 @@ export async function fetchMe(): Promise<{ user: AuthUser; account: AuthAccount 
     leads_pii_visible: data.leads_pii_visible,
   };
   return { user: mapUser(raw), account: mapAccount(data.account) };
+}
+
+/**
+ * Erases the signed-in member. `password` is required only of somebody who
+ * has one — an Apple/Google/magic-link member has nothing to type, and their
+ * live session is the proof the backend accepts.
+ *
+ * Unlike `logout`, a failure here must surface: silently swallowing it would
+ * sign the user out and leave them believing they were deleted.
+ */
+export async function deleteAccount(password?: string): Promise<void> {
+  await request('/portal/auth/account', {
+    method: 'DELETE',
+    body: { password: password || undefined },
+  });
 }
 
 export async function logout(): Promise<void> {

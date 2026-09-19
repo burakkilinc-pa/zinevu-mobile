@@ -48,6 +48,13 @@ export type AuthUser = {
   pricingVisible: boolean;
   /** Whether the leads screens may show customer PII to this member. */
   leadsPiiVisible: boolean;
+  /**
+   * The company the user works for (the Dealer or Assembler row behind them).
+   * This — not `AuthAccount` — is who they are: one account can hold many
+   * dealers behind a single white-label Brand, so the account name belongs to
+   * the reseller, never to the person reading the screen.
+   */
+  company: { id: string | null; name: string } | null;
   status: string;
   /** False for an invited member who still has to choose a password. */
   hasPassword: boolean;

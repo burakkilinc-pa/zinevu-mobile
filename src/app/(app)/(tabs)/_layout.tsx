@@ -1,22 +1,30 @@
+import { useState } from 'react';
 import { Tabs, useSegments } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
 import { useAuthStore } from '@/features/auth/store';
+import { useSupportUnread } from '@/features/support/hooks/use-support';
 import { resolveAppSpace } from '@/lib/auth/roles';
 import { BrandTabBar } from '@/components/brand-tab-bar';
+import { MoreSheet } from '@/components/more-sheet';
+import { Avatar } from '@/components/ui/avatar';
 import { useT } from '@/lib/i18n';
 
 /**
  * Tab navigator. Adapts to the user's space (src/lib/auth/roles.ts):
  *
- *  - dealer / admin  Leads · Planning · [Dashboard] · Live Chat · Settings —
- *                    Dashboard sits in the raised centre of the dock, and an
- *                    admin additionally gets the platform back-office tab.
- *  - installer       a stripped dock: Planning · [Jobs] · Settings. A fitter
+ *  - dealer / admin  Leads · Planning · [Dashboard] · Live Chat · More —
+ *                    Dashboard sits in the raised centre of the dock.
+ *  - installer       a stripped dock: Planning · [Jobs] · More. A fitter
  *                    only ever needs the visits assigned to them.
  *
- * Support is reached from Settings rather than the dock: it is a rare,
- * deliberate action, and five icons is already the most a dock reads cleanly at.
+ * The side tabs are kept to an even number on purpose: the brand Z only reads
+ * as the hero when it is dead centre, and an odd split pushes it off-axis.
+ * So the last slot is not the Settings screen but an overflow sheet (MoreSheet)
+ * carrying support, the platform back-office and settings — and it wears the
+ * signed-in user's photo when they have one, the way every app of this shape
+ * does. Support's unread count rides up onto that slot so an answer is never
+ * buried a sheet deep.
  *
  * Irrelevant tabs are hidden with href={null}; BrandTabBar filters those out
  * itself, since it renders its own buttons rather than the default bar's.
@@ -36,7 +44,16 @@ export default function TabsLayout() {
   const space = resolveAppSpace(user);
   const isInstaller = space === 'installer';
   const isOffice = space === 'dealer' || space === 'admin';
-  const isAdmin = space === 'admin';
+  const supportUnread = useSupportUnread();
+  const [moreOpen, setMoreOpen] = useState(false);
+
+  const initials = (user?.name ?? '?')
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join('')
+    .toUpperCase();
 
   // WhatsApp hides the tab bar inside a thread so the composer sits on the
   // safe-area edge. The (tabs) group segment sits between '(app)' and the tab
@@ -44,13 +61,24 @@ export default function TabsLayout() {
   const chatIndex = segments.indexOf('chat');
   const inThread = chatIndex !== -1 && segments.length > chatIndex + 1;
 
+  // Same reasoning for the offer editors: they are one screen with one save
+  // button on the bottom edge, and a dock floating over it both covers the
+  // button and offers to navigate away mid-edit. Nothing on those screens is
+  // reachable from the dock anyway — you got there from a lead, and Back is
+  // how you leave.
+  const inEditor = ['offer', 'answers'].includes(segments[segments.length - 1] ?? '');
+
+  const hideDock = inThread || inEditor;
+
   // Each space's landing screen sits in the raised centre of the dock.
   const centerRoute = isInstaller ? 'jobs' : 'index';
 
   return (
+    <>
+    <MoreSheet visible={moreOpen} onClose={() => setMoreOpen(false)} />
     <Tabs
       tabBar={(props) =>
-        inThread ? null : <BrandTabBar {...props} centerRoute={centerRoute} />
+        hideDock ? null : <BrandTabBar {...props} centerRoute={centerRoute} />
       }
       screenOptions={{ headerShown: false }}
     >
@@ -113,34 +141,47 @@ export default function TabsLayout() {
           ),
         }}
       />
-      {/* Zinevu platform back-office — staff only. */}
+      {/* Zinevu platform back-office — staff only, and reached from the More
+          sheet rather than the dock: a fifth side icon would knock the brand Z
+          off centre, and this is a back-office errand, not daily work. */}
       <Tabs.Screen
         name="platform"
         options={{
           title: t('tabs.admin'),
-          href: isAdmin ? undefined : null,
-          tabBarIcon: ({ focused, color, size }) => (
-            <Ionicons
-              name={focused ? 'shield-checkmark' : 'shield-checkmark-outline'}
-              color={color}
-              size={size}
-            />
-          ),
+          href: null,
         }}
       />
+      {/* The overflow slot. It never navigates — pressing it opens MoreSheet
+          (see the tabPress listener), which is where Settings now lives. */}
       <Tabs.Screen
         name="settings"
+        listeners={{
+          tabPress: (e) => {
+            e.preventDefault();
+            setMoreOpen(true);
+          },
+        }}
         options={{
           title: t('tabs.settings'),
-          tabBarIcon: ({ focused, color, size }) => (
-            <Ionicons
-              name={focused ? 'settings' : 'settings-outline'}
-              color={color}
-              size={size}
-            />
-          ),
+          tabBarBadge: supportUnread.data || undefined,
+          tabBarIcon: ({ focused, color, size }) =>
+            user?.avatarUrl ? (
+              <Avatar
+                url={user.avatarUrl}
+                initials={initials || '?'}
+                size={size + 2}
+                className={focused ? 'opacity-100' : 'opacity-90'}
+              />
+            ) : (
+              <Ionicons
+                name={focused ? 'settings' : 'settings-outline'}
+                color={color}
+                size={size}
+              />
+            ),
         }}
       />
     </Tabs>
+    </>
   );
 }

@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { cn } from '@/lib/cn';
 import { useColors } from '@/lib/theme';
 
-type Variant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'success';
+type Variant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'success' | 'destructive';
 
 type ButtonProps = PressableProps & {
   title: string;
@@ -26,6 +26,10 @@ const CONTAINER: Record<Variant, string> = {
   // Positive confirm: a saturated success green so it clearly reads as the
   // go-ahead, distinct from the brand-coloured primary.
   success: 'bg-success active:opacity-90',
+  // The other side of `success`: a solid red for the one action on a screen
+  // that cannot be taken back. Solid rather than outlined so it never reads
+  // as a secondary way out.
+  destructive: 'bg-destructive active:opacity-90',
 };
 
 const LABEL: Record<Variant, string> = {
@@ -34,6 +38,7 @@ const LABEL: Record<Variant, string> = {
   outline: 'text-foreground',
   ghost: 'text-foreground',
   success: 'text-white',
+  destructive: 'text-destructive-foreground',
 };
 
 export function Button({
@@ -48,7 +53,7 @@ export function Button({
   const colors = useColors();
   const isDisabled = disabled || loading;
   const contentColor =
-    variant === 'secondary' || variant === 'success'
+    variant === 'secondary' || variant === 'success' || variant === 'destructive'
       ? colors.white
       : colors.foreground;
   return (

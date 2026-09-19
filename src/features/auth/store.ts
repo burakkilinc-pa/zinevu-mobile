@@ -4,7 +4,7 @@ import { setUnauthorizedHandler } from '@/lib/api/client';
 import { getToken, setToken, clearToken } from '@/lib/storage/secure-token';
 import type { AuthAccount, AuthSession, AuthUser } from '@/features/auth/types';
 import * as authApi from '@/features/auth/api/auth.api';
-import { revokePushDevice } from '@/features/push/use-push';
+import { forgetPushDevice, revokePushDevice } from '@/features/push/use-push';
 
 type AuthStatus = 'loading' | 'authenticated' | 'unauthenticated';
 
@@ -25,6 +25,11 @@ type AuthState = {
   /** Clears the "choose a password" gate once the member has set one. */
   clearMustSetPassword: () => void;
   signOut: () => Promise<void>;
+  /**
+   * Erases this member and tears the session down. Throws if the backend
+   * refuses (wrong password, last admin) — the session must survive a refusal.
+   */
+  deleteAccount: (password?: string) => Promise<void>;
 };
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -86,6 +91,21 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     // that authorizes the revocation is thrown away.
     await revokePushDevice();
     await authApi.logout();
+    await clearToken();
+    set({
+      status: 'unauthenticated',
+      user: null,
+      account: null,
+      mustSetPassword: false,
+    });
+  },
+
+  deleteAccount: async (password) => {
+    // First, and unguarded: a refusal (wrong password, last admin) must throw
+    // out of here with the session — and this phone's push — untouched.
+    await authApi.deleteAccount(password);
+    // The device row went with the account, so only the local id is left.
+    await forgetPushDevice();
     await clearToken();
     set({
       status: 'unauthenticated',

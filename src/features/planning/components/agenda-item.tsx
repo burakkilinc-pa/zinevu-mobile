@@ -3,6 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { useColors } from '@/lib/theme';
 import { useT } from '@/lib/i18n';
+import { followUpTypeLabel } from '@/features/planning/type-label';
 import { clockTime } from '@/lib/time';
 import type { PlanningItem } from '@/features/planning/types';
 
@@ -16,6 +17,11 @@ import type { PlanningItem } from '@/features/planning/types';
  *
  * Address gets a tap of its own. Standing at the van, the thing you want is
  * not a detail screen, it is directions.
+ *
+ * It renders two kinds of entry. A Zinevu task is the loud one. A block synced in
+ * from the dealer's own calendar is deliberately quieter — faded rail, lighter
+ * title, a sync mark and the calendar's name — because it answers a different
+ * question: not "what am I doing" but "why this afternoon is already gone".
  */
 export function AgendaItem({
   item,
@@ -27,7 +33,10 @@ export function AgendaItem({
   const t = useT();
   const c = useColors();
 
-  const rail = item.type?.colorHex ?? c.foreground;
+  const isEvent = item.source === 'event';
+  const rail = isEvent
+    ? item.calendarColor ?? c.mutedForeground
+    : item.type?.colorHex ?? c.foreground;
   const done = item.status === 'done';
   const cancelled = item.status === 'cancelled';
 
@@ -52,25 +61,57 @@ export function AgendaItem({
       style={cancelled ? { opacity: 0.45 } : undefined}
     >
       <View className="w-14 items-end pt-0.5">
-        <Text className="text-sm font-medium text-foreground">
-          {item.dueAt ? clockTime(item.dueAt) : ''}
-        </Text>
-        {end ? <Text className="text-xs text-muted-foreground">{end}</Text> : null}
+        {item.allDay ? (
+          // An all-day block has no clock time to show, and rendering "00:00"
+          // would read as a midnight appointment.
+          <Text className="text-xs font-medium text-muted-foreground">
+            {t('planning.allDay')}
+          </Text>
+        ) : (
+          <>
+            <Text className="text-sm font-medium text-foreground">
+              {item.dueAt ? clockTime(item.dueAt) : ''}
+            </Text>
+            {end ? <Text className="text-xs text-muted-foreground">{end}</Text> : null}
+          </>
+        )}
       </View>
 
       <View
         className="w-1 rounded-full"
-        style={{ backgroundColor: rail, opacity: done ? 0.35 : 1 }}
+        style={{
+          backgroundColor: rail,
+          // A synced block's rail is faded and its title is lighter: it belongs
+          // on the day, but it is not this dealer's work to do.
+          opacity: done ? 0.35 : isEvent ? 0.5 : 1,
+        }}
       />
 
       <View className="flex-1 gap-1 pb-1">
-        <Text
-          className="text-[15px] font-medium text-foreground"
-          numberOfLines={1}
-          style={cancelled ? { textDecorationLine: 'line-through' } : undefined}
-        >
-          {item.title || item.type?.name || t('planning.untitled')}
-        </Text>
+        <View className="flex-row items-center gap-1.5">
+          {isEvent ? (
+            <Ionicons name="sync-outline" size={13} color={c.mutedForeground} />
+          ) : null}
+          <Text
+            className={
+              isEvent
+                ? 'flex-1 text-[15px] text-muted-foreground'
+                : 'flex-1 text-[15px] font-medium text-foreground'
+            }
+            numberOfLines={1}
+            style={cancelled ? { textDecorationLine: 'line-through' } : undefined}
+          >
+            {item.title || followUpTypeLabel(t, item.type) || t('planning.untitled')}
+          </Text>
+        </View>
+
+        {/* Which calendar it came from — the dealer has more than one linked,
+            and "Privé" vs "Werk" is the whole reason to show the source. */}
+        {isEvent && item.calendarName ? (
+          <Text className="text-xs text-muted-foreground" numberOfLines={1}>
+            {item.calendarName}
+          </Text>
+        ) : null}
 
         {item.customerName ? (
           <Text className="text-sm text-muted-foreground" numberOfLines={1}>

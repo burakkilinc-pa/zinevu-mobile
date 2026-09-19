@@ -21,6 +21,21 @@
   "dash.visitors.stageInForm": { "en": "Filling in the form", "nl": "Vult het formulier in", "de": "Füllt das Formular aus", "fr": "Remplit le formulaire", "tr": "Formu dolduruyor" },
   "dash.visitors.stageConverted": { "en": "Left a request", "nl": "Aanvraag achtergelaten", "de": "Anfrage hinterlassen", "fr": "A laissé une demande", "tr": "Talep bıraktı" },
 
+  "dash.last30d": { "en": "last 30 days", "nl": "laatste 30 dagen", "de": "letzte 30 Tage", "fr": "30 derniers jours", "tr": "son 30 gün" },
+
+  "dash.chart.monthly.title": { "en": "Leads per month", "nl": "Leads per maand", "de": "Leads pro Monat", "fr": "Leads par mois", "tr": "Aylık talepler" },
+  "dash.chart.monthly.total": { "en": "{count} in 6 months", "nl": "{count} in 6 maanden", "de": "{count} in 6 Monaten", "fr": "{count} en 6 mois", "tr": "6 ayda {count}" },
+
+  "dash.chart.funnel.title": { "en": "Lead to signature", "nl": "Van lead naar handtekening", "de": "Vom Lead zur Unterschrift", "fr": "Du lead à la signature", "tr": "Talepten imzaya" },
+  "dash.chart.funnel.leads": { "en": "Leads", "nl": "Leads", "de": "Leads", "fr": "Leads", "tr": "Talep" },
+  "dash.chart.funnel.sent": { "en": "Offers sent", "nl": "Offertes verstuurd", "de": "Angebote gesendet", "fr": "Devis envoyés", "tr": "Gönderilen teklif" },
+  "dash.chart.funnel.won": { "en": "Signed", "nl": "Getekend", "de": "Unterschrieben", "fr": "Signés", "tr": "İmzalanan" },
+
+  "dash.chart.sources.title": { "en": "Where leads come from", "nl": "Waar leads vandaan komen", "de": "Woher die Leads kommen", "fr": "D'où viennent les leads", "tr": "Talepler nereden geliyor" },
+  "dash.chart.sources.meta": { "en": "Meta ads", "nl": "Meta-advertenties", "de": "Meta-Anzeigen", "fr": "Publicités Meta", "tr": "Meta reklamları" },
+  "dash.chart.sources.form": { "en": "Website form", "nl": "Formulier op de site", "de": "Formular auf der Website", "fr": "Formulaire du site", "tr": "Site formu" },
+  "dash.chart.sources.manual": { "en": "Added by hand", "nl": "Handmatig toegevoegd", "de": "Manuell angelegt", "fr": "Ajoutés à la main", "tr": "Elle eklenen" },
+
   "dash.noAccess.title": { "en": "No dashboard access", "nl": "Geen toegang tot dashboard", "de": "Kein Zugriff auf das Dashboard", "fr": "Pas d'accès au tableau de bord", "tr": "Panele erişim yok" },
   "dash.noAccess.body": { "en": "Your account doesn't have permission to see the figures. Ask an admin in your team.", "nl": "Je account heeft geen rechten om de cijfers te zien. Vraag een beheerder in je team.", "de": "Dein Konto darf die Zahlen nicht sehen. Frag eine Administratorin in deinem Team.", "fr": "Votre compte n'a pas l'autorisation de voir les chiffres. Demandez à un administrateur de votre équipe.", "tr": "Hesabının rakamları görme yetkisi yok. Ekibindeki bir yöneticiye sor." }
 }
