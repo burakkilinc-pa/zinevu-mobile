@@ -44,11 +44,13 @@ const RESEND_AFTER = 30; // seconds before "Resend" re-enables
 const MARK_H = 44; // brand Z height on the lime tile
 const MARK_W = Math.round((MARK_H * 164) / 224); // the mark's own 164×224 aspect
 
-// Apple draws its button natively, so it cannot inherit our classes: these two
-// are the `h-12` and `rounded-md` of components/ui/button.tsx, written out so
-// the Apple button lines up with the Google one above it. Keep them in step.
-const SOCIAL_HEIGHT = 48;
+// Apple draws its button natively, so it cannot inherit our classes. The
+// radius is `rounded-md` from tailwind.config.js, written out here; the height
+// is measured off the Google button rather than guessed, because `h-12` is 42
+// and not 48 — NativeWind's rem is 14. This is the height until it reports in,
+// and the one used when Google is unavailable and there is nothing to match.
 const SOCIAL_RADIUS = 18;
+const SOCIAL_HEIGHT = 42;
 
 export default function LoginScreen() {
   const t = useT();
@@ -68,6 +70,7 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
   const [social, setSocial] = useState<'google' | 'apple' | null>(null);
   const [showApple, setShowApple] = useState(false);
+  const [socialHeight, setSocialHeight] = useState(SOCIAL_HEIGHT);
 
   // Sign in with Apple exists on iOS 13+ only, so the button is asked for
   // rather than assumed — on Android and older iOS it never renders.
@@ -331,6 +334,7 @@ export default function LoginScreen() {
                           // has to move the face instead: the edge is already
                           // as dark as the variant's pressed state.
                           className="border-foreground active:bg-muted"
+                          onLayout={(e) => setSocialHeight(e.nativeEvent.layout.height)}
                         />
                       ) : null}
 
@@ -355,7 +359,7 @@ export default function LoginScreen() {
                               : AppleAuthentication.AppleAuthenticationButtonStyle.WHITE_OUTLINE
                           }
                           cornerRadius={SOCIAL_RADIUS}
-                          style={{ height: SOCIAL_HEIGHT }}
+                          style={{ height: socialHeight }}
                           onPress={() => handleSocial('apple')}
                         />
                       ) : null}
