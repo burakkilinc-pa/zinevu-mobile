@@ -328,12 +328,13 @@ export default function LoginScreen() {
                           loading={social === 'google'}
                           disabled={loading || social !== null}
                           onPress={() => handleSocial('google')}
-                          // The edge Apple draws around its own white button,
-                          // so the two provider rows carry the same line
-                          // rather than one black and one hairline. The press
-                          // has to move the face instead: the edge is already
-                          // as dark as the variant's pressed state.
-                          className="border-foreground active:bg-muted"
+                          // The edge Apple draws around its own white button:
+                          // black, and a point thin rather than the brand's
+                          // 1.5 — Apple's outline is not ours to thicken, and
+                          // the pair has to carry the same line. The press has
+                          // to move the face instead, the edge being already as
+                          // dark as the variant's pressed state.
+                          className="border border-foreground active:bg-muted"
                           onLayout={(e) => setSocialHeight(e.nativeEvent.layout.height)}
                         />
                       ) : null}
