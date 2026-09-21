@@ -77,3 +77,26 @@ export type AuthSession = {
   /** True when an invited member must set a password before continuing. */
   mustSetPassword: boolean;
 };
+
+/**
+ * One company this person belongs to — a row in `portal_users`, not a tenant.
+ *
+ * The same person can be an admin in one company and a fitter in another, so
+ * everything that depends on a seat (permissions, what the tabs show) is
+ * re-read after a switch rather than carried across.
+ */
+export type Membership = {
+  /** `membership_id` — what /auth/switch takes, and what a push carries. */
+  id: number;
+  accountId: number | null;
+  name: string;
+  logoUrl: string | null;
+  kind: 'dealer' | 'assembler';
+  current: boolean;
+  /** Invited, or switched on by an admin and never entered. */
+  pending: boolean;
+  available: boolean;
+  pinned: boolean;
+  /** Visitors whose last word is unanswered, for the badge. */
+  waiting: number;
+};

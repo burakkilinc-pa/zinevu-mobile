@@ -1,6 +1,6 @@
 import { request } from '@/lib/api/client';
 import { t } from '@/lib/i18n';
-import type { AuthAccount, AuthSession, AuthUser } from '@/features/auth/types';
+import type { AuthAccount, AuthSession, AuthUser, Membership } from '@/features/auth/types';
 import {
   mapAccount,
   mapUser,
@@ -209,4 +209,59 @@ export async function logout(): Promise<void> {
   } catch {
     // Even if the server call fails, the client clears its token.
   }
+}
+
+type RawMembership = {
+  id?: number;
+  account_id?: number | null;
+  name?: string | null;
+  logo_url?: string | null;
+  kind?: string;
+  current?: boolean;
+  pending?: boolean;
+  available?: boolean;
+  pinned?: boolean;
+  waiting?: number;
+};
+
+/**
+ * Every company this person works for, newest-used first.
+ *
+ * The same list the web portal's switcher reads, including `waiting` — the
+ * only number that crosses a company boundary, and the reason the switcher is
+ * worth opening at all when nothing else told you the other company needs you.
+ */
+export async function fetchMemberships(): Promise<Membership[]> {
+  const data = await request<{ memberships?: RawMembership[] }>('/portal/auth/memberships');
+
+  return (data.memberships ?? []).map((raw) => ({
+    id: Number(raw.id ?? 0),
+    accountId: raw.account_id ?? null,
+    name: raw.name ?? '',
+    logoUrl: raw.logo_url ?? null,
+    kind: raw.kind === 'assembler' ? 'assembler' : 'dealer',
+    current: !!raw.current,
+    pending: !!raw.pending,
+    available: raw.available !== false,
+    pinned: !!raw.pinned,
+    waiting: Number(raw.waiting ?? 0),
+  }));
+}
+
+/**
+ * Moves this session into another company.
+ *
+ * The answer is a whole new session — the token the app was carrying is
+ * deleted server-side — so it goes through the same door a login does. The
+ * body field is `membership_id` and NOT `portal_user_id`: the portal
+ * middleware merges the caller's own id under that name, so the wrong spelling
+ * would silently switch you into the company you are already in.
+ */
+export async function switchCompany(membershipId: number): Promise<AuthSession> {
+  const data = await request<TokenPayload>('/portal/auth/switch', {
+    method: 'POST',
+    body: { membership_id: membershipId },
+  });
+
+  return toSession(data);
 }

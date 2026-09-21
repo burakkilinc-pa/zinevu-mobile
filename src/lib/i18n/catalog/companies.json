@@ -1,0 +1,14 @@
+{
+  "companies.title": {"en": "Switch company", "nl": "Bedrijf wisselen", "de": "Unternehmen wechseln", "fr": "Changer d’entreprise", "tr": "Şirket değiştir"},
+  "companies.subtitle": {"en": "You work for more than one company. Choose where you are now.", "nl": "Je werkt voor meer dan één bedrijf. Kies waar je nu bent.", "de": "Du arbeitest für mehrere Unternehmen. Wähle, wo du gerade bist.", "fr": "Vous travaillez pour plusieurs entreprises. Choisissez où vous êtes.", "tr": "Birden fazla şirkette çalışıyorsun. Şu an nerede olduğunu seç."},
+  "companies.unnamed": {"en": "Unnamed company", "nl": "Naamloos bedrijf", "de": "Unbenanntes Unternehmen", "fr": "Entreprise sans nom", "tr": "Adsız şirket"},
+  "companies.current": {"en": "You’re here", "nl": "Je bent hier", "de": "Du bist hier", "fr": "Vous êtes ici", "tr": "Buradasın"},
+  "companies.pending": {"en": "Invitation — tap to open", "nl": "Uitnodiging — tik om te openen", "de": "Einladung — zum Öffnen tippen", "fr": "Invitation — touchez pour ouvrir", "tr": "Davet — açmak için dokun"},
+  "companies.role.dealer": {"en": "Dealer", "nl": "Dealer", "de": "Händler", "fr": "Revendeur", "tr": "Bayi"},
+  "companies.role.assembler": {"en": "Assembly partner", "nl": "Montagepartner", "de": "Montagepartner", "fr": "Partenaire de montage", "tr": "Montaj ortağı"},
+  "companies.switched": {"en": "You’re now in {name}.", "nl": "Je bent nu in {name}.", "de": "Du bist jetzt in {name}.", "fr": "Vous êtes maintenant dans {name}.", "tr": "Artık {name} şirketindesin."},
+  "companies.switchFailed": {"en": "Couldn’t switch company. Try again.", "nl": "Wisselen lukte niet. Probeer het opnieuw.", "de": "Wechsel fehlgeschlagen. Versuche es erneut.", "fr": "Le changement a échoué. Réessayez.", "tr": "Şirket değiştirilemedi. Tekrar dene."},
+  "companies.row": {"en": "Company", "nl": "Bedrijf", "de": "Unternehmen", "fr": "Entreprise", "tr": "Şirket"},
+  "companies.waitingElsewhere": {"en": "{n} waiting at another company", "nl": "{n} wachten bij een ander bedrijf", "de": "{n} warten bei einem anderen Unternehmen", "fr": "{n} en attente dans une autre entreprise", "tr": "Başka bir şirkette {n} kişi bekliyor"},
+  "companies.switchedFromPush": {"en": "Opened in {name}.", "nl": "Geopend in {name}.", "de": "In {name} geöffnet.", "fr": "Ouvert dans {name}.", "tr": "{name} şirketinde açıldı."}
+}

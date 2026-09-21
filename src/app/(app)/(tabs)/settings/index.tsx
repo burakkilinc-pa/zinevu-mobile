@@ -26,6 +26,8 @@ import {
   setBiometricEnabled,
 } from '@/features/auth/biometric';
 import { useCompany } from '@/features/auth/api/company.api';
+import { CompanySwitcherSheet } from '@/features/companies/company-switcher';
+import { useCompanySummary } from '@/features/companies/use-company-switch';
 import { useSupportUnread } from '@/features/support/hooks/use-support';
 import { ApiError } from '@/lib/api/client';
 import { capturePhotos, PermissionDeniedError } from '@/lib/media';
@@ -50,6 +52,11 @@ const LANGUAGE_OPTIONS: LocalePreference[] = ['system', ...SUPPORTED_LOCALES];
  * carries its unread badge up to this row so an answer is never buried.
  */
 export default function SettingsScreen() {
+  // One login can hold several companies. The card below is where the person
+  // already looks to see which one they are in, so it is also where they
+  // change it — rather than a second row saying the same word.
+  const { hasOthers, elsewhereWaiting } = useCompanySummary();
+  const [switcherOpen, setSwitcherOpen] = useState(false);
   const router = useRouter();
   const c = useColors();
   const t = useT();
@@ -195,7 +202,11 @@ export default function SettingsScreen() {
             Barida's mark. Falls back to the company name alone, which is
             exactly what the offer mail does with an empty dealer logo. */}
         {user?.company?.name ? (
-          <View
+          <Pressable
+            onPress={hasOthers ? () => setSwitcherOpen(true) : undefined}
+            disabled={!hasOthers}
+            accessibilityRole={hasOthers ? 'button' : undefined}
+            accessibilityLabel={hasOthers ? t('companies.title') : undefined}
             className="mt-5 flex-row items-center gap-3 rounded-2xl border border-border/50 bg-card p-3"
             style={CARD_SHADOW}
           >
@@ -215,12 +226,36 @@ export default function SettingsScreen() {
               <Text className="text-base font-semibold text-foreground" numberOfLines={1}>
                 {company.data?.name || user.company.name}
               </Text>
-              <Text className="text-sm text-muted-foreground">
-                {t('account.section.company')}
+              <Text className="text-sm text-muted-foreground" numberOfLines={1}>
+                {/* The one thing worth saying about a company you are NOT in:
+                    somebody there is waiting. Everything else about it stays
+                    on the other side of the switch. */}
+                {elsewhereWaiting > 0
+                  ? t('companies.waitingElsewhere', { n: elsewhereWaiting })
+                  : hasOthers
+                    ? t('companies.title')
+                    : t('account.section.company')}
               </Text>
             </View>
-          </View>
+
+            {elsewhereWaiting > 0 ? (
+              <View
+                className="min-w-6 items-center rounded-full px-2 py-0.5"
+                style={{ backgroundColor: c.destructive }}
+              >
+                <Text className="text-xs font-bold text-white">
+                  {elsewhereWaiting > 9 ? '9+' : elsewhereWaiting}
+                </Text>
+              </View>
+            ) : null}
+
+            {hasOthers ? (
+              <Ionicons name="swap-horizontal" size={20} color={c.mutedForeground} />
+            ) : null}
+          </Pressable>
         ) : null}
+
+        <CompanySwitcherSheet visible={switcherOpen} onClose={() => setSwitcherOpen(false)} />
 
         <Section title={t('account.section.profile')}>
           <Row

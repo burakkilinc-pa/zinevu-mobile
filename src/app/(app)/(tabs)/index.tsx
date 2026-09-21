@@ -1,7 +1,11 @@
 import { useState } from 'react';
-import { RefreshControl, ScrollView, Text, View } from 'react-native';
+import { Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
+
+import { Ionicons } from '@expo/vector-icons';
 
 import { Screen, useDockClearance } from '@/components/ui/screen';
+import { CompanySwitcherSheet } from '@/features/companies/company-switcher';
+import { useCompanySummary } from '@/features/companies/use-company-switch';
 import { Placeholder } from '@/components/ui/placeholder';
 import { useT } from '@/lib/i18n';
 import { useAuthStore } from '@/features/auth/store';
@@ -40,6 +44,12 @@ export default function DashboardScreen() {
   // Only a pull drives the spinner. The visitor list polls every 30s, and
   // bound to `isRefetching` that poll shows the control on its own.
   const [pulling, setPulling] = useState(false);
+  // The second way into the switcher. Settings is the one that is always
+  // there; this is the one somebody reaches for, because the company name
+  // under the greeting is where they were already looking to find out which
+  // company they are in.
+  const { hasOthers, elsewhereWaiting } = useCompanySummary();
+  const [switcherOpen, setSwitcherOpen] = useState(false);
   const onRefresh = async () => {
     setPulling(true);
     try {
@@ -89,11 +99,29 @@ export default function DashboardScreen() {
               user has no company of their own (assembler crew, platform staff)
               does the branded account name stand in. */}
           {user?.company?.name ? (
-            <Text className="mt-0.5 text-sm text-muted-foreground">{user.company.name}</Text>
+            <Pressable
+              onPress={hasOthers ? () => setSwitcherOpen(true) : undefined}
+              disabled={!hasOthers}
+              accessibilityRole={hasOthers ? 'button' : undefined}
+              accessibilityLabel={hasOthers ? t('companies.title') : undefined}
+              // A hit area worth the name: the line itself is 17pt tall.
+              hitSlop={hasOthers ? { top: 8, bottom: 8, left: 8, right: 16 } : undefined}
+              className="mt-0.5 flex-row items-center gap-1.5 self-start"
+            >
+              <Text className="text-sm text-muted-foreground">{user.company.name}</Text>
+              {hasOthers ? (
+                <Ionicons name="swap-horizontal" size={14} color={c.mutedForeground} />
+              ) : null}
+              {elsewhereWaiting > 0 ? (
+                <View className="h-2 w-2 rounded-full" style={{ backgroundColor: c.destructive }} />
+              ) : null}
+            </Pressable>
           ) : account?.branded ? (
             <Text className="mt-0.5 text-sm text-muted-foreground">{account.name}</Text>
           ) : null}
         </View>
+
+        <CompanySwitcherSheet visible={switcherOpen} onClose={() => setSwitcherOpen(false)} />
 
         {dashboard.isError ? (
           <Text className="mb-4 text-sm text-destructive">{t('common.error')}</Text>

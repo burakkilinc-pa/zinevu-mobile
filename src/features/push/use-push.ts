@@ -7,9 +7,11 @@ import { useRouter } from 'expo-router';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { useAuthStore } from '@/features/auth/store';
+import { performCompanySwitch } from '@/features/companies/use-company-switch';
 import { registerDevice, unregisterDevice } from '@/features/push/push.api';
 import { notifications } from '@/features/push/notifications';
 import { toast } from '@/components/ui/toast';
+import { t } from '@/lib/i18n';
 
 const DEVICE_ID_KEY = 'zinevu.push.device-id';
 
@@ -32,6 +34,15 @@ type PushData = {
     | 'chat.opened'
     | 'planning.changed'
     | 'support.reply';
+  /**
+   * Which company this is about. A person who works for two carries one phone
+   * and it rings for both, so a tap may have to move the app across before it
+   * opens anything — see `open()`.
+   */
+  membership_id?: number | string;
+  account_id?: number | string;
+  /** That company's name, for the line that says where we just went. */
+  company?: string;
   /** Chat conversation uuid. */
   conversation_id?: string;
   /**
@@ -196,10 +207,41 @@ export function usePush(): void {
       }
     }
 
+    /**
+     * A notification from the OTHER company.
+     *
+     * The phone rings for every company its owner works for, so the thing
+     * tapped may not live in the company the app is currently in — and a chat
+     * uuid from over there resolves to nothing here. The tap is the intent, so
+     * it switches rather than asking; a toast says where we went, because
+     * moving somebody's whole app without a word is how they end up replying
+     * as the wrong company.
+     *
+     * Nothing to switch to (single company, or already there) costs nothing:
+     * the ids match and it opens straight away.
+     */
+    async function openMaybeElsewhere(data: PushData) {
+      const target = Number(data.membership_id ?? 0);
+      const here = Number(useAuthStore.getState().user?.id ?? 0);
+
+      if (target > 0 && here > 0 && target !== here) {
+        const moved = await performCompanySwitch(target);
+
+        if (!moved) {
+          toast.error(t('companies.switchFailed'));
+          return; // stay where we are rather than open the wrong company's id
+        }
+
+        toast.success(t('companies.switchedFromPush', { name: data.company ?? '' }));
+      }
+
+      open(data);
+    }
+
     function handleResponse(response: {
       notification: { request: { content: { data?: unknown } } };
     }) {
-      open((response.notification.request.content.data ?? {}) as PushData);
+      void openMaybeElsewhere((response.notification.request.content.data ?? {}) as PushData);
     }
 
     const subscription = api.addNotificationResponseReceivedListener(
