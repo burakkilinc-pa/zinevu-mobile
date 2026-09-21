@@ -1,8 +1,18 @@
 import Echo from 'laravel-echo';
-import Pusher from 'pusher-js/react-native';
+import * as PusherModule from 'pusher-js/react-native';
 
 import { config } from '@/lib/config';
 import { getToken } from '@/lib/storage/secure-token';
+
+/**
+ * pusher-js's React Native build ends in `module.exports.Pusher = …` while its
+ * own typings declare a default export. The two disagree, the runtime is the
+ * one that has to be right, and importing the default gets you a plain object
+ * that Echo then tries to call with `new` ("Object cannot be used as a
+ * constructor" — silent, because a broken socket only shows up as a chat that
+ * never updates).
+ */
+const Pusher = (PusherModule as unknown as { Pusher: typeof PusherModule.default }).Pusher;
 
 /**
  * The app's one connection to Reverb (Laravel's websocket server).
