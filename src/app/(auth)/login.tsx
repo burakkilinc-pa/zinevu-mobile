@@ -44,6 +44,12 @@ const RESEND_AFTER = 30; // seconds before "Resend" re-enables
 const MARK_H = 44; // brand Z height on the lime tile
 const MARK_W = Math.round((MARK_H * 164) / 224); // the mark's own 164×224 aspect
 
+// Apple draws its button natively, so it cannot inherit our classes: these two
+// are the `h-12` and `rounded-md` of components/ui/button.tsx, written out so
+// the Apple button lines up with the Google one above it. Keep them in step.
+const SOCIAL_HEIGHT = 48;
+const SOCIAL_RADIUS = 18;
+
 export default function LoginScreen() {
   const t = useT();
   const c = useColors();
@@ -319,24 +325,37 @@ export default function LoginScreen() {
                           loading={social === 'google'}
                           disabled={loading || social !== null}
                           onPress={() => handleSocial('google')}
+                          // The edge Apple draws around its own white button,
+                          // so the two provider rows carry the same line
+                          // rather than one black and one hairline. The press
+                          // has to move the face instead: the edge is already
+                          // as dark as the variant's pressed state.
+                          className="border-foreground active:bg-muted"
                         />
                       ) : null}
 
                       {/* Apple's own button, not our outline one: the App Store
                           guidelines pin its wording and appearance, and a
-                          look-alike is a known review rejection. */}
+                          look-alike is a known review rejection. What they do
+                          allow is the corner radius and the choice between
+                          their three styles — so it is squared to SOCIAL_RADIUS
+                          and takes the white-on-outline face, which is the one
+                          that matches the Google button above it on paper. On a
+                          dark ground Apple asks for the plain white face.
+                          CONTINUE, not SIGN_IN: our Google button says
+                          "Continue with…" and Apple localises its own label. */}
                       {showApple ? (
                         <AppleAuthentication.AppleAuthenticationButton
                           buttonType={
-                            AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN
+                            AppleAuthentication.AppleAuthenticationButtonType.CONTINUE
                           }
                           buttonStyle={
                             scheme === 'dark'
                               ? AppleAuthentication.AppleAuthenticationButtonStyle.WHITE
-                              : AppleAuthentication.AppleAuthenticationButtonStyle.BLACK
+                              : AppleAuthentication.AppleAuthenticationButtonStyle.WHITE_OUTLINE
                           }
-                          cornerRadius={6}
-                          style={{ height: 48 }}
+                          cornerRadius={SOCIAL_RADIUS}
+                          style={{ height: SOCIAL_HEIGHT }}
                           onPress={() => handleSocial('apple')}
                         />
                       ) : null}
