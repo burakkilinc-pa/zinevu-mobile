@@ -221,3 +221,43 @@ export async function claimThread(uuid: string): Promise<void> {
 export async function closeThread(uuid: string): Promise<void> {
   await request(`/portal/dealer/chat/conversations/${uuid}/close`, { method: 'POST' });
 }
+
+/**
+ * Whether anyone is reachable, and whether it is US.
+ *
+ * Two different facts in one read, and the screen needs both: `online` is the
+ * whole dealer (a colleague at the desk counts), `availableUntil` is this
+ * person's own standing claim, which is what the switch reflects. The phone
+ * cannot be the record of its own state — it gets closed, and the claim
+ * expires on the server without asking it.
+ */
+export type ChatAvailability = { online: boolean; availableUntil: string | null };
+
+type RawAvailability = { online?: boolean; available_until?: string | null };
+
+function mapAvailability(raw: RawAvailability | null | undefined): ChatAvailability {
+  return {
+    online: !!raw?.online,
+    availableUntil: raw?.available_until ?? null,
+  };
+}
+
+export async function fetchChatAvailability(): Promise<ChatAvailability> {
+  return mapAvailability(await request<RawAvailability>('/portal/dealer/chat/meta'));
+}
+
+/**
+ * Say it, or take it back.
+ *
+ * The server decides how long a claim lasts (hours, bounded), so nothing here
+ * sends a duration: a phone that picked its own would be making a promise the
+ * escalation ladder is the judge of.
+ */
+export async function setChatAvailability(available: boolean): Promise<ChatAvailability> {
+  return mapAvailability(
+    await request<RawAvailability>('/portal/dealer/chat/availability', {
+      method: 'POST',
+      body: { available },
+    })
+  );
+}

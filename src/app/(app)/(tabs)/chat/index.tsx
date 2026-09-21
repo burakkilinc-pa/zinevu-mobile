@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ActivityIndicator, Pressable, RefreshControl, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, RefreshControl, Switch, Text, View } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,10 +8,10 @@ import { Screen, useDockClearance } from '@/components/ui/screen';
 import { Placeholder } from '@/components/ui/placeholder';
 import { useColors } from '@/lib/theme';
 import { useT, type MessageKey } from '@/lib/i18n';
-import { relativeTime } from '@/lib/time';
+import { clockTime, relativeTime } from '@/lib/time';
 import { useAuthStore } from '@/features/auth/store';
 import { hasPermission, PERMISSIONS } from '@/lib/auth/roles';
-import { useChatCustomers } from '@/features/chat/hooks/use-chat';
+import { useChatAvailability, useChatCustomers } from '@/features/chat/hooks/use-chat';
 import type { ChatCustomer } from '@/features/chat/types';
 import type { ChatFilter } from '@/features/chat/api/chat.api';
 
@@ -69,6 +69,8 @@ export default function ChatListScreen() {
       <View className="px-5 pb-2 pt-1">
         <Text className="text-2xl font-bold text-foreground">{t('tabs.chat')}</Text>
       </View>
+
+      <AvailabilityRow />
 
       <View className="flex-row gap-2 px-5 pb-2">
         {FILTERS.map((f) => {
@@ -133,6 +135,52 @@ export default function ChatListScreen() {
         }
       />
     </Screen>
+  );
+}
+
+/**
+ * "I am reachable", and what the visitor is being told because of it.
+ *
+ * This is the one control on the phone that changes what a stranger on the
+ * dealer's website sees, so it says so in as many words rather than leaving
+ * a switch to be interpreted. Three states worth telling apart:
+ *
+ *   - my claim is standing → the visitor sees "online", until when,
+ *   - somebody ELSE is at the desk → the visitor sees "online" anyway, and
+ *     turning my switch on would add nothing,
+ *   - nobody → the visitor is told we are away and asked to leave details.
+ *
+ * Office hours still have the last word on all three: outside them the widget
+ * says offline whatever this switch is doing, which is the honest answer and
+ * the reason the claim may be held for hours without lying at 3am.
+ */
+function AvailabilityRow() {
+  const t = useT();
+  const c = useColors();
+  const { online, availableUntil, allowed, isLoading, setAvailable, isSaving } =
+    useChatAvailability();
+
+  if (!allowed || isLoading) return null;
+
+  const mine = !!availableUntil;
+  const subtitle = mine
+    ? t('chat.available.until', { time: clockTime(availableUntil) })
+    : online
+      ? t('chat.available.colleague')
+      : t('chat.available.off');
+
+  return (
+    <View className="mx-5 mb-2 flex-row items-center gap-3 rounded-md border border-border bg-card px-4 py-3">
+      <View
+        className="h-2.5 w-2.5 rounded-full"
+        style={{ backgroundColor: online ? c.success ?? '#22c55e' : c.mutedForeground }}
+      />
+      <View className="flex-1">
+        <Text className="text-base font-medium text-foreground">{t('chat.available.title')}</Text>
+        <Text className="text-sm text-muted-foreground">{subtitle}</Text>
+      </View>
+      <Switch value={mine} onValueChange={setAvailable} disabled={isSaving} />
+    </View>
   );
 }
 

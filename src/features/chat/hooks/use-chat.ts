@@ -2,11 +2,14 @@ import { useCallback, useEffect, useRef } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import {
+  fetchChatAvailability,
   fetchChatCustomers,
   fetchThread,
   fetchThreadCustomer,
   sendChatMessage,
   sendTypingSignal,
+  setChatAvailability,
+  type ChatAvailability,
   type ChatFilter,
 } from '@/features/chat/api/chat.api';
 import { useChatRealtimeConnected } from '@/features/chat/realtime-state';
@@ -16,6 +19,7 @@ import { hasPermission, PERMISSIONS } from '@/lib/auth/roles';
 import { uuidv4 } from '@/lib/uuid';
 
 export const chatKeys = {
+  availability: () => ['chat', 'availability'] as const,
   customers: (filter: ChatFilter) => ['chat', 'customers', filter] as const,
   thread: (uuid: string) => ['chat', 'thread', uuid] as const,
   threadCustomer: (uuid: string) => ['chat', 'thread-customer', uuid] as const,
@@ -176,6 +180,66 @@ export function useSendMessage(uuid: string) {
       void queryClient.invalidateQueries({ queryKey: ['chat', 'customers'] });
     },
   });
+}
+
+/**
+ * "I am reachable" — the phone's answer to a presence model built for a
+ * browser tab.
+ *
+ * The switch moves optimistically because it is a switch: waiting out a round
+ * trip makes it feel broken, and the worst case is that it springs back. It is
+ * also polled slowly, for the two things this phone cannot see happen — the
+ * claim expiring on its own, and the escalation ladder withdrawing it because
+ * a visitor went unanswered long enough to prove it was not true.
+ */
+export function useChatAvailability() {
+  const user = useAuthStore((s) => s.user);
+  const queryClient = useQueryClient();
+  const allowed = hasPermission(user, PERMISSIONS.chatView);
+
+  const query = useQuery({
+    queryKey: chatKeys.availability(),
+    queryFn: fetchChatAvailability,
+    enabled: allowed,
+    refetchInterval: 60_000,
+    staleTime: 30_000,
+  });
+
+  const mutation = useMutation({
+    mutationFn: (available: boolean) => setChatAvailability(available),
+
+    onMutate: async (available) => {
+      await queryClient.cancelQueries({ queryKey: chatKeys.availability() });
+      const previous = queryClient.getQueryData<ChatAvailability>(chatKeys.availability());
+
+      queryClient.setQueryData<ChatAvailability>(chatKeys.availability(), {
+        // Switching myself ON means somebody is online. Switching myself off
+        // does NOT mean nobody is — a colleague at the desk still counts, and
+        // only the answer coming back knows that.
+        online: available || (previous?.online ?? false),
+        availableUntil: available ? (previous?.availableUntil ?? null) : null,
+      });
+
+      return { previous };
+    },
+
+    onError: (_error, _available, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(chatKeys.availability(), context.previous);
+      }
+    },
+
+    onSuccess: (data) => queryClient.setQueryData(chatKeys.availability(), data),
+  });
+
+  return {
+    online: query.data?.online ?? false,
+    availableUntil: query.data?.availableUntil ?? null,
+    isLoading: query.isLoading,
+    allowed,
+    setAvailable: (value: boolean) => mutation.mutate(value),
+    isSaving: mutation.isPending,
+  };
 }
 
 export { uuidv4 };
