@@ -24,11 +24,37 @@
   "chat.send": { "en": "Send", "nl": "Versturen", "de": "Senden", "fr": "Envoyer", "tr": "Gönder" },
   "chat.readOnly": { "en": "You can read this conversation but not reply.", "nl": "Je kunt dit gesprek lezen maar niet beantwoorden.", "de": "Du kannst dieses Gespräch lesen, aber nicht beantworten.", "fr": "Vous pouvez lire cette conversation mais pas y répondre.", "tr": "Bu sohbeti okuyabilirsin ama cevaplayamazsın." },
 
-  "chat.available.title": {"en": "I'm reachable", "nl": "Ik ben bereikbaar", "de": "Ich bin erreichbar", "fr": "Je suis joignable", "tr": "Ulaşılabilirim"},
-  "chat.available.until": {"en": "Visitors see “online” until {time}.", "nl": "Bezoekers zien “online” tot {time}.", "de": "Besucher sehen „online“ bis {time}.", "fr": "Les visiteurs voient « en ligne » jusqu’à {time}.", "tr": "Ziyaretçiler {time} saatine kadar “çevrimiçi” görüyor."},
-  "chat.available.colleague": {"en": "A colleague is at the desk, so visitors see “online”.", "nl": "Een collega staat aan de desk, dus bezoekers zien “online”.", "de": "Ein Kollege ist am Platz, also sehen Besucher „online“.", "fr": "Un collègue est au poste, les visiteurs voient donc « en ligne ».", "tr": "Masada bir ekip arkadaşı var, bu yüzden ziyaretçiler “çevrimiçi” görüyor."},
-  "chat.available.off": {"en": "Visitors are told we’re away and asked to leave their details.", "nl": "Bezoekers zien dat we er niet zijn en wordt gevraagd hun gegevens achter te laten.", "de": "Besuchern wird gesagt, dass wir weg sind, und sie hinterlassen ihre Daten.", "fr": "Les visiteurs voient que nous sommes absents et laissent leurs coordonnées.", "tr": "Ziyaretçiler burada olmadığımızı görür ve bilgilerini bırakması istenir."},
+  "chat.available.title": { "en": "I'm reachable", "nl": "Ik ben bereikbaar", "de": "Ich bin erreichbar", "fr": "Je suis joignable", "tr": "Ulaşılabilirim" },
+  "chat.available.until": { "en": "Visitors see “online” until {time}.", "nl": "Bezoekers zien “online” tot {time}.", "de": "Besucher sehen „online“ bis {time}.", "fr": "Les visiteurs voient « en ligne » jusqu’à {time}.", "tr": "Ziyaretçiler {time} saatine kadar “çevrimiçi” görüyor." },
+  "chat.available.colleague": { "en": "A colleague is at the desk, so visitors see “online”.", "nl": "Een collega staat aan de desk, dus bezoekers zien “online”.", "de": "Ein Kollege ist am Platz, also sehen Besucher „online“.", "fr": "Un collègue est au poste, les visiteurs voient donc « en ligne ».", "tr": "Masada bir ekip arkadaşı var, bu yüzden ziyaretçiler “çevrimiçi” görüyor." },
+  "chat.available.off": { "en": "Visitors are told we’re away and asked to leave their details.", "nl": "Bezoekers zien dat we er niet zijn en wordt gevraagd hun gegevens achter te laten.", "de": "Besuchern wird gesagt, dass wir weg sind, und sie hinterlassen ihre Daten.", "fr": "Les visiteurs voient que nous sommes absents et laissent leurs coordonnées.", "tr": "Ziyaretçiler burada olmadığımızı görür ve bilgilerini bırakması istenir." },
 
   "chat.noAccess.title": { "en": "No access to chat", "nl": "Geen toegang tot chat", "de": "Kein Zugriff auf den Chat", "fr": "Pas d'accès au chat", "tr": "Sohbete erişim yok" },
-  "chat.noAccess.body": { "en": "Your account doesn't have permission to see conversations. Ask an admin in your team.", "nl": "Je account heeft geen rechten om gesprekken te zien. Vraag een beheerder in je team.", "de": "Dein Konto darf keine Gespräche sehen. Frag eine Administratorin in deinem Team.", "fr": "Votre compte n'a pas l'autorisation de voir les conversations. Demandez à un administrateur de votre équipe.", "tr": "Hesabının sohbetleri görme yetkisi yok. Ekibindeki bir yöneticiye sor." }
+  "chat.noAccess.body": { "en": "Your account doesn't have permission to see conversations. Ask an admin in your team.", "nl": "Je account heeft geen rechten om gesprekken te zien. Vraag een beheerder in je team.", "de": "Dein Konto darf keine Gespräche sehen. Frag eine Administratorin in deinem Team.", "fr": "Votre compte n'a pas l'autorisation de voir les conversations. Demandez à un administrateur de votre équipe.", "tr": "Hesabının sohbetleri görme yetkisi yok. Ekibindeki bir yöneticiye sor." },
+
+  "chat.onPage": { "en": "On the page", "nl": "Op de pagina", "de": "Auf der Seite", "fr": "Sur la page", "tr": "Sayfada" },
+  "chat.leftPage": { "en": "Left the page", "nl": "Pagina verlaten", "de": "Seite verlassen", "fr": "A quitté la page", "tr": "Sayfadan ayrıldı" },
+
+  "chat.surface.form": { "en": "Form", "nl": "Formulier", "de": "Formular", "fr": "Formulaire", "tr": "Form" },
+  "chat.surface.3d": { "en": "3D configurator", "nl": "3D-configurator", "de": "3D-Konfigurator", "fr": "Configurateur 3D", "tr": "3D yapılandırıcı" },
+  "chat.surface.site": { "en": "Website", "nl": "Website", "de": "Website", "fr": "Site web", "tr": "Web sitesi" },
+  "chat.surface.offer": { "en": "Offer page", "nl": "Offertepagina", "de": "Angebotsseite", "fr": "Page du devis", "tr": "Teklif sayfası" },
+
+  "chat.header.page": { "en": "Page they are on", "nl": "Pagina waar ze zijn", "de": "Seite, auf der sie sind", "fr": "Page où ils se trouvent", "tr": "Bulunduğu sayfa" },
+  "chat.header.step": { "en": "Step", "nl": "Stap", "de": "Schritt", "fr": "Étape", "tr": "Adım" },
+  "chat.header.contact": { "en": "Contact", "nl": "Contact", "de": "Kontakt", "fr": "Contact", "tr": "İletişim" },
+  "chat.header.device": { "en": "Device", "nl": "Apparaat", "de": "Gerät", "fr": "Appareil", "tr": "Cihaz" },
+  "chat.header.firstSeen": { "en": "First seen", "nl": "Eerst gezien", "de": "Zuerst gesehen", "fr": "Vu pour la première fois", "tr": "İlk görülme" },
+
+  "chat.receipt.sent": { "en": "Sent", "nl": "Verstuurd", "de": "Gesendet", "fr": "Envoyé", "tr": "Gönderildi" },
+  "chat.receipt.read": { "en": "Read", "nl": "Gelezen", "de": "Gelesen", "fr": "Lu", "tr": "Okundu" },
+
+  "chat.attach.title": { "en": "Add a photo", "nl": "Foto toevoegen", "de": "Foto hinzufügen", "fr": "Ajouter une photo", "tr": "Fotoğraf ekle" },
+  "chat.attach.remove": { "en": "Remove photo", "nl": "Foto verwijderen", "de": "Foto entfernen", "fr": "Retirer la photo", "tr": "Fotoğrafı kaldır" },
+  "chat.attach.failed": { "en": "The photo could not be added.", "nl": "De foto kon niet worden toegevoegd.", "de": "Das Foto konnte nicht hinzugefügt werden.", "fr": "La photo n’a pas pu être ajoutée.", "tr": "Fotoğraf eklenemedi." },
+  "chat.sendFailed": { "en": "The message was not sent.", "nl": "Het bericht is niet verstuurd.", "de": "Die Nachricht wurde nicht gesendet.", "fr": "Le message n’a pas été envoyé.", "tr": "Mesaj gönderilemedi." },
+
+  "chat.quickReplies.title": { "en": "Quick replies", "nl": "Snelle antwoorden", "de": "Schnellantworten", "fr": "Réponses rapides", "tr": "Hazır cevaplar" },
+  "chat.quickReplies.subtitle": { "en": "Tap one to put it in the message — you can still edit it.", "nl": "Tik erop om het in het bericht te zetten — je kunt het nog aanpassen.", "de": "Antippen, um sie in die Nachricht zu setzen — du kannst sie noch ändern.", "fr": "Touchez-en une pour l’insérer dans le message — vous pouvez encore la modifier.", "tr": "Birine dokun, mesaja eklensin — yine de düzenleyebilirsin." },
+  "chat.quickReplies.empty": { "en": "No quick replies yet. Write them in the portal.", "nl": "Nog geen snelle antwoorden. Schrijf ze in de portal.", "de": "Noch keine Schnellantworten. Schreib sie im Portal.", "fr": "Pas encore de réponses rapides. Écrivez-les dans le portail.", "tr": "Henüz hazır cevap yok. Portalden yazabilirsin." }
 }

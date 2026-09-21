@@ -12,6 +12,7 @@ import { clockTime, relativeTime } from '@/lib/time';
 import { useAuthStore } from '@/features/auth/store';
 import { hasPermission, PERMISSIONS } from '@/lib/auth/roles';
 import { useChatAvailability, useChatCustomers } from '@/features/chat/hooks/use-chat';
+import { surfaceLabel } from '@/features/chat/components/customer-header';
 import type { ChatCustomer } from '@/features/chat/types';
 import type { ChatFilter } from '@/features/chat/api/chat.api';
 
@@ -160,7 +161,14 @@ function AvailabilityRow() {
   const { online, availableUntil, allowed, isLoading, setAvailable, isSaving } =
     useChatAvailability();
 
-  if (!allowed || isLoading) return null;
+  if (!allowed) return null;
+
+  // Holds its own height while the first read is in flight. Returning null
+  // meant the card dropped in a moment after the list had drawn and shoved
+  // every row down the screen — the inbox visibly jumped on every open.
+  if (isLoading) {
+    return <View className="mx-5 mb-2 h-[62px] rounded-md border border-border bg-card" />;
+  }
 
   const mine = !!availableUntil;
   const subtitle = mine
@@ -197,13 +205,24 @@ function CustomerRow({ person, onPress }: { person: ChatCustomer; onPress: () =>
       accessibilityRole="button"
       className="flex-row items-center gap-3 border-b border-border px-5 py-3.5 active:bg-muted"
     >
-      <View
-        className="h-11 w-11 items-center justify-center rounded-full"
-        style={{ backgroundColor: c.muted }}
-      >
-        <Text className="text-base font-semibold text-foreground">
-          {name.charAt(0).toUpperCase()}
-        </Text>
+      <View>
+        <View
+          className="h-11 w-11 items-center justify-center rounded-full"
+          style={{ backgroundColor: c.muted }}
+        >
+          <Text className="text-base font-semibold text-foreground">
+            {name.charAt(0).toUpperCase()}
+          </Text>
+        </View>
+        {/* Still on the site. It decides whether answering in the next minute
+            reaches them or lands in an inbox, and the desk has shown it in
+            its own list from the start. */}
+        {person.present ? (
+          <View
+            className="absolute right-0 bottom-0 h-3 w-3 rounded-full border-2"
+            style={{ backgroundColor: c.success ?? '#22c55e', borderColor: c.background }}
+          />
+        ) : null}
       </View>
 
       <View className="flex-1 gap-0.5">
@@ -224,9 +243,13 @@ function CustomerRow({ person, onPress }: { person: ChatCustomer; onPress: () =>
           {latest?.preview || t('chat.noMessages')}
         </Text>
 
-        {/* What makes this row worth grouping: how many conversations, and how
-            many quotes are on the table. */}
+        {/* Where the question came from, plus what makes this row worth
+            grouping: how many conversations, how many quotes are on the
+            table. */}
         <View className="mt-0.5 flex-row items-center gap-3">
+          {latest?.surface ? (
+            <Badge icon="pricetag-outline" label={surfaceLabel(t, latest.surface)} />
+          ) : null}
           {person.conversations.length > 1 ? (
             <Badge
               icon="chatbubbles-outline"

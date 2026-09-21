@@ -16,7 +16,7 @@ import { hasPermission, PERMISSIONS } from '@/lib/auth/roles';
 import { chatKeys } from '@/features/chat/hooks/use-chat';
 import { setRealtimeConnected, setVisitorTyping } from '@/features/chat/realtime-state';
 import { mapMessage, type RawMessage } from '@/features/chat/api/chat.api';
-import type { ChatMessage } from '@/features/chat/types';
+import type { ChatMessage, ChatThreadView } from '@/features/chat/types';
 
 /**
  * Live chat over the websocket.
@@ -65,7 +65,33 @@ type MessagePayload = {
 
 type ConversationPayload = {
   conversation_id?: string;
+  /** The cursor that turns our ticks green — see markReadUpTo. */
+  visitor_last_read_at?: string | null;
 };
+
+/**
+ * Stamp `readAt` on our own messages sent before the visitor last read the
+ * thread.
+ *
+ * The event carries a cursor rather than a list of ids, which is the right
+ * shape on the wire and means the fold happens here. Nothing is ever
+ * un-read: a message that already carries the server's timestamp keeps it.
+ */
+function markReadUpTo(messages: ChatMessage[], readAtIso: string): ChatMessage[] {
+  const cursor = new Date(readAtIso).getTime();
+  if (!Number.isFinite(cursor)) return messages;
+
+  let changed = false;
+  const next = messages.map((message) => {
+    if (message.authorType !== 'agent' || message.readAt) return message;
+    const sentAt = new Date(message.createdAt ?? '').getTime();
+    if (Number.isFinite(sentAt) && sentAt > cursor) return message;
+    changed = true;
+    return { ...message, readAt: readAtIso };
+  });
+
+  return changed ? next : messages;
+}
 
 type TypingPayload = {
   conversation_id?: string;
@@ -133,8 +159,8 @@ export function useChatRealtime(): void {
 
         // Patch the open thread in place — that is where the wait is felt.
         // A thread nobody has opened has no cache to patch and needs none.
-        queryClient.setQueryData<ChatMessage[]>(chatKeys.thread(uuid), (old) =>
-          old ? mergeMessage(old, incoming) : old
+        queryClient.setQueryData<ChatThreadView>(chatKeys.thread(uuid), (old) =>
+          old ? { ...old, messages: mergeMessage(old.messages, incoming) } : old
         );
 
         // The inbox is grouped by person, re-sorted and re-badged server-side;
@@ -149,11 +175,22 @@ export function useChatRealtime(): void {
         // Claimed, closed, renamed, read by a colleague — all of it changes
         // the row, none of it is worth its own handler.
         void queryClient.invalidateQueries({ queryKey: ['chat', 'customers'] });
-        if (payload.conversation_id) {
-          void queryClient.invalidateQueries({
-            queryKey: chatKeys.threadCustomer(payload.conversation_id),
-          });
-        }
+        if (!payload.conversation_id) return;
+
+        void queryClient.invalidateQueries({
+          queryKey: chatKeys.threadCustomer(payload.conversation_id),
+        });
+
+        // The visitor read what we sent. Patched rather than refetched: this
+        // is the one event that changes nothing but a tick, and the thread
+        // the dealer is looking at must not blink for it.
+        const readAt = payload.visitor_last_read_at;
+        if (!readAt) return;
+
+        queryClient.setQueryData<ChatThreadView>(
+          chatKeys.thread(payload.conversation_id),
+          (old) => (old ? { ...old, messages: markReadUpTo(old.messages, readAt) } : old)
+        );
       })
       .listen('.chat.typing', (payload: TypingPayload) => {
         // The agent side of this event goes to the visitor's own channel, so

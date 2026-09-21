@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   fetchChatAvailability,
   fetchChatCustomers,
+  fetchQuickReplies,
   fetchThread,
   fetchThreadCustomer,
   sendChatMessage,
@@ -13,7 +14,8 @@ import {
   type ChatFilter,
 } from '@/features/chat/api/chat.api';
 import { useChatRealtimeConnected } from '@/features/chat/realtime-state';
-import type { ChatMessage } from '@/features/chat/types';
+import type { ChatThreadView } from '@/features/chat/types';
+import type { CapturedFile } from '@/lib/media';
 import { useAuthStore } from '@/features/auth/store';
 import { hasPermission, PERMISSIONS } from '@/lib/auth/roles';
 import { uuidv4 } from '@/lib/uuid';
@@ -23,6 +25,7 @@ export const chatKeys = {
   customers: (filter: ChatFilter) => ['chat', 'customers', filter] as const,
   thread: (uuid: string) => ['chat', 'thread', uuid] as const,
   threadCustomer: (uuid: string) => ['chat', 'thread-customer', uuid] as const,
+  quickReplies: (locale: string | null) => ['chat', 'quick-replies', locale] as const,
 };
 
 /**
@@ -138,31 +141,51 @@ export function useThreadCustomer(uuid: string) {
  * `client_message_id` is what makes that safe — the backend dedupes on it, so
  * a retry of a request that actually succeeded cannot double-post.
  */
+type SendVars = {
+  body: string;
+  clientMessageId: string;
+  files?: CapturedFile[];
+  quickReplyId?: number | null;
+};
+
 export function useSendMessage(uuid: string) {
   const queryClient = useQueryClient();
   const user = useAuthStore((s) => s.user);
 
   return useMutation({
-    mutationFn: ({ body, clientMessageId }: { body: string; clientMessageId: string }) =>
-      sendChatMessage(uuid, body, clientMessageId),
+    mutationFn: ({ body, clientMessageId, files, quickReplyId }: SendVars) =>
+      sendChatMessage(uuid, body, clientMessageId, files ?? [], quickReplyId ?? null),
 
-    onMutate: async ({ body, clientMessageId }) => {
+    onMutate: async ({ body, clientMessageId, files }) => {
       await queryClient.cancelQueries({ queryKey: chatKeys.thread(uuid) });
-      const previous = queryClient.getQueryData<ChatMessage[]>(chatKeys.thread(uuid));
+      const previous = queryClient.getQueryData<ChatThreadView>(chatKeys.thread(uuid));
 
-      queryClient.setQueryData<ChatMessage[]>(chatKeys.thread(uuid), (old) => [
-        ...(old ?? []),
-        {
-          id: `pending:${clientMessageId}`,
-          clientMessageId,
-          authorType: 'agent',
-          authorName: user?.name ?? null,
-          body,
-          attachments: [],
-          createdAt: new Date().toISOString(),
-          pending: true,
-        },
-      ]);
+      queryClient.setQueryData<ChatThreadView>(chatKeys.thread(uuid), (old) => ({
+        detail: old?.detail ?? null,
+        messages: [
+          ...(old?.messages ?? []),
+          {
+            id: `pending:${clientMessageId}`,
+            clientMessageId,
+            authorType: 'agent',
+            authorName: user?.name ?? null,
+            body,
+            // The local file uri renders straight away: a photo that only
+            // appears once the upload lands makes a slow connection look
+            // like a failed send, and gets the photo sent twice.
+            attachments: (files ?? []).map((file, index) => ({
+              id: `pending:${clientMessageId}:${index}`,
+              fileName: file.name,
+              url: file.uri,
+              thumbUrl: null,
+              isImage: file.type.startsWith('image/'),
+            })),
+            readAt: null,
+            createdAt: new Date().toISOString(),
+            pending: true,
+          },
+        ],
+      }));
 
       return { previous };
     },
@@ -178,7 +201,26 @@ export function useSendMessage(uuid: string) {
     onSettled: () => {
       void queryClient.invalidateQueries({ queryKey: chatKeys.thread(uuid) });
       void queryClient.invalidateQueries({ queryKey: ['chat', 'customers'] });
+      // The picker orders itself by use; one send changes that order.
+      void queryClient.invalidateQueries({ queryKey: ['chat', 'quick-replies'] });
     },
+  });
+}
+
+/**
+ * The canned answers for the language a conversation is being held in.
+ *
+ * Kept fresh for five minutes: they are written on the web, on a screen
+ * nobody has open while they are answering from a phone.
+ */
+export function useQuickReplies(locale: string | null) {
+  const user = useAuthStore((s) => s.user);
+
+  return useQuery({
+    queryKey: chatKeys.quickReplies(locale),
+    queryFn: () => fetchQuickReplies(locale),
+    enabled: hasPermission(user, PERMISSIONS.chatReply),
+    staleTime: 5 * 60_000,
   });
 }
 

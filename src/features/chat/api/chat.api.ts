@@ -1,12 +1,16 @@
-import { request } from '@/lib/api/client';
+import { request, uploadMultipart } from '@/lib/api/client';
 import type {
   ChatAttachment,
+  ChatConversationDetail,
   ChatCustomer,
   ChatMessage,
   ChatOffer,
+  ChatQuickReply,
   ChatStatus,
   ChatThread,
+  ChatThreadView,
 } from '@/features/chat/types';
+import type { CapturedFile } from '@/lib/media';
 
 type RawThread = {
   uuid?: string;
@@ -18,6 +22,14 @@ type RawThread = {
   unread?: number;
   awaiting_reply?: boolean;
   assigned_to?: string | null;
+  present?: boolean;
+  city?: string | null;
+  country?: string | null;
+  device_type?: string | null;
+  locale?: string | null;
+  current_url?: string | null;
+  current_step_key?: string | null;
+  first_seen_at?: string | null;
 };
 
 type RawOffer = {
@@ -39,6 +51,7 @@ type RawCustomer = {
   offers?: RawOffer[];
   unread?: number;
   awaiting_reply?: boolean;
+  present?: boolean;
   last_message_at?: string | null;
 };
 
@@ -53,6 +66,14 @@ function mapThread(raw: RawThread): ChatThread {
     unread: Number(raw.unread ?? 0),
     awaitingReply: !!raw.awaiting_reply,
     assignedTo: raw.assigned_to ?? null,
+    present: !!raw.present,
+    city: raw.city ?? null,
+    country: raw.country ?? null,
+    deviceType: raw.device_type ?? null,
+    locale: raw.locale ?? null,
+    currentUrl: raw.current_url ?? null,
+    currentStepKey: raw.current_step_key ?? null,
+    firstSeenAt: raw.first_seen_at ?? null,
   };
 }
 
@@ -79,6 +100,7 @@ function mapCustomer(raw: RawCustomer): ChatCustomer {
     offers: (raw.offers ?? []).map(mapOffer).filter((o) => o.ref !== ''),
     unread: Number(raw.unread ?? 0),
     awaitingReply: !!raw.awaiting_reply,
+    present: !!raw.present,
     lastMessageAt: raw.last_message_at ?? null,
   };
 }
@@ -118,6 +140,7 @@ export type RawMessage = {
   author_name?: string | null;
   body?: string | null;
   attachments?: RawAttachment[];
+  read_at?: string | null;
   created_at?: string | null;
 };
 
@@ -149,44 +172,168 @@ export function mapMessage(raw: RawMessage): ChatMessage {
     authorName: raw.author_name ?? null,
     body: raw.body ?? null,
     attachments: (raw.attachments ?? []).map(mapAttachment).filter((a) => a.url !== ''),
+    readAt: raw.read_at ?? null,
     createdAt: raw.created_at ?? null,
   };
 }
 
+type RawConversation = {
+  id?: string;
+  status?: string;
+  visitor_present?: boolean;
+  visitor?: {
+    name?: string | null;
+    display_name?: string | null;
+    email?: string | null;
+    phone?: string | null;
+    city?: string | null;
+    country?: string | null;
+    device_type?: string | null;
+    locale?: string | null;
+  };
+  context?: {
+    surface?: string | null;
+    current_url?: string | null;
+    landing_url?: string | null;
+    current_step_key?: string | null;
+    device_type?: string | null;
+  };
+  assigned_to?: { name?: string | null } | null;
+  first_seen_at?: string | null;
+  visitor_last_read_at?: string | null;
+  messages?: RawMessage[];
+};
+
+function mapConversation(raw: RawConversation | undefined): ChatConversationDetail | null {
+  if (!raw?.id) return null;
+
+  return {
+    uuid: raw.id,
+    status: (raw.status === 'closed' ? 'closed' : 'open') as ChatStatus,
+    present: !!raw.visitor_present,
+    name: raw.visitor?.name || raw.visitor?.display_name || null,
+    email: raw.visitor?.email ?? null,
+    phone: raw.visitor?.phone ?? null,
+    city: raw.visitor?.city ?? null,
+    country: raw.visitor?.country ?? null,
+    locale: raw.visitor?.locale ?? null,
+    // The device is filed under context on the wire and under the visitor in
+    // the reader's head; take whichever the payload carries.
+    deviceType: raw.context?.device_type ?? raw.visitor?.device_type ?? null,
+    surface: raw.context?.surface ?? null,
+    currentUrl: raw.context?.current_url ?? null,
+    landingUrl: raw.context?.landing_url ?? null,
+    currentStepKey: raw.context?.current_step_key ?? null,
+    firstSeenAt: raw.first_seen_at ?? null,
+    assignedTo: raw.assigned_to?.name ?? null,
+    visitorLastReadAt: raw.visitor_last_read_at ?? null,
+  };
+}
+
 /**
- * A thread's messages.
+ * A thread: its messages AND the context they were asked in.
  *
- * Opening it marks it read server-side — unless `since` is passed, which is the
- * polling path and must not steal the unread badge from a colleague who has
- * not looked yet.
+ * One request for both, because the context is on the same row — a second
+ * call for "which page are they on" would double the cost of the screen that
+ * is opened on every push tap.
+ *
+ * Opening it marks it read server-side — unless `since` is passed, which is
+ * the polling path and must not steal the unread badge from a colleague who
+ * has not looked yet.
  */
-export async function fetchThread(uuid: string): Promise<ChatMessage[]> {
-  const d = await request<{ conversation?: { messages?: RawMessage[] } }>(
+export async function fetchThread(uuid: string): Promise<ChatThreadView> {
+  const d = await request<{ conversation?: RawConversation }>(
     `/portal/dealer/chat/conversations/${uuid}`
   );
 
-  return (d.conversation?.messages ?? []).map(mapMessage);
+  return {
+    messages: (d.conversation?.messages ?? []).map(mapMessage),
+    detail: mapConversation(d.conversation),
+  };
 }
 
 /** Polls for new messages without claiming the thread as read. */
-export async function pollThread(uuid: string, since: string): Promise<ChatMessage[]> {
-  const d = await request<{ conversation?: { messages?: RawMessage[] } }>(
+export async function pollThread(uuid: string, since: string): Promise<ChatThreadView> {
+  const d = await request<{ conversation?: RawConversation }>(
     `/portal/dealer/chat/conversations/${uuid}`,
     { params: { since } }
   );
 
-  return (d.conversation?.messages ?? []).map(mapMessage);
+  return {
+    messages: (d.conversation?.messages ?? []).map(mapMessage),
+    detail: mapConversation(d.conversation),
+  };
 }
 
+/**
+ * Sends a reply, with photos when there are any.
+ *
+ * Two transports for one message: JSON for text, multipart over XHR for
+ * anything with a file on it (Expo's fetch refuses React Native's file part —
+ * see uploadMultipart). The dealer does not get to know which was used; a
+ * photo of the gutter they are being asked about is the most useful thing the
+ * phone can send, and until now it could not send one at all.
+ */
 export async function sendChatMessage(
   uuid: string,
   body: string,
-  clientMessageId: string
-): Promise<void> {
-  await request(`/portal/dealer/chat/conversations/${uuid}/messages`, {
-    method: 'POST',
-    body: { body, client_message_id: clientMessageId },
+  clientMessageId: string,
+  files: CapturedFile[] = [],
+  quickReplyId: number | null = null
+): Promise<ChatMessage | null> {
+  const path = `/portal/dealer/chat/conversations/${uuid}/messages`;
+
+  if (files.length === 0) {
+    const d = await request<{ message?: RawMessage }>(path, {
+      method: 'POST',
+      body: {
+        body,
+        client_message_id: clientMessageId,
+        quick_reply_id: quickReplyId ?? undefined,
+      },
+    });
+    return d.message ? mapMessage(d.message) : null;
+  }
+
+  const form = new FormData();
+  if (body) form.append('body', body);
+  form.append('client_message_id', clientMessageId);
+  if (quickReplyId) form.append('quick_reply_id', String(quickReplyId));
+  for (const file of files) {
+    // React Native's classic file part; XHR streams it from the uri.
+    form.append('attachments[]', file as unknown as Blob);
+  }
+
+  const d = await uploadMultipart<{ message?: RawMessage }>(path, form);
+  return d.message ? mapMessage(d.message) : null;
+}
+
+/**
+ * The team's canned answers, narrowed to the language this conversation is
+ * being held in. Written on the web — the phone picks, it does not curate:
+ * nobody composes the company's standard answer on a phone keyboard between
+ * two montages.
+ */
+export async function fetchQuickReplies(locale?: string | null): Promise<ChatQuickReply[]> {
+  type RawQuickReply = {
+    id?: number;
+    title?: string;
+    body?: string;
+    locale?: string | null;
+  };
+
+  const d = await request<{ quick_replies?: RawQuickReply[] }>('/portal/dealer/chat/quick-replies', {
+    params: locale ? { locale } : undefined,
   });
+
+  return (d.quick_replies ?? [])
+    .filter((raw) => !!raw.id && !!raw.title)
+    .map((raw) => ({
+      id: Number(raw.id),
+      title: String(raw.title),
+      body: String(raw.body ?? ''),
+      locale: raw.locale ?? null,
+    }));
 }
 
 /**
