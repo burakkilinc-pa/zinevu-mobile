@@ -17,6 +17,11 @@ type ButtonProps = PressableProps & {
    * buttons; elsewhere it is drawn plain, in the label's colour.
    */
   icon?: keyof typeof Ionicons.glyphMap;
+  /**
+   * Overrides the label and icon colour. For the rare face a variant cannot
+   * describe — a button borrowing a provider's own colours, say.
+   */
+  contentColor?: string;
   className?: string;
 };
 
@@ -59,6 +64,7 @@ export function Button({
   variant = 'primary',
   loading = false,
   icon,
+  contentColor: contentColorProp,
   disabled,
   className,
   onPressIn,
@@ -71,11 +77,13 @@ export function Button({
   const turned = variant === 'primary' && pressed;
   const chip = variant === 'primary' && !!icon;
 
-  const contentColor = turned
-    ? colors.onInk
-    : variant === 'secondary' || variant === 'success' || variant === 'destructive'
-      ? colors.white
-      : colors.foreground;
+  const contentColor =
+    contentColorProp ??
+    (turned
+      ? colors.onInk
+      : variant === 'secondary' || variant === 'success' || variant === 'destructive'
+        ? colors.white
+        : colors.foreground);
 
   return (
     <Pressable
@@ -122,7 +130,7 @@ export function Button({
           <Text
             numberOfLines={1}
             className={cn('shrink text-center text-base font-bold', LABEL[variant])}
-            style={turned ? { color: colors.onInk } : undefined}
+            style={contentColorProp || turned ? { color: contentColor } : undefined}
           >
             {title}
           </Text>

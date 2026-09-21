@@ -7,6 +7,7 @@ import * as AppleAuthentication from 'expo-apple-authentication';
 import { useColorScheme } from 'nativewind';
 import { Ionicons } from '@expo/vector-icons';
 
+import { cn } from '@/lib/cn';
 import { Screen } from '@/components/ui/screen';
 import { Button } from '@/components/ui/button';
 import { TextField } from '@/components/ui/text-field';
@@ -328,13 +329,26 @@ export default function LoginScreen() {
                           loading={social === 'google'}
                           disabled={loading || social !== null}
                           onPress={() => handleSocial('google')}
-                          // The edge Apple draws around its own white button:
-                          // black, and a point thin rather than the brand's
-                          // 1.5 — Apple's outline is not ours to thicken, and
-                          // the pair has to carry the same line. The press has
-                          // to move the face instead, the edge being already as
-                          // dark as the variant's pressed state.
-                          className="border border-foreground active:bg-muted"
+                          // Whatever face Apple takes below, this one takes
+                          // too, because the pair reads as one control. On
+                          // paper: a white face inside the edge Apple draws
+                          // around its own — black, and a point thin rather
+                          // than the brand's 1.5, since Apple's outline is not
+                          // ours to thicken. The press then has to move the
+                          // face, the edge being already as dark as the
+                          // variant's pressed state. On a dark ground Apple
+                          // only offers a white face, so this one goes white
+                          // as well — Google's own light button, which they
+                          // intend for exactly that ground.
+                          className={cn(
+                            'border',
+                            scheme === 'dark'
+                              ? 'border-transparent bg-white active:opacity-90'
+                              : 'border-foreground active:bg-muted'
+                          )}
+                          // Black on the white face in both schemes; `ink`
+                          // turns paper in the dark one.
+                          contentColor={scheme === 'dark' ? c.primaryForeground : undefined}
                           onLayout={(e) => setSocialHeight(e.nativeEvent.layout.height)}
                         />
                       ) : null}
