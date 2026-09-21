@@ -122,6 +122,7 @@ export const en = {
   'chat.readOnly': 'You can read this conversation but not reply.',
   'chat.send': 'Send',
   'chat.threadCount': '{n} conversations',
+  'chat.typing': '{name} is typing…',
   'common.back': 'Back',
   'common.camera': 'Camera',
   'common.cancel': 'Cancel',

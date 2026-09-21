@@ -20,7 +20,14 @@ import { uuidv4 } from '@/lib/uuid';
 import { useAuthStore } from '@/features/auth/store';
 import { hasPermission, PERMISSIONS } from '@/lib/auth/roles';
 import { setActiveConversation } from '@/features/push/use-push';
-import { useSendMessage, useThread, useThreadCustomer } from '@/features/chat/hooks/use-chat';
+import {
+  useSendMessage,
+  useThread,
+  useThreadCustomer,
+  useTypingSignal,
+} from '@/features/chat/hooks/use-chat';
+import { useVisitorTyping } from '@/features/chat/realtime-state';
+import { markThreadRead } from '@/features/chat/api/chat.api';
 import { CustomerHeader } from '@/features/chat/components/customer-header';
 import type { ChatMessage } from '@/features/chat/types';
 
@@ -44,6 +51,8 @@ export default function ChatThreadScreen() {
   const thread = useThread(String(uuid));
   const customer = useThreadCustomer(String(uuid));
   const send = useSendMessage(String(uuid));
+  const typing = useTypingSignal(String(uuid));
+  const visitorTyping = useVisitorTyping(String(uuid));
 
   const canReply = hasPermission(user, PERMISSIONS.chatReply);
 
@@ -56,18 +65,43 @@ export default function ChatThreadScreen() {
 
   const messages = useMemo(() => thread.data ?? [], [thread.data]);
 
-  // Follow the conversation down as it grows, the way a chat should.
+  // Opening the thread marks it read server-side; a message that lands over
+  // the socket while it is already open does not. Without this the badge
+  // would sit on a conversation the dealer is looking straight at.
+  const lastVisitorMessage = useMemo(() => {
+    for (let i = messages.length - 1; i >= 0; i -= 1) {
+      if (messages[i].authorType === 'visitor') return messages[i].id;
+    }
+    return null;
+  }, [messages]);
+
+  const readUpTo = useRef<string | null>(null);
   useEffect(() => {
-    if (messages.length === 0) return;
+    if (!lastVisitorMessage) return;
+    const firstLoad = readUpTo.current === null;
+    readUpTo.current = lastVisitorMessage;
+    // The fetch that opened the thread already claimed everything it carried.
+    if (firstLoad) return;
+    void markThreadRead(String(uuid)).catch(() => {});
+  }, [lastVisitorMessage, uuid]);
+
+  // Follow the conversation down as it grows, the way a chat should — and
+  // again when the typing bubble appears, which is also the list getting
+  // taller under the reader.
+  useEffect(() => {
+    if (messages.length === 0 && !visitorTyping) return;
     const id = setTimeout(() => list.current?.scrollToEnd({ animated: true }), 60);
     return () => clearTimeout(id);
-  }, [messages.length]);
+  }, [messages.length, visitorTyping]);
 
   function submit() {
     const body = draft.trim();
     if (!body || send.isPending) return;
 
     setDraft('');
+    // The message itself says we have stopped writing; leaving the bubble up
+    // after it would be a lie told to the customer.
+    typing.stop();
     // A fresh id per send: the backend dedupes on it, so a retry of a request
     // that actually landed cannot post the same reply twice.
     send.mutate({ body, clientMessageId: uuidv4() });
@@ -109,6 +143,15 @@ export default function ChatThreadScreen() {
             keyExtractor={(m) => m.id}
             contentContainerStyle={{ padding: 16, gap: 8 }}
             renderItem={({ item }) => <Bubble message={item} />}
+            ListFooterComponent={
+              visitorTyping ? (
+                <Text className="px-1 pt-1 text-xs text-muted-foreground">
+                  {t('chat.typing', {
+                    name: customer.data?.name || t('chat.anonymous'),
+                  })}
+                </Text>
+              ) : null
+            }
             ListEmptyComponent={
               <Text className="py-12 text-center text-sm text-muted-foreground">
                 {t('chat.noMessages')}
@@ -124,7 +167,11 @@ export default function ChatThreadScreen() {
           >
             <TextInput
               value={draft}
-              onChangeText={setDraft}
+              onChangeText={(next) => {
+                setDraft(next);
+                if (next.trim()) typing.onType();
+              }}
+              onBlur={typing.stop}
               placeholder={t('chat.composerPlaceholder')}
               placeholderTextColor={c.mutedForeground}
               multiline

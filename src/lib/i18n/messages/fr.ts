@@ -117,6 +117,7 @@ export const fr: Record<MessageKey, string> = {
   'chat.readOnly': 'Vous pouvez lire cette conversation mais pas y répondre.',
   'chat.send': 'Envoyer',
   'chat.threadCount': '{n} conversations',
+  'chat.typing': '{name} écrit…',
   'common.back': 'Retour',
   'common.camera': 'Appareil photo',
   'common.cancel': 'Annuler',

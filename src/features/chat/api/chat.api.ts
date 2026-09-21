@@ -111,7 +111,7 @@ type RawAttachment = {
   is_image?: boolean;
 };
 
-type RawMessage = {
+export type RawMessage = {
   id?: string;
   client_message_id?: string | null;
   author_type?: string;
@@ -131,7 +131,14 @@ function mapAttachment(raw: RawAttachment): ChatAttachment {
   };
 }
 
-function mapMessage(raw: RawMessage): ChatMessage {
+/**
+ * One message, from the API's ChatMessageResource.
+ *
+ * Exported because the websocket payload carries the very same resource — the
+ * backend was built that way on purpose, so a message that arrives over the
+ * socket can be appended to the list this fetched without a second shape.
+ */
+export function mapMessage(raw: RawMessage): ChatMessage {
   return {
     id: String(raw.id ?? ''),
     clientMessageId: raw.client_message_id ?? null,
@@ -179,6 +186,30 @@ export async function sendChatMessage(
   await request(`/portal/dealer/chat/conversations/${uuid}/messages`, {
     method: 'POST',
     body: { body, client_message_id: clientMessageId },
+  });
+}
+
+/**
+ * Marks the thread read for the whole dealer team.
+ *
+ * Opening a thread does this server-side, but a message that lands over the
+ * socket while the thread is already open does not — without this the badge
+ * would sit there until the next full fetch.
+ */
+export async function markThreadRead(uuid: string): Promise<void> {
+  await request(`/portal/dealer/chat/conversations/${uuid}/read`, { method: 'POST' });
+}
+
+/**
+ * Tells the visitor we are writing (or have stopped).
+ *
+ * Fire-and-forget: a typing bubble that fails to arrive is not worth an error
+ * on screen, and the state expires on the other side by itself.
+ */
+export async function sendTypingSignal(uuid: string, typing: boolean): Promise<void> {
+  await request(`/portal/dealer/chat/conversations/${uuid}/typing`, {
+    method: 'POST',
+    body: { typing },
   });
 }
 

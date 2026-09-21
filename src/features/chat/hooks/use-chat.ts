@@ -1,3 +1,4 @@
+import { useCallback, useEffect, useRef } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import {
@@ -5,8 +6,10 @@ import {
   fetchThread,
   fetchThreadCustomer,
   sendChatMessage,
+  sendTypingSignal,
   type ChatFilter,
 } from '@/features/chat/api/chat.api';
+import { useChatRealtimeConnected } from '@/features/chat/realtime-state';
 import type { ChatMessage } from '@/features/chat/types';
 import { useAuthStore } from '@/features/auth/store';
 import { hasPermission, PERMISSIONS } from '@/lib/auth/roles';
@@ -19,21 +22,33 @@ export const chatKeys = {
 };
 
 /**
+ * How often to ask when the socket is up, and when it is not.
+ *
+ * With the websocket connected the poll is only a safety net against a socket
+ * that died without saying so, so it can be lazy. Without it, the poll IS the
+ * feature and has to be quick enough to type against.
+ */
+const POLL = {
+  inbox: { live: 90_000, alone: 20_000 },
+  thread: { live: 30_000, alone: 5_000 },
+} as const;
+
+/**
  * The inbox.
  *
- * Polled on an interval as well as pushed to. The push wakes a backgrounded
- * phone, but a phone sitting open on this screen would otherwise only learn
- * about a new visitor when the user pulled to refresh — and a live chat that is
- * a minute stale is not live.
+ * Fed by the websocket (use-chat-realtime.ts) and polled underneath it. The
+ * push wakes a backgrounded phone; the poll covers a socket that is down or
+ * lying, and widens out of the way as soon as one is up.
  */
 export function useChatCustomers(filter: ChatFilter) {
   const user = useAuthStore((s) => s.user);
+  const live = useChatRealtimeConnected();
 
   return useQuery({
     queryKey: chatKeys.customers(filter),
     queryFn: () => fetchChatCustomers(filter),
     enabled: hasPermission(user, PERMISSIONS.chatView),
-    refetchInterval: 20_000,
+    refetchInterval: live ? POLL.inbox.live : POLL.inbox.alone,
     staleTime: 10_000,
   });
 }
@@ -41,20 +56,59 @@ export function useChatCustomers(filter: ChatFilter) {
 /**
  * One thread's messages.
  *
- * Polled every five seconds while it is on screen. Reverb is wired on this
- * backend and is the better answer, but a socket that drops silently leaves a
- * dealer staring at a conversation that has moved on — the poll is the floor
- * under that, and five seconds is close enough to live for typing speed.
+ * Messages arrive over the socket and are merged into this cache as they
+ * land. The poll underneath is the floor: a socket that drops silently leaves
+ * a dealer staring at a conversation that has moved on, and that must not be
+ * possible. Every un-`since`d fetch also marks the thread read, which is why
+ * the interval widens rather than stopping — see markThreadRead for the gap
+ * the socket leaves.
  */
 export function useThread(uuid: string) {
   const user = useAuthStore((s) => s.user);
+  const live = useChatRealtimeConnected();
 
   return useQuery({
     queryKey: chatKeys.thread(uuid),
     queryFn: () => fetchThread(uuid),
     enabled: !!uuid && hasPermission(user, PERMISSIONS.chatView),
-    refetchInterval: 5_000,
+    refetchInterval: live ? POLL.thread.live : POLL.thread.alone,
   });
+}
+
+/** Leading-edge throttle on the typing signal — the portal desk's cadence. */
+const TYPING_THROTTLE = 2_000;
+
+/**
+ * Tells the visitor we are writing.
+ *
+ * `onType()` on every keystroke, throttled; `stop()` when the message goes,
+ * when the field loses focus, and when the screen closes. The portal only
+ * ever says "typing" and never "stopped", which leaves a bubble bouncing at
+ * the visitor under a dealer who walked away — this end says both.
+ */
+export function useTypingSignal(uuid: string) {
+  const sentAt = useRef(0);
+  const typing = useRef(false);
+
+  const stop = useCallback(() => {
+    if (!typing.current) return;
+    typing.current = false;
+    sentAt.current = 0;
+    void sendTypingSignal(uuid, false).catch(() => {});
+  }, [uuid]);
+
+  const onType = useCallback(() => {
+    const now = Date.now();
+    if (now - sentAt.current < TYPING_THROTTLE) return;
+    sentAt.current = now;
+    typing.current = true;
+    void sendTypingSignal(uuid, true).catch(() => {});
+  }, [uuid]);
+
+  // Leaving the screen mid-sentence is exactly when the bubble would stick.
+  useEffect(() => stop, [stop]);
+
+  return { onType, stop };
 }
 
 /** Who the thread is with — their other threads and their offers. */

@@ -117,6 +117,7 @@ export const tr: Record<MessageKey, string> = {
   'chat.readOnly': 'Bu sohbeti okuyabilirsin ama cevaplayamazsın.',
   'chat.send': 'Gönder',
   'chat.threadCount': '{n} sohbet',
+  'chat.typing': '{name} yazıyor…',
   'common.back': 'Geri',
   'common.camera': 'Kamera',
   'common.cancel': 'İptal',

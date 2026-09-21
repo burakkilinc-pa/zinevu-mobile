@@ -4,6 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import { useAuthStore } from '@/features/auth/store';
 import { usePush } from '@/features/push/use-push';
+import { useChatRealtime } from '@/features/chat/hooks/use-chat-realtime';
 import { BiometricGate } from '@/features/auth/components/biometric-gate';
 import { useLocale } from '@/lib/i18n';
 
@@ -24,6 +25,11 @@ export default function AppLayout() {
 
   // Device registration + notification taps live for as long as the shell does.
   usePush();
+
+  // One websocket for the session: live chat arrives here rather than being
+  // polled for. It costs nothing when there is no chat on screen — the
+  // subscription is per dealer, not per conversation.
+  useChatRealtime();
 
   // Backend labels are localized via Accept-Language, so refetch everything
   // when the language changes (skip the initial mount).

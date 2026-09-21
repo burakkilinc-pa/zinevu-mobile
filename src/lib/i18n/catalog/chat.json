@@ -11,6 +11,7 @@
 
   "chat.anonymous": { "en": "Anonymous visitor", "nl": "Anonieme bezoeker", "de": "Anonymer Besucher", "fr": "Visiteur anonyme", "tr": "Anonim ziyaretçi" },
   "chat.noMessages": { "en": "No messages yet", "nl": "Nog geen berichten", "de": "Noch keine Nachrichten", "fr": "Pas encore de messages", "tr": "Henüz mesaj yok" },
+  "chat.typing": { "en": "{name} is typing…", "nl": "{name} is aan het typen…", "de": "{name} schreibt…", "fr": "{name} écrit…", "tr": "{name} yazıyor…" },
   "chat.threadCount": { "en": "{n} conversations", "nl": "{n} gesprekken", "de": "{n} Gespräche", "fr": "{n} conversations", "tr": "{n} sohbet" },
   "chat.offerCount": { "en": "{n} offers", "nl": "{n} offertes", "de": "{n} Angebote", "fr": "{n} devis", "tr": "{n} teklif" },
 

@@ -117,6 +117,7 @@ export const nl: Record<MessageKey, string> = {
   'chat.readOnly': 'Je kunt dit gesprek lezen maar niet beantwoorden.',
   'chat.send': 'Versturen',
   'chat.threadCount': '{n} gesprekken',
+  'chat.typing': '{name} is aan het typen…',
   'common.back': 'Terug',
   'common.camera': 'Camera',
   'common.cancel': 'Annuleren',

@@ -15,7 +15,16 @@ export const config = {
   apiBaseUrl:
     process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, '') ??
     'http://127.0.0.1:8001/api/v1',
-  // Reverb (websocket) — used by the messaging realtime layer in a later phase.
+  /**
+   * Reverb (websocket) — the live-chat realtime layer, see
+   * src/lib/realtime/echo.ts. The key is public by design: it names the app,
+   * it does not authorise anything. Every private channel is signed by the
+   * backend against the user's own bearer token.
+   *
+   * These point at the PUBLIC host (nginx terminates TLS and proxies /app to
+   * Reverb), so port 443 and https — not the server's own loopback port.
+   * An empty key is a valid state: the app then runs on polling alone.
+   */
   reverb: {
     key: process.env.EXPO_PUBLIC_REVERB_KEY ?? '',
     host: process.env.EXPO_PUBLIC_REVERB_HOST ?? '127.0.0.1',

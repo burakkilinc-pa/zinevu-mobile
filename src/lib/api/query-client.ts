@@ -1,4 +1,5 @@
-import { onlineManager, QueryClient } from '@tanstack/react-query';
+import { AppState } from 'react-native';
+import { focusManager, onlineManager, QueryClient } from '@tanstack/react-query';
 import NetInfo from '@react-native-community/netinfo';
 
 import { ApiError } from '@/lib/api/client';
@@ -12,6 +13,17 @@ onlineManager.setEventListener((setOnline) =>
     setOnline(state.isConnected !== false);
   })
 );
+
+// A phone in a pocket is a paused app: timers stop, sockets die, and what
+// comes back on screen can be minutes old. Foreground counts as focus, so
+// anything stale is refetched the moment the user is looking again — which is
+// also what makes the chat's relaxed polling safe while its socket is up.
+focusManager.setEventListener((setFocused) => {
+  const subscription = AppState.addEventListener('change', (state) => {
+    setFocused(state === 'active');
+  });
+  return () => subscription.remove();
+});
 
 /**
  * Shared TanStack Query client. Mirrors the web frontend defaults
