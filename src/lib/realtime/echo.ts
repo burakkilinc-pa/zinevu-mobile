@@ -148,7 +148,7 @@ function buildEcho(key: string, host: string, port: number, tls: boolean): Echo<
     // with none of the battery behaviour we expect. Derived from the scheme
     // exactly as the portal does it — a plain-http dev Reverb has no wss.
     enabledTransports: tls ? ['ws', 'wss'] : ['ws'],
-    disableStats: true,
+    enableStats: false,
     // Echo otherwise goes looking for axios / jQuery / Vue / Turbo to decorate
     // with a socket id header. None of them exist here.
     withoutInterceptors: true,
