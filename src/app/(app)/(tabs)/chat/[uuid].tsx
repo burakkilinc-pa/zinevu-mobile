@@ -1,15 +1,17 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { type ComponentRef, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
-  FlatList,
   Pressable,
   ScrollView,
   Text,
   TextInput,
   View,
 } from 'react-native';
-import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
+import {
+  KeyboardChatScrollView,
+  KeyboardStickyView,
+} from 'react-native-keyboard-controller';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -54,7 +56,7 @@ export default function ChatThreadScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const user = useAuthStore((s) => s.user);
-  const list = useRef<FlatList<ChatMessage>>(null);
+  const list = useRef<ComponentRef<typeof KeyboardChatScrollView>>(null);
   const [draft, setDraft] = useState('');
   const [files, setFiles] = useState<CapturedFile[]>([]);
   const [detailsOpen, setDetailsOpen] = useState(false);
@@ -102,14 +104,25 @@ export default function ChatThreadScreen() {
     void markThreadRead(String(uuid)).catch(() => {});
   }, [lastVisitorMessage, uuid]);
 
-  // Follow the conversation down as it grows, the way a chat should — and
-  // again when the typing bubble appears, which is also the list getting
-  // taller under the reader.
-  useEffect(() => {
-    if (messages.length === 0 && !visitorTyping) return;
-    const id = setTimeout(() => list.current?.scrollToEnd({ animated: true }), 60);
-    return () => clearTimeout(id);
-  }, [messages.length, visitorTyping]);
+  /**
+   * Follow the conversation down as it grows, the way a chat should.
+   *
+   * The content growing is the only signal worth listening to — a new bubble,
+   * the typing line appearing, an image settling into its box — and it fires
+   * after the layout, so there is nothing to race with a timer. The first one
+   * lands without an animation, because a thread that scrolls itself on open
+   * is a thread you have to wait for.
+   *
+   * The keyboard is no longer our business: KeyboardChatScrollView keeps the
+   * bottom pinned frame by frame while it comes up, which is what the timed
+   * scrollToEnd on focus was failing to do — it guessed 250ms, landed early,
+   * and left the last bubble under the composer.
+   */
+  const settled = useRef(false);
+  function stickToBottom() {
+    list.current?.scrollToEnd({ animated: settled.current });
+    settled.current = true;
+  }
 
   /**
    * Back, even when there is nowhere to go back to.
@@ -191,144 +204,155 @@ export default function ChatThreadScreen() {
         onBack={goBack}
       />
 
-      <KeyboardAvoidingView
-        behavior="translate-with-padding"
-        keyboardVerticalOffset={0}
-        className="flex-1"
-      >
+      <View className="flex-1">
         {thread.isLoading ? (
           <View className="flex-1 items-center justify-center">
             <ActivityIndicator color={c.mutedForeground} />
           </View>
         ) : (
-          <FlatList
+          <KeyboardChatScrollView
             ref={list}
-            data={messages}
-            keyExtractor={(m) => m.id}
+            // What stays put under the list while the keyboard comes up.
+            // Not the composer: that rides up with the keyboard, so the
+            // list loses exactly the keyboard minus the home-indicator
+            // inset the composer gives back. Passing the composer's height
+            // here scrolls short by the difference, which reads as the last
+            // bubble sliced in half.
+            offset={insets.bottom}
             contentContainerStyle={{ padding: 16, gap: 8 }}
+            onContentSizeChange={stickToBottom}
             // A drag downward puts the keyboard away, and a tap on a bubble
             // does not have to be spent closing it first — what every
             // messenger does, and what the old screen did neither of.
             keyboardDismissMode="interactive"
             keyboardShouldPersistTaps="handled"
-            renderItem={({ item }) => <Bubble message={item} t={t} />}
-            ListFooterComponent={
-              visitorTyping ? (
-                <Text className="px-1 pt-1 text-xs text-muted-foreground">
-                  {t('chat.typing', {
-                    name: detail?.name || t('chat.anonymous'),
-                  })}
-                </Text>
-              ) : null
-            }
-            ListEmptyComponent={
+          >
+            {messages.length === 0 ? (
               <Text className="py-12 text-center text-sm text-muted-foreground">
                 {t('chat.noMessages')}
               </Text>
-            }
-          />
+            ) : (
+              messages.map((message) => (
+                <Bubble key={message.id} message={message} t={t} />
+              ))
+            )}
+
+            {visitorTyping ? (
+              <Text className="px-1 pt-1 text-xs text-muted-foreground">
+                {t('chat.typing', {
+                  name: detail?.name || t('chat.anonymous'),
+                })}
+              </Text>
+            ) : null}
+          </KeyboardChatScrollView>
         )}
 
-        {canReply ? (
-          <View className="border-t border-border" style={{ paddingBottom: insets.bottom > 0 ? insets.bottom : 10 }}>
-            {files.length > 0 ? (
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{ gap: 8, paddingHorizontal: 12, paddingTop: 10 }}
-              >
-                {files.map((file, index) => (
-                  <View key={file.uri}>
-                    <Image
-                      source={{ uri: file.uri }}
-                      contentFit="cover"
-                      style={{ width: 64, height: 64, borderRadius: 10 }}
-                    />
-                    <Pressable
-                      onPress={() =>
-                        setFiles((prev) => prev.filter((_, i) => i !== index))
-                      }
-                      hitSlop={8}
-                      accessibilityRole="button"
-                      accessibilityLabel={t('chat.attach.remove')}
-                      className="absolute -right-1.5 -top-1.5 h-5 w-5 items-center justify-center rounded-full"
-                      style={{ backgroundColor: c.foreground }}
-                    >
-                      <Ionicons name="close" size={12} color={c.background} />
-                    </Pressable>
-                  </View>
-                ))}
-              </ScrollView>
-            ) : null}
-
-            <View className="flex-row items-end gap-1.5 px-3 pt-2">
-              <Pressable
-                onPress={addPhotos}
-                disabled={files.length >= MAX_FILES}
-                hitSlop={6}
-                accessibilityRole="button"
-                accessibilityLabel={t('chat.attach.title')}
-                className="h-11 w-9 items-center justify-center"
-                style={{ opacity: files.length >= MAX_FILES ? 0.4 : 1 }}
-              >
-                <Ionicons name="image-outline" size={22} color={c.mutedForeground} />
-              </Pressable>
-
-              {(quickReplies.data?.length ?? 0) > 0 ? (
-                <Pressable
-                  onPress={() => setQuickOpen(true)}
-                  hitSlop={6}
-                  accessibilityRole="button"
-                  accessibilityLabel={t('chat.quickReplies.title')}
-                  className="h-11 w-9 items-center justify-center"
+        {/*
+          The composer rides the keyboard instead of the whole screen
+          translating under it — that shove was the page "jumping" on
+          focus. `opened` gives back the home-indicator inset the padding
+          below already reserves, so the field lands exactly on the
+          keyboard rather than a safe area above it.
+        */}
+        <KeyboardStickyView offset={{ closed: 0, opened: insets.bottom }}>
+          {canReply ? (
+            <View
+              className="border-t border-border bg-background"
+              style={{ paddingBottom: insets.bottom > 0 ? insets.bottom : 10 }}
+            >
+              {files.length > 0 ? (
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={{ gap: 8, paddingHorizontal: 12, paddingTop: 10 }}
                 >
-                  <Ionicons name="flash-outline" size={21} color={c.mutedForeground} />
-                </Pressable>
+                  {files.map((file, index) => (
+                    <View key={file.uri}>
+                      <Image
+                        source={{ uri: file.uri }}
+                        contentFit="cover"
+                        style={{ width: 64, height: 64, borderRadius: 10 }}
+                      />
+                      <Pressable
+                        onPress={() =>
+                          setFiles((prev) => prev.filter((_, i) => i !== index))
+                        }
+                        hitSlop={8}
+                        accessibilityRole="button"
+                        accessibilityLabel={t('chat.attach.remove')}
+                        className="absolute -right-1.5 -top-1.5 h-5 w-5 items-center justify-center rounded-full"
+                        style={{ backgroundColor: c.foreground }}
+                      >
+                        <Ionicons name="close" size={12} color={c.background} />
+                      </Pressable>
+                    </View>
+                  ))}
+                </ScrollView>
               ) : null}
 
-              <TextInput
-                value={draft}
-                onChangeText={(next) => {
-                  setDraft(next);
-                  if (next.trim()) typing.onType();
-                }}
-                onBlur={typing.stop}
-                // The keyboard halves the list, and the last line — the one
-                // being answered — is exactly what slides out of sight under
-                // it. Re-pin once the keyboard has finished coming up.
-                onFocus={() => {
-                  setTimeout(() => list.current?.scrollToEnd({ animated: true }), 250);
-                }}
-                placeholder={t('chat.composerPlaceholder')}
-                placeholderTextColor={c.mutedForeground}
-                multiline
-                className="max-h-28 flex-1 rounded-2xl bg-muted px-4 py-2.5 text-base text-foreground"
-              />
+              <View className="flex-row items-end gap-1.5 px-3 pt-2">
+                <Pressable
+                  onPress={addPhotos}
+                  disabled={files.length >= MAX_FILES}
+                  hitSlop={6}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('chat.attach.title')}
+                  className="h-11 w-9 items-center justify-center"
+                  style={{ opacity: files.length >= MAX_FILES ? 0.4 : 1 }}
+                >
+                  <Ionicons name="image-outline" size={22} color={c.mutedForeground} />
+                </Pressable>
 
-              <Pressable
-                onPress={submit}
-                disabled={!canSend}
-                accessibilityRole="button"
-                accessibilityLabel={t('chat.send')}
-                className="h-11 w-11 items-center justify-center rounded-full"
-                style={{ backgroundColor: c.primary, opacity: canSend ? 1 : 0.4 }}
-              >
-                {send.isPending ? (
-                  <ActivityIndicator size="small" color={c.primaryForeground} />
-                ) : (
-                  <Ionicons name="arrow-up" size={20} color={c.primaryForeground} />
-                )}
-              </Pressable>
+                {(quickReplies.data?.length ?? 0) > 0 ? (
+                  <Pressable
+                    onPress={() => setQuickOpen(true)}
+                    hitSlop={6}
+                    accessibilityRole="button"
+                    accessibilityLabel={t('chat.quickReplies.title')}
+                    className="h-11 w-9 items-center justify-center"
+                  >
+                    <Ionicons name="flash-outline" size={21} color={c.mutedForeground} />
+                  </Pressable>
+                ) : null}
+
+                <TextInput
+                  value={draft}
+                  onChangeText={(next) => {
+                    setDraft(next);
+                    if (next.trim()) typing.onType();
+                  }}
+                  onBlur={typing.stop}
+                  placeholder={t('chat.composerPlaceholder')}
+                  placeholderTextColor={c.mutedForeground}
+                  multiline
+                  className="max-h-28 flex-1 rounded-2xl bg-muted px-4 py-2.5 text-base text-foreground"
+                />
+
+                <Pressable
+                  onPress={submit}
+                  disabled={!canSend}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('chat.send')}
+                  className="h-11 w-11 items-center justify-center rounded-full"
+                  style={{ backgroundColor: c.primary, opacity: canSend ? 1 : 0.4 }}
+                >
+                  {send.isPending ? (
+                    <ActivityIndicator size="small" color={c.primaryForeground} />
+                  ) : (
+                    <Ionicons name="arrow-up" size={20} color={c.primaryForeground} />
+                  )}
+                </Pressable>
+              </View>
             </View>
-          </View>
-        ) : (
-          <View className="border-t border-border px-5 py-4">
-            <Text className="text-center text-xs text-muted-foreground">
-              {t('chat.readOnly')}
-            </Text>
-          </View>
-        )}
-      </KeyboardAvoidingView>
+          ) : (
+            <View className="border-t border-border bg-background px-5 py-4">
+              <Text className="text-center text-xs text-muted-foreground">
+                {t('chat.readOnly')}
+              </Text>
+            </View>
+          )}
+        </KeyboardStickyView>
+      </View>
 
       <QuickReplySheet
         visible={quickOpen}

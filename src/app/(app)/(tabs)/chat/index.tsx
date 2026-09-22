@@ -7,14 +7,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { Screen, useDockClearance } from '@/components/ui/screen';
 import { Placeholder } from '@/components/ui/placeholder';
 import { useColors } from '@/lib/theme';
-import { useT, type MessageKey } from '@/lib/i18n';
+import { useT } from '@/lib/i18n';
 import { clockTime, relativeTime } from '@/lib/time';
 import { useAuthStore } from '@/features/auth/store';
 import { hasPermission, PERMISSIONS } from '@/lib/auth/roles';
 import { useChatAvailability, useChatCustomers } from '@/features/chat/hooks/use-chat';
 import { surfaceLabel } from '@/features/chat/components/customer-header';
 import type { ChatCustomer } from '@/features/chat/types';
-import type { ChatFilter } from '@/features/chat/api/chat.api';
 
 /**
  * The chat inbox — one row per PERSON, not per thread.
@@ -26,7 +25,6 @@ import type { ChatFilter } from '@/features/chat/api/chat.api';
  * talking to.
  */
 
-const FILTERS: ChatFilter[] = ['awaiting', 'open', 'all'];
 
 export default function ChatListScreen() {
   const t = useT();
@@ -35,10 +33,20 @@ export default function ChatListScreen() {
   const bottom = useDockClearance();
   const user = useAuthStore((s) => s.user);
 
-  // Opens on "awaiting": the only slice with a clock on it. An open thread
-  // somebody already answered is not waiting for anything.
-  const [filter, setFilter] = useState<ChatFilter>('awaiting');
-  const query = useChatCustomers(filter);
+  /**
+   * One list. No slices.
+   *
+   * "Waiting" and "Open" split the inbox on who happened to write last, which
+   * is not a thing anybody reading their inbox is thinking about — and it
+   * moved rows out from under them: a colleague takes a thread over, the last
+   * line is no longer the visitor's, and the conversation the phone had just
+   * buzzed about was gone from the tab they were looking at.
+   *
+   * `open` is everything not archived. Nothing sets `closed` yet, so today
+   * that is simply everything; when archiving lands, this is the list it
+   * takes rows out of, and still the only list there is.
+   */
+  const query = useChatCustomers('open');
 
   // Only a pull drives the spinner. Bound to `isRefetching` the inbox's own
   // 20s poll shows the control every twenty seconds, and it sits there until
@@ -73,29 +81,6 @@ export default function ChatListScreen() {
 
       <AvailabilityRow />
 
-      <View className="flex-row gap-2 px-5 pb-2">
-        {FILTERS.map((f) => {
-          const active = f === filter;
-          return (
-            <Pressable
-              key={f}
-              onPress={() => setFilter(f)}
-              accessibilityRole="button"
-              accessibilityState={active ? { selected: true } : {}}
-              className="rounded-full px-4 py-1.5"
-              style={{ backgroundColor: active ? c.foreground : c.muted }}
-            >
-              <Text
-                className="text-sm font-medium"
-                style={{ color: active ? c.background : c.foreground }}
-              >
-                {t(`chat.filter.${f}` as MessageKey)}
-              </Text>
-            </Pressable>
-          );
-        })}
-      </View>
-
       <FlashList
         data={customers}
         keyExtractor={(person) => person.key}
@@ -129,7 +114,7 @@ export default function ChatListScreen() {
             <View className="items-center gap-2 py-16">
               <Ionicons name="chatbubbles-outline" size={26} color={c.mutedForeground} />
               <Text className="text-base text-muted-foreground">
-                {query.isError ? t('common.error') : t(`chat.empty.${filter}` as MessageKey)}
+                {query.isError ? t('common.error') : t('chat.empty.all')}
               </Text>
             </View>
           )
