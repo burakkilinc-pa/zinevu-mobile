@@ -372,7 +372,14 @@ export default function ChatThreadScreen() {
 
 function Bubble({ message, t }: { message: ChatMessage; t: ReturnType<typeof useT> }) {
   const c = useColors();
-  const mine = message.authorType === 'agent';
+  // The assistant answers on the dealer's behalf, so its lines belong on the
+  // dealer's side. They were landing on the visitor's, which put an entire
+  // agent-led conversation — question, answer, question, answer — in one
+  // column down the left, and read as if the customer had been talking to
+  // themselves. Labelled rather than silently ours: before a dealer follows
+  // an answer they did not type, they should know nobody typed it.
+  const ai = message.authorType === 'ai';
+  const mine = ai || message.authorType === 'agent';
 
   // A system line ("joined", "closed") is not anybody's message — it sits
   // centred and quiet rather than taking a side.
@@ -384,6 +391,15 @@ function Bubble({ message, t }: { message: ChatMessage; t: ReturnType<typeof use
 
   return (
     <View className={mine ? 'items-end' : 'items-start'}>
+      {ai ? (
+        <View className="mr-1 mb-0.5 flex-row items-center gap-1">
+          <Ionicons name="sparkles" size={10} color={c.mutedForeground} />
+          {message.authorName ? (
+            <Text className="text-[10px] text-muted-foreground">{message.authorName}</Text>
+          ) : null}
+        </View>
+      ) : null}
+
       <View
         className="max-w-[82%] gap-1 rounded-2xl px-3.5 py-2.5"
         style={{

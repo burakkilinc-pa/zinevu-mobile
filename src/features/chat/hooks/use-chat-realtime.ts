@@ -83,7 +83,10 @@ function markReadUpTo(messages: ChatMessage[], readAtIso: string): ChatMessage[]
 
   let changed = false;
   const next = messages.map((message) => {
-    if (message.authorType !== 'agent' || message.readAt) return message;
+    // The assistant's lines are ours too, and the visitor reads them the
+    // same way — they earn the second tick like anything else we sent.
+    const ours = message.authorType === 'agent' || message.authorType === 'ai';
+    if (!ours || message.readAt) return message;
     const sentAt = new Date(message.createdAt ?? '').getTime();
     if (Number.isFinite(sentAt) && sentAt > cursor) return message;
     changed = true;

@@ -77,7 +77,8 @@ export type ChatMessage = {
   id: string;
   /** Set by us on an optimistic send, so the echo can replace it. */
   clientMessageId: string | null;
-  authorType: 'visitor' | 'agent' | 'system';
+  /** `ai` is the assistant answering on the dealer's behalf — our side. */
+  authorType: 'visitor' | 'agent' | 'ai' | 'system';
   authorName: string | null;
   body: string | null;
   attachments: ChatAttachment[];

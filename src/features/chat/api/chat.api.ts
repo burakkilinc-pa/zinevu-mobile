@@ -165,8 +165,13 @@ export function mapMessage(raw: RawMessage): ChatMessage {
   return {
     id: String(raw.id ?? ''),
     clientMessageId: raw.client_message_id ?? null,
+    // Anything unrecognised is the visitor, which is the safe side to guess
+    // on for a bubble — but `ai` has to be named, or the assistant's own
+    // questions come back as though the customer had asked them.
     authorType:
-      raw.author_type === 'agent' || raw.author_type === 'system'
+      raw.author_type === 'agent' ||
+      raw.author_type === 'ai' ||
+      raw.author_type === 'system'
         ? raw.author_type
         : 'visitor',
     authorName: raw.author_name ?? null,
