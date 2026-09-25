@@ -80,7 +80,7 @@ const isWebInvocation = (url: string): boolean =>
   /^https:\/\/app\.zinevu\.com\/ar(?:[/?#]|$)/i.test(url);
 
 /**
- * The same invocation, wrapped in our own scheme: `zinevumobile://ar?u=<url>`.
+ * The same invocation, wrapped in our own scheme: `zinevumobile://?u=<url>`.
  *
  * The web page offers this because Apple offers nothing else to a phone that
  * already has the app. A universal link needs an external open or a link tap in
@@ -92,8 +92,12 @@ const isWebInvocation = (url: string): boolean =>
  * It carries the https URL whole rather than re-encoding slug, draft and
  * language, so exactly one parser reads an invocation. See `appMeasureUrl` in
  * app.veranduo `src/lib/appClip.js` — the two must stay in step.
+ *
+ * The path is ignored on purpose: the web sends none (`zinevumobile://?u=…`) so
+ * that a build which predates this lands on the app's own start screen instead
+ * of the router's "Unmatched Route", and a build that has it never needed one.
  */
-const SCHEME_INVOCATION = /^zinevumobile:\/\/ar\b/i;
+const SCHEME_INVOCATION = /^zinevumobile:\/\//i;
 
 /**
  * The https invocation this URL means, whichever door it came through — or null
