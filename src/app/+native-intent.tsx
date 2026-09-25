@@ -1,7 +1,7 @@
 import { currentLocale } from '@/lib/i18n';
 import {
   holdMeasureInvocation,
-  isMeasureInvocation,
+  measureInvocationUrl,
   openMeasure,
 } from '@/features/ar-measure/ar-measure';
 
@@ -21,16 +21,20 @@ import {
  * alike (expo-router's getLinkingConfig / linking.subscribe).
  */
 export function redirectSystemPath({ path, initial }: { path: string; initial: boolean }) {
-  if (!isMeasureInvocation(path)) return path;
+  // Two doors, one destination: the https address a QR or an App Clip
+  // invocation carries, and `zinevumobile://ar?u=…`, which the /ar page offers
+  // because a browser without a Smart App Banner has no other way in.
+  const invocation = measureInvocationUrl(path);
+  if (!invocation) return path;
 
   if (initial) {
     // Nothing is on screen yet to present over; the root layout releases it
     // once the splash is gone. Meanwhile start where a normal launch starts.
-    holdMeasureInvocation(path);
+    holdMeasureInvocation(invocation);
     return '/';
   }
 
   // Already running: present now and leave the current screen where it is.
-  void openMeasure({ url: path, language: currentLocale() });
+  void openMeasure({ url: invocation, language: currentLocale() });
   return null;
 }

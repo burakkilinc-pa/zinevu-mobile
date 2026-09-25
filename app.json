@@ -17,7 +17,8 @@
         "usesNonExemptEncryption": false
       },
       "associatedDomains": [
-        "appclips:app.zinevu.com"
+        "appclips:app.zinevu.com",
+        "applinks:app.zinevu.com"
       ]
     },
     "android": {
@@ -94,6 +95,7 @@
         }
       ],
       "expo-web-browser",
+      "expo-sharing",
       "expo-apple-authentication",
       [
         "@react-native-google-signin/google-signin",

@@ -52,11 +52,13 @@ module.exports = () => ({
   entitlements: {
     // `appclips:` is what lets this domain hand a visitor the clip at all.
     //
-    // Deliberately WITHOUT `applinks:` — here and on the parent app. An
-    // `applinks` claim means "somebody who has the app installed opens the app
-    // instead of the clip", and the app they would open is the dealer portal,
-    // which cannot measure anything. Leaving it off is what makes a scanned QR
-    // open the clip for everyone, dealers included.
+    // Still WITHOUT `applinks:` HERE — a clip has no use for one; it is opened
+    // by an App Clip experience, not by a link claim. The PARENT app does claim
+    // applinks now (app.json), and the old reasoning for keeping it off both —
+    // "whoever has the app installed opens the app, and the app cannot
+    // measure" — expired when `modules/ar-measure` put this target's own Swift
+    // inside the app. A phone with the app now measures in the app; a phone
+    // without one still gets this clip.
     'com.apple.developer.associated-domains': ['appclips:app.zinevu.com'],
     // Apple refuses to build a clip whose parent identifier does not match the
     // app embedding it.

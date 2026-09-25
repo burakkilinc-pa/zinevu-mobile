@@ -75,9 +75,44 @@ export function withMeasuredSize(url: string, size: MeasuredSize): string {
   }
 }
 
-/** `https://app.zinevu.com/ar/…` — the one URL shape the clip answers to. */
+/** `https://app.zinevu.com/ar/…` — the address the clip and a scanned QR carry. */
+const isWebInvocation = (url: string): boolean =>
+  /^https:\/\/app\.zinevu\.com\/ar(?:[/?#]|$)/i.test(url);
+
+/**
+ * The same invocation, wrapped in our own scheme: `zinevumobile://ar?u=<url>`.
+ *
+ * The web page offers this because Apple offers nothing else to a phone that
+ * already has the app. A universal link needs an external open or a link tap in
+ * a browser that honours it; the Smart App Banner exists only in Safari, can be
+ * dismissed for good, and cannot be summoned by a page. A visitor in Chrome (or
+ * an Instagram webview) with the app installed had no door at all — which is
+ * how "it opens in Safari and just sits there" happened.
+ *
+ * It carries the https URL whole rather than re-encoding slug, draft and
+ * language, so exactly one parser reads an invocation. See `appMeasureUrl` in
+ * app.veranduo `src/lib/appClip.js` — the two must stay in step.
+ */
+const SCHEME_INVOCATION = /^zinevumobile:\/\/ar\b/i;
+
+/**
+ * The https invocation this URL means, whichever door it came through — or null
+ * when the URL is not ours to open.
+ */
+export function measureInvocationUrl(url: string): string | null {
+  if (isWebInvocation(url)) return url;
+  if (!SCHEME_INVOCATION.test(url)) return null;
+  try {
+    const inner = new URL(url).searchParams.get('u');
+    return inner && isWebInvocation(inner) ? inner : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Whether this URL is a measurement hand-off at all. */
 export function isMeasureInvocation(url: string): boolean {
-  return /^https:\/\/app\.zinevu\.com\/ar(?:[/?#]|$)/i.test(url);
+  return measureInvocationUrl(url) !== null;
 }
 
 /**
