@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ActivityIndicator, Pressable, RefreshControl, Switch, Text, View } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
 import { Screen, useDockClearance } from '@/components/ui/screen';
@@ -14,24 +14,134 @@ import { hasPermission, PERMISSIONS } from '@/lib/auth/roles';
 import { useChatAvailability, useChatCustomers } from '@/features/chat/hooks/use-chat';
 import { surfaceLabel } from '@/features/chat/components/customer-header';
 import type { ChatCustomer } from '@/features/chat/types';
+import { useInbox, useUnlinked } from '@/features/inbox/hooks/use-inbox';
+import type { InboxRow, UnlinkedRow } from '@/features/inbox/types';
 
 /**
- * The chat inbox — one row per PERSON, not per thread.
+ * Two sources of message, one tab.
+ *
+ * A dealer looking for "a message" does not care which pipe carried it, and
+ * the dock has no room for a fifth icon — the brand Z only reads as the hero
+ * dead centre. So the live chat and the customers' own conversations share
+ * this screen behind a two-chip switch.
+ *
+ * They are not the same thing underneath and the screen does not pretend they
+ * are. Website is an anonymous visitor standing on a page who will leave in a
+ * minute, which is why availability, presence dots and a websocket live on
+ * that side only. WhatsApp & mail is a named customer on a thread that keeps,
+ * against a request with a reference number.
+ */
+type Source = 'website' | 'leads';
+
+export default function MessagesScreen() {
+  const t = useT();
+  const user = useAuthStore((s) => s.user);
+  // The unlinked-WhatsApp push has no id to route on, so it names the segment
+  // instead. See PushData in use-push.ts.
+  const { tab } = useLocalSearchParams<{ tab?: string }>();
+  const [source, setSource] = useState<Source>(tab === 'whatsapp' ? 'leads' : 'website');
+
+  const mayChat = hasPermission(user, PERMISSIONS.chatView);
+  const mayLeads = hasPermission(user, PERMISSIONS.leadsView);
+
+  // A member with exactly one of the two permissions gets that one list with
+  // no switch above it — a chip that is the only choice is furniture.
+  const both = mayChat && mayLeads;
+  const shown: Source = both ? source : mayChat ? 'website' : 'leads';
+
+  if (!mayChat && !mayLeads) {
+    return (
+      <Placeholder
+        icon="lock-closed-outline"
+        title={t('chat.noAccess.title')}
+        subtitle={t('chat.noAccess.body')}
+      />
+    );
+  }
+
+  return (
+    <Screen padded={false} edges={['top']}>
+      <View className="px-5 pb-2 pt-1">
+        <Text className="text-2xl font-bold text-foreground">{t('tabs.messages')}</Text>
+      </View>
+
+      {both ? <SourceSwitch value={shown} onChange={setSource} /> : null}
+
+      {shown === 'website' ? <WebsiteList /> : <LeadList />}
+    </Screen>
+  );
+}
+
+function SourceSwitch({ value, onChange }: { value: Source; onChange: (s: Source) => void }) {
+  const t = useT();
+  const c = useColors();
+  // The SAME query key LeadList uses, deliberately: react-query dedupes it to
+  // one request, so the badge costs nothing. A second filter ('unanswered')
+  // would read more naturally and double the polling.
+  const rows = useInbox('all').data ?? [];
+  const unlinked = useUnlinked().data ?? [];
+  const waiting =
+    rows.filter((row) => row.awaitingReply && !row.agentHolds).length + unlinked.length;
+
+  const chips: { key: Source; label: string; count: number }[] = [
+    { key: 'website', label: t('inbox.source.website'), count: 0 },
+    { key: 'leads', label: t('inbox.source.leads'), count: waiting },
+  ];
+
+  return (
+    <View className="mb-2 flex-row gap-2 px-5">
+      {chips.map((chip) => {
+        const active = chip.key === value;
+
+        return (
+          <Pressable
+            key={chip.key}
+            onPress={() => onChange(chip.key)}
+            accessibilityRole="button"
+            accessibilityState={active ? { selected: true } : {}}
+            className="flex-row items-center gap-2 rounded-full px-4 py-2"
+            style={{ backgroundColor: active ? c.foreground : c.muted }}
+          >
+            <Text
+              className="text-sm font-medium"
+              style={{ color: active ? c.background : c.foreground }}
+            >
+              {chip.label}
+            </Text>
+            {chip.count > 0 ? (
+              <View
+                className="min-w-5 items-center rounded-full px-1.5"
+                style={{ backgroundColor: active ? c.background : c.destructive }}
+              >
+                <Text
+                  className="text-xs font-bold"
+                  style={{ color: active ? c.foreground : '#fff' }}
+                >
+                  {chip.count}
+                </Text>
+              </View>
+            ) : null}
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+}
+
+/**
+ * The live chat — one row per PERSON, not per thread.
  *
  * Somebody who asked twice from two devices is one person with two
- * conversations; three rows for them is three chances to reply without knowing
- * what was already said. The row shows how many threads and how many offers
- * they have, so the dealer opens a conversation already knowing who they are
- * talking to.
+ * conversations; three rows for them is three chances to reply without
+ * knowing what was already said. The row shows how many threads and how many
+ * offers they have, so the dealer opens a conversation already knowing who
+ * they are talking to.
  */
-
-
-export default function ChatListScreen() {
+function WebsiteList() {
   const t = useT();
   const c = useColors();
   const router = useRouter();
   const bottom = useDockClearance();
-  const user = useAuthStore((s) => s.user);
 
   /**
    * One list. No slices.
@@ -41,10 +151,6 @@ export default function ChatListScreen() {
    * moved rows out from under them: a colleague takes a thread over, the last
    * line is no longer the visitor's, and the conversation the phone had just
    * buzzed about was gone from the tab they were looking at.
-   *
-   * `open` is everything not archived. Nothing sets `closed` yet, so today
-   * that is simply everything; when archiving lands, this is the list it
-   * takes rows out of, and still the only list there is.
    */
   const query = useChatCustomers('open');
 
@@ -61,24 +167,10 @@ export default function ChatListScreen() {
     }
   };
 
-  if (!hasPermission(user, PERMISSIONS.chatView)) {
-    return (
-      <Placeholder
-        icon="lock-closed-outline"
-        title={t('chat.noAccess.title')}
-        subtitle={t('chat.noAccess.body')}
-      />
-    );
-  }
-
   const customers = query.data ?? [];
 
   return (
-    <Screen padded={false} edges={['top']}>
-      <View className="px-5 pb-2 pt-1">
-        <Text className="text-2xl font-bold text-foreground">{t('tabs.chat')}</Text>
-      </View>
-
+    <>
       <AvailabilityRow />
 
       <FlashList
@@ -120,7 +212,7 @@ export default function ChatListScreen() {
           )
         }
       />
-    </Screen>
+    </>
   );
 }
 
@@ -269,6 +361,198 @@ function Badge({ icon, label }: { icon: keyof typeof Ionicons.glyphMap; label: s
     <View className="flex-row items-center gap-1">
       <Ionicons name={icon} size={11} color={c.mutedForeground} />
       <Text className="text-xs text-muted-foreground">{label}</Text>
+    </View>
+  );
+}
+
+/**
+ * The customers' own conversations — WhatsApp on the dealer's business
+ * number, and replies to the mails we sent.
+ *
+ * One list, newest first, and the rows carry the one thing that decides
+ * whether anybody has to open them: whether the assistant is already
+ * answering. Without it every row reads as work still owed, including the
+ * conversations a machine is handling correctly — which is the fastest way
+ * for a list to stop being read.
+ *
+ * The unlinked pile sits on top rather than at the bottom. A number nobody
+ * has matched to a request is a customer writing for the FIRST time, which
+ * is the most valuable message on a business number and the easiest to lose.
+ */
+function LeadList() {
+  const t = useT();
+  const c = useColors();
+  const router = useRouter();
+  const bottom = useDockClearance();
+
+  const query = useInbox('all');
+  const unlinked = useUnlinked();
+
+  const [pulling, setPulling] = useState(false);
+  const onRefresh = async () => {
+    setPulling(true);
+    try {
+      await Promise.all([query.refetch(), unlinked.refetch()]);
+    } finally {
+      setPulling(false);
+    }
+  };
+
+  const rows = query.data ?? [];
+  const strangers = unlinked.data ?? [];
+
+  return (
+    <FlashList
+      data={rows}
+      keyExtractor={(row) => row.ref}
+      contentContainerStyle={{ paddingBottom: bottom }}
+      ListHeaderComponent={
+        strangers.length > 0 ? (
+          <View className="mb-1">
+            <Text className="px-5 pb-1 pt-2 text-xs font-semibold uppercase text-muted-foreground">
+              {t('inbox.unlinked.title')}
+            </Text>
+            {strangers.map((row) => (
+              <UnlinkedRowView key={row.messageId} row={row} />
+            ))}
+          </View>
+        ) : null
+      }
+      renderItem={({ item }) => (
+        <LeadRow row={item} onPress={() => router.push(`/leads/${item.ref}/conversation`)} />
+      )}
+      refreshControl={
+        <RefreshControl
+          refreshing={pulling}
+          onRefresh={() => void onRefresh()}
+          tintColor={c.mutedForeground}
+        />
+      }
+      ListEmptyComponent={
+        query.isLoading ? (
+          <View className="py-16">
+            <ActivityIndicator color={c.mutedForeground} />
+          </View>
+        ) : strangers.length > 0 ? null : (
+          <View className="items-center gap-2 px-10 py-16">
+            <Ionicons name="mail-outline" size={26} color={c.mutedForeground} />
+            <Text className="text-base text-muted-foreground">
+              {query.isError ? t('common.error') : t('inbox.empty')}
+            </Text>
+            {query.isError ? null : (
+              <Text className="text-center text-sm text-muted-foreground">
+                {t('inbox.emptyHint')}
+              </Text>
+            )}
+          </View>
+        )
+      }
+    />
+  );
+}
+
+function LeadRow({ row, onPress }: { row: InboxRow; onPress: () => void }) {
+  const t = useT();
+  const c = useColors();
+
+  const name = row.customerName || row.offerNo || t('inbox.anonymous');
+  const channelIcon: keyof typeof Ionicons.glyphMap =
+    row.lastChannel === 'whatsapp'
+      ? 'logo-whatsapp'
+      : row.lastChannel === 'call'
+        ? 'call-outline'
+        : row.lastChannel === 'note'
+          ? 'document-text-outline'
+          : 'mail-outline';
+
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      className="flex-row items-center gap-3 border-b border-border px-5 py-3.5 active:bg-muted"
+    >
+      <View
+        className="h-11 w-11 items-center justify-center rounded-full"
+        style={{ backgroundColor: c.muted }}
+      >
+        <Ionicons name={channelIcon} size={19} color={c.mutedForeground} />
+      </View>
+
+      <View className="flex-1 gap-0.5">
+        <View className="flex-row items-center gap-2">
+          <Text className="flex-1 text-base font-semibold text-foreground" numberOfLines={1}>
+            {name}
+          </Text>
+          <Text className="text-xs text-muted-foreground">{relativeTime(row.lastAt)}</Text>
+        </View>
+
+        <Text
+          className="text-sm text-muted-foreground"
+          numberOfLines={1}
+          style={row.awaitingReply && !row.agentHolds ? { color: c.foreground } : undefined}
+        >
+          {row.lastPreview || t('chat.noMessages')}
+        </Text>
+
+        {row.agentHolds ? (
+          <View className="mt-0.5 flex-row items-center gap-1">
+            <Text className="text-xs">🤖</Text>
+            <Text className="text-xs text-muted-foreground">{t('inbox.agentHolds')}</Text>
+          </View>
+        ) : row.awaitingReply ? (
+          <View className="mt-0.5 flex-row items-center gap-1">
+            <Ionicons name="alert-circle-outline" size={11} color={c.destructive} />
+            <Text className="text-xs" style={{ color: c.destructive }}>
+              {t('inbox.awaitingReply')}
+            </Text>
+          </View>
+        ) : null}
+      </View>
+
+      {row.unread > 0 ? (
+        <View
+          className="min-w-6 items-center rounded-full px-2 py-0.5"
+          style={{ backgroundColor: c.destructive }}
+        >
+          <Text className="text-xs font-bold text-white">{row.unread}</Text>
+        </View>
+      ) : null}
+    </Pressable>
+  );
+}
+
+/**
+ * A number on no lead yet.
+ *
+ * Not pressable, deliberately. Linking a thread to a request — or making a
+ * request out of it — spends a lead from the dealer's plan and needs a lead
+ * to pick, and neither is a decision to make by accident on a list row. The
+ * phone's job here is to say somebody wrote; the portal's is to file them.
+ */
+function UnlinkedRowView({ row }: { row: UnlinkedRow }) {
+  const t = useT();
+  const c = useColors();
+
+  return (
+    <View className="flex-row items-center gap-3 border-b border-border px-5 py-3">
+      <View
+        className="h-9 w-9 items-center justify-center rounded-full"
+        style={{ backgroundColor: c.muted }}
+      >
+        <Ionicons name="logo-whatsapp" size={17} color={c.mutedForeground} />
+      </View>
+      <View className="flex-1 gap-0.5">
+        <View className="flex-row items-center gap-2">
+          <Text className="flex-1 text-sm font-semibold text-foreground" numberOfLines={1}>
+            {row.fromName || t('inbox.anonymous')}
+          </Text>
+          <Text className="text-xs text-muted-foreground">{relativeTime(row.lastAt)}</Text>
+        </View>
+        <Text className="text-sm text-muted-foreground" numberOfLines={1}>
+          {row.preview || t('chat.noMessages')}
+        </Text>
+        <Text className="text-xs text-muted-foreground">{t('inbox.unlinked.hint')}</Text>
+      </View>
     </View>
   );
 }

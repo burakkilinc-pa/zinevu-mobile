@@ -38,8 +38,8 @@ type PushData = {
      * A WhatsApp message from a number that is on no lead yet. Carries no id:
      * an unlinked thread is addressed by the id of one of its messages so a
      * phone number never reaches a URL, a log or a history — see the portal's
-     * inbox routes. Until the inbox screen exists on mobile a tap deliberately
-     * lands nowhere rather than on a screen that would fail to load.
+     * inbox routes. A tap therefore opens the WhatsApp segment of Messages
+     * rather than one thread.
      */
     | 'inbox.unlinked'
     | 'chat.message'
@@ -201,7 +201,18 @@ export function usePush(): void {
         return;
       }
       if (data.lead_ref) {
-        router.push(`/leads/${data.lead_ref}`);
+        // Two of these are about something that was SAID, and the thread is
+        // where you answer it. Landing on the lead's summary instead would
+        // make the dealer hunt for the message the banner just showed them.
+        const saidSomething = data.type === 'lead.message' || data.type === 'agent.handover';
+        router.push(`/leads/${data.lead_ref}${saidSomething ? '/conversation' : ''}`);
+        return;
+      }
+      if (data.type === 'inbox.unlinked') {
+        // No id to route on by design — an unlinked thread is addressed by a
+        // message id so the customer's number never reaches a URL. The
+        // segment is the destination.
+        router.push('/chat?tab=whatsapp');
         return;
       }
       if (data.ticket_id) {

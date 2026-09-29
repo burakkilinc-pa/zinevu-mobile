@@ -173,11 +173,17 @@ export default function LeadDetailScreen() {
               disabled={!dialable}
               onPress={() => dialable && Linking.openURL(`tel:+${dialable}`)}
             />
+            {/* The conversation, not wa.me. Writing from the dealer's own
+                phone reaches the customer and leaves no trace on the lead —
+                no timeline row, nothing for the assistant to read, nothing a
+                colleague can see. The thread sends through the company's own
+                number and records itself; wa.me stays available there, for
+                the one case where it is the right answer (Meta's 24-hour
+                window has shut and nothing we send can reach them). */}
             <ActionButton
-              icon="logo-whatsapp"
-              label="WhatsApp"
-              disabled={!dialable}
-              onPress={() => dialable && Linking.openURL(`https://wa.me/${dialable}`)}
+              icon="chatbubbles"
+              label={t('conversation.title')}
+              onPress={() => router.push(`/leads/${ref}/conversation`)}
             />
             <ActionButton
               icon="document-text"

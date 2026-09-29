@@ -66,7 +66,9 @@ export default function TabsLayout() {
   // button and offers to navigate away mid-edit. Nothing on those screens is
   // reachable from the dock anyway — you got there from a lead, and Back is
   // how you leave.
-  const inEditor = ['offer', 'answers'].includes(segments[segments.length - 1] ?? '');
+  const inEditor = ['offer', 'answers', 'conversation'].includes(
+    segments[segments.length - 1] ?? ''
+  );
 
   const hideDock = inThread || inEditor;
 
@@ -112,10 +114,14 @@ export default function TabsLayout() {
           ),
         }}
       />
+      {/* Messages — the live chat AND the customers' own conversations
+          (WhatsApp, mail replies). Two sources behind one chip switch rather
+          than two tabs: there is no room for a fifth side icon, and a dealer
+          looking for "a message" does not care which pipe carried it. */}
       <Tabs.Screen
         name="chat"
         options={{
-          title: t('tabs.chat'),
+          title: t('tabs.messages'),
           href: isOffice ? undefined : null,
           tabBarIcon: ({ focused, color, size }) => (
             <Ionicons
