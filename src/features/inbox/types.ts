@@ -65,6 +65,14 @@ export type WhatsAppState = {
   to: string | null;
   windowOpen: boolean;
   windowExpiresAt: string | null;
+  /**
+   * They told this dealer to stop. Separate from the window, because both
+   * can be true at once and they mean different things: the window is
+   * whether Meta will carry a free message, this is whether we should be
+   * sending one. It does not close the composer — the assistant is barred,
+   * a colleague answering a question is service.
+   */
+  optedOut: boolean;
 };
 
 export type AgentState = {

@@ -187,6 +187,23 @@ function AgentBanner({ view }: { view: ConversationView }) {
 
   const handedOver = view.agent.status === 'handed_over';
 
+  // Outranks both of the others, and is the only one of the three that is
+  // about the CUSTOMER rather than about us. Somebody who asked to be left
+  // alone has said the most important thing on this screen.
+  if (view.whatsapp.optedOut) {
+    return (
+      <View
+        className="mx-4 mb-2 flex-row items-center gap-2 rounded-md px-3 py-2"
+        style={{ backgroundColor: c.muted }}
+      >
+        <Ionicons name="hand-left-outline" size={14} color={c.destructive} />
+        <Text className="flex-1 text-xs" style={{ color: c.destructive }}>
+          {t('conversation.optedOut')}
+        </Text>
+      </View>
+    );
+  }
+
   if (!view.agent.holds && !handedOver) {
     return view.whatsapp.windowOpen && view.whatsapp.windowExpiresAt ? (
       <Text className="px-5 pb-1 text-xs text-muted-foreground">

@@ -175,6 +175,7 @@ export const tr: Record<MessageKey, string> = {
   'conversation.noChannel': 'Bağlı bir WhatsApp numarası yok, bu görüşme burada sadece okunabilir.',
   'conversation.note': 'Not',
   'conversation.openOwnWhatsapp': 'WhatsApp\'ta aç',
+  'conversation.optedOut': 'Bu müşteri otomatik mesaj istemiyor. Asistan devre dışı; siz yine de cevap verebilirsiniz.',
   'conversation.placeholder': 'Bir mesaj yaz…',
   'conversation.send': 'Gönder',
   'conversation.sendFailed': 'Mesaj gönderilemedi.',

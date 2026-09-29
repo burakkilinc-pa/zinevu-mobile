@@ -137,6 +137,7 @@ export async function fetchConversation(ref: string): Promise<ConversationView> 
       to?: string | null;
       window_open?: boolean;
       window_expires_at?: string | null;
+      opted_out?: boolean;
     };
     agent?: { holds?: boolean; status?: string | null; handover_reason?: string | null };
   }>(`/portal/dealer/leads/${id}/conversation`, { params: { kind } });
@@ -150,6 +151,7 @@ export async function fetchConversation(ref: string): Promise<ConversationView> 
       to: d.whatsapp?.to ?? null,
       windowOpen: !!d.whatsapp?.window_open,
       windowExpiresAt: d.whatsapp?.window_expires_at ?? null,
+      optedOut: !!d.whatsapp?.opted_out,
     },
     agent: {
       holds: !!d.agent?.holds,

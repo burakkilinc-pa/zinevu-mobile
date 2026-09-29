@@ -180,6 +180,7 @@ export const en = {
   'conversation.noChannel': 'No WhatsApp number is connected, so this conversation can only be read here.',
   'conversation.note': 'Note',
   'conversation.openOwnWhatsapp': 'Open in WhatsApp',
+  'conversation.optedOut': 'This customer asked for no automated messages. The assistant stays out; you can still answer.',
   'conversation.placeholder': 'Write a message…',
   'conversation.send': 'Send',
   'conversation.sendFailed': 'The message could not be sent.',

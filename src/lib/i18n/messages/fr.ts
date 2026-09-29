@@ -175,6 +175,7 @@ export const fr: Record<MessageKey, string> = {
   'conversation.noChannel': 'Aucun numéro WhatsApp n\'est connecté ; cette conversation est en lecture seule ici.',
   'conversation.note': 'Note',
   'conversation.openOwnWhatsapp': 'Ouvrir dans WhatsApp',
+  'conversation.optedOut': 'Ce client ne veut pas de messages automatiques. L\'assistant se retire ; vous pouvez toujours répondre.',
   'conversation.placeholder': 'Écrire un message…',
   'conversation.send': 'Envoyer',
   'conversation.sendFailed': 'Le message n\'a pas pu être envoyé.',

@@ -175,6 +175,7 @@ export const nl: Record<MessageKey, string> = {
   'conversation.noChannel': 'Er is geen WhatsApp-nummer gekoppeld, dus dit gesprek is hier alleen te lezen.',
   'conversation.note': 'Notitie',
   'conversation.openOwnWhatsapp': 'Openen in WhatsApp',
+  'conversation.optedOut': 'Deze klant wil geen automatische berichten. De assistent blijft eruit; jij kunt nog wel antwoorden.',
   'conversation.placeholder': 'Schrijf een bericht…',
   'conversation.send': 'Versturen',
   'conversation.sendFailed': 'Het bericht kon niet worden verstuurd.',
