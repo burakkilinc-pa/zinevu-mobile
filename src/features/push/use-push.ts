@@ -30,6 +30,18 @@ type PushData = {
   type?:
     | 'lead.new'
     | 'lead.approved'
+    /** The customer wrote back on a lead — WhatsApp, or a reply to our mail. */
+    | 'lead.message'
+    /** The assistant stopped mid-conversation and asked for a colleague. */
+    | 'agent.handover'
+    /**
+     * A WhatsApp message from a number that is on no lead yet. Carries no id:
+     * an unlinked thread is addressed by the id of one of its messages so a
+     * phone number never reaches a URL, a log or a history — see the portal's
+     * inbox routes. Until the inbox screen exists on mobile a tap deliberately
+     * lands nowhere rather than on a screen that would fail to load.
+     */
+    | 'inbox.unlinked'
     | 'chat.message'
     | 'chat.opened'
     | 'planning.changed'
