@@ -2,7 +2,6 @@ import { useEffect, type ReactNode } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -65,7 +64,15 @@ type TabOptions = {
   tabBarItemStyle?: any;
 };
 
-type Route = { key: string; name: string };
+type Route = {
+  key: string;
+  name: string;
+  // The tab's OWN navigator state, present once that tab has been visited —
+  // for every tab here a stack, so `routes.length > 1` means the tab is sitting
+  // on a pushed screen (a lead detail) rather than its own root. `key` is the
+  // address a pop has to be sent to; see press().
+  state?: { key?: string; routes?: unknown[] };
+};
 
 type TabBarProps = {
   state: { index: number; routes: Route[] };
@@ -75,6 +82,7 @@ type TabBarProps = {
     // Loosely typed: the real BottomTabBarProps emit is generic over event
     // names; `any` here lets us accept it without importing @react-navigation.
     emit: (e: any) => any;
+    dispatch: (action: any) => void;
   };
   // Route name that should occupy the notch (the space's landing screen).
   // Falls back to a flat dock if it isn't among the visible tabs.
@@ -118,11 +126,19 @@ export function BrandTabBar({ state, descriptors, navigation, centerRoute }: Tab
     });
     if (event.defaultPrevented) return;
     // Tapping the tab you are already on returns to that tab's root — the
-    // behaviour every tabbed app has. Without it a lead detail (a push inside
-    // the leads stack) traps you: the dock's Leads button is already focused,
-    // so nothing happens and the list is unreachable.
+    // behaviour every tabbed app has, and one the default bar does NOT provide
+    // (it ignores a press on the focused tab outright). Without it a lead
+    // detail traps you: the dock's Leads button is already focused, so nothing
+    // happens and the list is unreachable.
+    //
+    // The pop is addressed to the tab's own stack by state key. `router
+    // .dismissAll()` cannot do this job: it dispatches POP_TO_TOP with no
+    // target, which the ROOT stack claims — the leads stack never sees it.
     if (focused) {
-      if (router.canDismiss()) router.dismissAll();
+      const stack = route.state;
+      if (stack?.key && (stack.routes?.length ?? 0) > 1) {
+        navigation.dispatch({ type: 'POP_TO_TOP', target: stack.key });
+      }
       return;
     }
     navigation.navigate(route.name);
