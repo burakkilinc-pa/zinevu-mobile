@@ -293,6 +293,132 @@ export async function fetchCustomerTokens(dealId: number): Promise<CustomerToken
   }));
 }
 
+/** Which pipe an offer takes to WhatsApp. See sendOfferWhatsapp. */
+export type WhatsappTransport = 'auto' | 'cloud' | 'link';
+
+export type WhatsappAttachment = {
+  url: string;
+  fileName: string;
+  mime: string;
+  size: number | null;
+};
+
+export type WhatsappSendResult = {
+  transport: 'cloud' | 'link';
+  /** The chat to open. Always null on a cloud send — it already went. */
+  url: string | null;
+  appUrl: string | null;
+  text: string;
+  offerUrl: string;
+  offerNo: string;
+  phone: string;
+  /** True once the deal is really booked as sent. */
+  confirmed: boolean;
+  /** Why `auto` came back as a hand-off, when it did. */
+  fallbackReason: string | null;
+  attachment: WhatsappAttachment | null;
+};
+
+function toAttachment(raw: unknown): WhatsappAttachment | null {
+  const a = raw as Record<string, unknown> | null | undefined;
+  if (!a || typeof a.url !== 'string') return null;
+
+  return {
+    url: a.url,
+    fileName: typeof a.file_name === 'string' ? a.file_name : 'offerte.pdf',
+    mime: typeof a.mime === 'string' ? a.mime : 'application/pdf',
+    size: typeof a.size === 'number' ? a.size : null,
+  };
+}
+
+/**
+ * Send the offer to the customer over WhatsApp.
+ *
+ * Two pipes, and the server picks. With a connected WhatsApp Business number
+ * and Meta's 24-hour service window open, it goes out from the server with the
+ * PDF attached as a real document and comes back `confirmed` — there is
+ * nothing left to do. Otherwise it comes back as a hand-off: a chat address to
+ * open, the message text, and the PDF for the app to attach itself. Only after
+ * the dealer says that chat really left do we call this again with
+ * `confirm: true`, which is what books the offer as sent.
+ *
+ * Preparing is free and repeatable; the same customer link comes back each
+ * time.
+ */
+export async function sendOfferWhatsapp(
+  dealId: number,
+  opts: { transport?: WhatsappTransport; confirm?: boolean } = {}
+): Promise<WhatsappSendResult> {
+  const data = await request<Record<string, unknown>>(
+    `/portal/dealer/deals/${dealId}/send-whatsapp`,
+    {
+      method: 'POST',
+      body: {
+        transport: opts.transport ?? 'auto',
+        ...(opts.confirm ? { confirm: true } : {}),
+      },
+    }
+  );
+
+  return {
+    transport: data.transport === 'cloud' ? 'cloud' : 'link',
+    url: typeof data.url === 'string' ? data.url : null,
+    appUrl: typeof data.app_url === 'string' ? data.app_url : null,
+    text: typeof data.text === 'string' ? data.text : '',
+    offerUrl: typeof data.offer_url === 'string' ? data.offer_url : '',
+    offerNo: typeof data.offer_no === 'string' ? data.offer_no : '',
+    phone: typeof data.phone === 'string' ? data.phone : '',
+    confirmed: data.confirmed === true,
+    fallbackReason: typeof data.fallback_reason === 'string' ? data.fallback_reason : null,
+    attachment: toAttachment(data.attachment),
+  };
+}
+
+export type WhatsappCapability = {
+  phone: string | null;
+  connected: boolean;
+  needsReconnect: boolean;
+  windowOpen: boolean;
+  /** 'cloud', 'link', or null when neither is possible. */
+  recommended: WhatsappTransport | null;
+  /** Why the recommended one is what it is — a closed vocabulary. */
+  reason: string | null;
+  /**
+   * Whether the plan still has an offer send in it. Separate from `recommended`
+   * being null, because the two are different sentences to a dealer: "this
+   * customer has no number" is about the lead, "your sends are used up" is
+   * about the account, and only one of them is fixed by editing the lead.
+   */
+  quotaAllowed: boolean;
+};
+
+/**
+ * Whether this offer can go by WhatsApp at all, and how.
+ *
+ * Safe to fetch on screen open: it mints no offer number, renders no PDF and
+ * spends no quota. The answer moves on its own, because it follows the
+ * customer's newest inbound message.
+ */
+export async function fetchWhatsappCapability(dealId: number): Promise<WhatsappCapability> {
+  const data = await request<Record<string, any>>(
+    `/portal/dealer/deals/${dealId}/whatsapp-capability`
+  );
+
+  const recommended = data?.recommended;
+
+  return {
+    phone: typeof data?.phone === 'string' ? data.phone : null,
+    connected: data?.connected === true,
+    needsReconnect: data?.needs_reconnect === true,
+    windowOpen: data?.window_open === true,
+    recommended: recommended === 'cloud' || recommended === 'link' ? recommended : null,
+    reason: data?.transports?.link?.reason ?? data?.transports?.cloud?.reason ?? null,
+    // Absent means "the endpoint did not say no" — the send itself still
+    // pre-flights the quota, so a missing key must not disable the button.
+    quotaAllowed: data?.quota?.allowed !== false,
+  };
+}
+
 /**
  * Mint a customer-facing signing link.
  *

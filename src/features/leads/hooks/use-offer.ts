@@ -12,10 +12,13 @@ import {
   reprocessWizard,
   saveOffer,
   sendOffer,
+  sendOfferWhatsapp,
   sendTestOffer,
+  fetchWhatsappCapability,
   updateWizardAnswers,
   type OfferLine,
   type OfferSettings,
+  type WhatsappTransport,
 } from '@/features/leads/api/offer.api';
 import { leadKeys } from '@/features/leads/hooks/use-leads';
 
@@ -25,6 +28,7 @@ export const offerKeys = {
   priceCheck: (dealId: number) => ['offer', 'price-check', dealId] as const,
   engagement: (dealId: number) => ['offer', 'engagement', dealId] as const,
   tokens: (dealId: number) => ['offer', 'tokens', dealId] as const,
+  whatsapp: (dealId: number) => ['offer', 'whatsapp-capability', dealId] as const,
 };
 
 /**
@@ -116,6 +120,39 @@ export function useSendOffer(ref: string, dealId: number) {
   return useMutation({
     mutationFn: () => sendOffer(dealId),
     onSuccess: invalidate,
+  });
+}
+
+/**
+ * The offer, over WhatsApp.
+ *
+ * Invalidates on every answer, not only the confirmed ones: even a hand-off
+ * that was merely PREPARED has minted the offer number and re-rendered the
+ * PDF, so the screen behind it is already out of date.
+ */
+export function useSendOfferWhatsapp(ref: string, dealId: number) {
+  const invalidate = useOfferInvalidator(ref, dealId);
+
+  return useMutation({
+    mutationFn: (opts: { transport?: WhatsappTransport; confirm?: boolean } = {}) =>
+      sendOfferWhatsapp(dealId, opts),
+    onSuccess: invalidate,
+  });
+}
+
+/**
+ * Which WhatsApp route is open, so the button can say what it will do.
+ *
+ * Short staleTime: it follows the customer's newest message, so an answer from
+ * two minutes ago can already be wrong in the direction that matters (a window
+ * that has since closed).
+ */
+export function useWhatsappCapability(dealId: number | null) {
+  return useQuery({
+    queryKey: offerKeys.whatsapp(dealId ?? 0),
+    queryFn: () => fetchWhatsappCapability(dealId as number),
+    enabled: !!dealId,
+    staleTime: 30_000,
   });
 }
 

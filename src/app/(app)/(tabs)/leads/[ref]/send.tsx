@@ -1,9 +1,11 @@
 import { useCallback } from 'react';
-import { ActivityIndicator, Alert, Share, Text, View, ScrollView } from 'react-native';
+import { ActivityIndicator, Alert, Linking, Share, Text, View, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import * as Clipboard from 'expo-clipboard';
+import * as Sharing from 'expo-sharing';
 import * as WebBrowser from 'expo-web-browser';
+import { Directory, File, Paths } from 'expo-file-system';
 
 import { Screen, useDockClearance } from '@/components/ui/screen';
 import { Card } from '@/components/ui/card';
@@ -24,20 +26,27 @@ import {
   useIssueCustomerToken,
   useOfferPdf,
   useSendOffer,
+  useSendOfferWhatsapp,
   useSendTestOffer,
+  useWhatsappCapability,
 } from '@/features/leads/hooks/use-offer';
+import type { WhatsappSendResult } from '@/features/leads/api/offer.api';
 
 /**
  * Putting the offer in front of the customer.
  *
  * Three ways out, in the order a dealer reaches for them: check the PDF, send a
  * test to yourself, send it for real. The real send is the only irreversible
- * one — it mints the offer number and mails the customer — so it asks first and
- * says exactly who is about to receive what.
+ * one — it mints the offer number and reaches the customer — so it asks first
+ * and says exactly who is about to receive what.
  *
  * There is no subject/body editor here on purpose: the mail is composed from
  * the dealer's own template in the portal, and re-typing it on a phone would be
  * a second, worse copy of a thing they already own.
+ *
+ * WhatsApp is a second real send, down the customer's own channel. What it
+ * does depends on the answer the server gives, and the two outcomes are
+ * genuinely different jobs — see onSendWhatsapp.
  */
 export default function SendOfferScreen() {
   const { ref } = useLocalSearchParams<{ ref: string }>();
@@ -59,6 +68,8 @@ export default function SendOfferScreen() {
   const dealId = lead?.dealId ?? null;
 
   const send = useSendOffer(String(ref), dealId ?? 0);
+  const sendWhatsapp = useSendOfferWhatsapp(String(ref), dealId ?? 0);
+  const whatsapp = useWhatsappCapability(allowed ? dealId : null);
   const sendTest = useSendTestOffer(dealId ?? 0);
   const pdf = useOfferPdf(dealId ?? 0);
   const tokens = useCustomerTokens(allowed ? dealId : null);
@@ -112,6 +123,157 @@ export default function SendOfferScreen() {
     );
   }, [lead, total, send, router, t]);
 
+  /**
+   * Hand the prepared message to WhatsApp, file and all.
+   *
+   * The clipboard step is the design, not a workaround: no share sheet on
+   * either platform can give WhatsApp a file AND a pre-filled caption at the
+   * same time, and RN's own Share does it unreliably on iOS and not at all on
+   * Android. One behaviour on both phones is worth more than one saved paste,
+   * and the screen says so out loud.
+   */
+  const handOff = useCallback(
+    async (result: WhatsappSendResult) => {
+      await Clipboard.setStringAsync(result.text);
+
+      const attachment = result.attachment;
+
+      if (attachment && (await Sharing.isAvailableAsync())) {
+        try {
+          // Downloaded rather than linked: the share sheet needs a local file,
+          // and the dealer is about to hand this exact document to a customer.
+          const dir = new Directory(Paths.cache, 'offers');
+          if (!dir.exists) dir.create({ intermediates: true });
+
+          // Downloaded to a NAMED file, not just into the directory: left to
+          // itself the download takes its name from the stored media, which
+          // is a random hash — and that hash is what the customer would see
+          // in their chat and in their downloads folder. `idempotent` because
+          // a dealer who sends twice must not hit DestinationAlreadyExists.
+          //
+          // No auth header: the offer PDF is served from the media disk at an
+          // unguessable public URL, the same address the "View PDF" button
+          // above opens in a browser.
+          const file = await File.downloadFileAsync(
+            attachment.url,
+            new File(dir, attachment.fileName),
+            { idempotent: true }
+          );
+
+          await Sharing.shareAsync(file.uri, {
+            mimeType: attachment.mime,
+            UTI: 'com.adobe.pdf',
+            dialogTitle: t('offer.send.whatsapp'),
+          });
+
+          return;
+        } catch {
+          // No file, but the message still has the link in it — falling
+          // through to the chat is better than stopping here.
+        }
+      }
+
+      const chat = result.appUrl ?? result.url;
+      if (chat) {
+        const opened = await Linking.openURL(chat).then(
+          () => true,
+          () => false
+        );
+        if (!opened) toast.error(t('offer.send.whatsappNoApp'));
+      }
+    },
+    [t]
+  );
+
+  /**
+   * Ask whether the chat really left, and only then book the offer as sent.
+   *
+   * We never find out by ourselves: the dealer leaves the app, picks a chat we
+   * cannot see and taps send in someone else's UI. Stamping on the way out
+   * would leave deals reading "sent" for messages nobody wrote.
+   */
+  const askIfItLeft = useCallback(() => {
+    Alert.alert(
+      t('offer.send.whatsappConfirmTitle'),
+      `${t('offer.send.whatsappConfirmBody', { name: lead?.customerName ?? '' })}`,
+      [
+        { text: t('offer.send.whatsappLater'), style: 'cancel' },
+        {
+          text: t('offer.send.whatsappConfirmAction'),
+          onPress: () =>
+            sendWhatsapp.mutate(
+              { transport: 'link', confirm: true },
+              {
+                onSuccess: () => {
+                  toast.success(t('offer.send.sent'));
+                  router.back();
+                },
+                onError: (error) => toast.error((error as Error).message),
+              }
+            ),
+        },
+      ]
+    );
+  }, [lead?.customerName, sendWhatsapp, router, t]);
+
+  const onSendWhatsapp = useCallback(() => {
+    if (!lead) return;
+    if (lead.lines.length === 0) {
+      toast.error(t('offer.send.noLines'));
+      return;
+    }
+    // Unlike the mail, this one needs a number and not an address — the whole
+    // reason a dealer reaches for it.
+    if (!whatsapp.data?.phone && !lead.customerPhone) {
+      toast.error(t('offer.send.noPhone'));
+      return;
+    }
+
+    sendWhatsapp.mutate(
+      { transport: 'auto' },
+      {
+        onSuccess: (result) => {
+          // Already gone, from the dealer's own business number, with the PDF
+          // attached. Nothing to open and nothing to ask.
+          if (result.transport === 'cloud') {
+            toast.success(t('offer.send.whatsappCloudSent'));
+            router.back();
+            return;
+          }
+
+          toast.success(t('offer.send.whatsappPasteHint'));
+          void handOff(result).then(askIfItLeft);
+        },
+        onError: (error) => toast.error((error as Error).message),
+      }
+    );
+  }, [lead, whatsapp.data?.phone, sendWhatsapp, handOff, askIfItLeft, router, t]);
+
+  /**
+   * What the WhatsApp button will do, said before it is pressed.
+   *
+   * The capability endpoint answers this for free (it mints nothing), and the
+   * two routes are genuinely different jobs: one sends from the dealer's own
+   * business number with the PDF attached, the other hands the message to the
+   * phone's WhatsApp and waits to be told it left. A button that looks the same
+   * in both cases teaches the dealer to distrust it.
+   */
+  const wa = whatsapp.data;
+  const waRoute = wa?.recommended ?? null;
+  // Only a loaded answer may disable it. Until then the button stays live —
+  // the send itself refuses properly, and a button greyed out by a slow
+  // request reads as a broken feature.
+  const waBlocked = !!wa && waRoute === null;
+  const waHint = !wa
+    ? null
+    : waRoute === 'cloud'
+      ? t('offer.send.whatsappHintCloud')
+      : waRoute === 'link'
+        ? t('offer.send.whatsappHintLink')
+        : wa.quotaAllowed
+          ? t('offer.send.noPhone')
+          : t('offer.send.whatsappQuota');
+
   const onShareLink = useCallback(
     (url: string) =>
       Share.share({ message: url }).catch(() => {
@@ -145,6 +307,7 @@ export default function SendOfferScreen() {
         <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: dock + 24, gap: 16 }}>
           <Card className="gap-3 p-4">
             <Row label={t('leads.detail.email')} value={lead.customerEmail ?? '—'} />
+            <Row label={t('leads.detail.phone')} value={lead.customerPhone ?? '—'} />
             <Row label={t('offer.total.total')} value={formatMoney(total)} strong />
             {lead.offerNo ? (
               <Row label={t('leads.detail.offerNo')} value={lead.offerNo} />
@@ -163,6 +326,19 @@ export default function SendOfferScreen() {
               loading={send.isPending}
               onPress={onSend}
             />
+            <View className="gap-1">
+              <Button
+                title={t('offer.send.whatsapp')}
+                variant="outline"
+                icon="logo-whatsapp"
+                loading={sendWhatsapp.isPending}
+                disabled={!dealId || waBlocked}
+                onPress={onSendWhatsapp}
+              />
+              {waHint ? (
+                <Text className="px-1 text-xs text-muted-foreground">{waHint}</Text>
+              ) : null}
+            </View>
             <Button
               title={t('offer.send.test')}
               variant="outline"
