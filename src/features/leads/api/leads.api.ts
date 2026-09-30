@@ -28,6 +28,12 @@ type RawPage = {
   pagination?: { current_page?: number; last_page?: number; total?: number };
 };
 
+/** board/overview: every column's first page in one response, keyed by stage. */
+type RawOverview = {
+  columns?: Record<string, RawPage | null>;
+  total?: number;
+};
+
 const STATUSES: FunnelStatus[] = [
   'processing',
   'needs_review',
@@ -83,6 +89,62 @@ export async function fetchLeads(tab: LeadTab, page: number): Promise<LeadPage> 
     lastPage: d.pagination?.last_page ?? 1,
     total: d.pagination?.total ?? 0,
   };
+}
+
+/** What one search turned up, and how much of it fitted in the answer. */
+export type LeadSearchResult = {
+  leads: Lead[];
+  /** Everything the query matched across all four columns, before the cut. */
+  total: number;
+};
+
+/**
+ * How many of each column's matches one search asks for — so at most four
+ * times this many rows come back. Kept modest because every row is a full board
+ * card: a term specific enough to be useful returns a handful, and a term that
+ * would return hundreds is better answered with "narrow it down" than with a
+ * megabyte over a phone connection.
+ */
+const SEARCH_PER_COLUMN = 25;
+
+/**
+ * Find a request by who it is from — name, phone, e-mail, street, postcode,
+ * reference or offer number, or anything they answered in the funnel.
+ *
+ * Reads `board/overview`, which returns every column's first page in ONE
+ * request, so a search spans the whole funnel rather than the column the user
+ * happens to be looking at: someone typing a phone number wants that person's
+ * request, and does not know — or care — whether it was already sent. The
+ * matching itself is the server's (App\Http\Controllers\Portal\LeadController
+ * ::applySearch), so the phone and the portal agree on what a term matches.
+ *
+ * Deliberately not paged: this is a lookup, not a board. The four columns' first
+ * pages are merged newest-first and `total` says how many matched in all, so a
+ * term too broad to answer can say so instead of pretending to scroll forever.
+ */
+export async function searchLeads(query: string): Promise<LeadSearchResult> {
+  const d = await request<RawOverview>('/portal/dealer/leads/board/overview', {
+    params: { q: query, per_page: SEARCH_PER_COLUMN },
+  });
+
+  const leads = Object.values(d.columns ?? {})
+    .flatMap((column) => column?.leads ?? [])
+    .map(mapLead)
+    .filter((l) => l.ref !== '')
+    // One list out of four columns, so it has to be re-sorted: the columns
+    // arrive in board order (new, sent, won, lost) and each is sorted only
+    // within itself. Newest first is the order every other list here uses.
+    .sort((a, b) => timestamp(b.createdAt) - timestamp(a.createdAt));
+
+  return { leads, total: d.total ?? leads.length };
+}
+
+/** Sortable instant, with unknown dates last rather than first. */
+function timestamp(iso: string | null): number {
+  if (!iso) return 0;
+  const ms = Date.parse(iso);
+
+  return Number.isNaN(ms) ? 0 : ms;
 }
 
 /**

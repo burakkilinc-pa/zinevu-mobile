@@ -551,5 +551,47 @@
     "de": "Ohne Montage",
     "fr": "Sans pose",
     "tr": "Montaj hariç"
+  },
+  "leads.search.placeholder": {
+    "en": "Name, phone, e-mail, address…",
+    "nl": "Naam, telefoon, e-mail, adres…",
+    "de": "Name, Telefon, E-Mail, Adresse…",
+    "fr": "Nom, téléphone, e-mail, adresse…",
+    "tr": "İsim, telefon, e-posta, adres…"
+  },
+  "leads.search.clear": {
+    "en": "Clear search",
+    "nl": "Zoekopdracht wissen",
+    "de": "Suche löschen",
+    "fr": "Effacer la recherche",
+    "tr": "Aramayı temizle"
+  },
+  "leads.search.short": {
+    "en": "Type at least {n} characters.",
+    "nl": "Typ minstens {n} tekens.",
+    "de": "Mindestens {n} Zeichen eingeben.",
+    "fr": "Saisissez au moins {n} caractères.",
+    "tr": "En az {n} karakter yazın."
+  },
+  "leads.search.results": {
+    "en": "{n} result(s)",
+    "nl": "{n} resulta(a)t(en)",
+    "de": "{n} Ergebnis(se)",
+    "fr": "{n} résultat(s)",
+    "tr": "{n} sonuç"
+  },
+  "leads.search.more": {
+    "en": "Showing the first {n} of {total} — narrow the search to see the rest.",
+    "nl": "De eerste {n} van {total} — zoek preciezer om de rest te zien.",
+    "de": "Die ersten {n} von {total} — Suche eingrenzen, um den Rest zu sehen.",
+    "fr": "Les {n} premiers sur {total} — affinez la recherche pour voir le reste.",
+    "tr": "{total} sonucun ilk {n} tanesi — geri kalanı için aramayı daraltın."
+  },
+  "leads.search.empty": {
+    "en": "Nothing matches “{q}”.",
+    "nl": "Niets gevonden voor “{q}”.",
+    "de": "Keine Treffer für „{q}“.",
+    "fr": "Aucun résultat pour « {q} ».",
+    "tr": "“{q}” için sonuç yok."
   }
 }

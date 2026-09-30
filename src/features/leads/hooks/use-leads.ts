@@ -1,27 +1,55 @@
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useInfiniteQuery, useQuery } from '@tanstack/react-query';
 
 import {
   activeForms,
   fetchDealerForms,
   fetchLeadCounts,
   fetchLeads,
+  searchLeads,
 } from '@/features/leads/api/leads.api';
 import { LEAD_TABS, type BoardCounts, type LeadTab } from '@/features/leads/types';
 
 export const leadKeys = {
   list: (tab: LeadTab) => ['leads', 'list', tab] as const,
   counts: ['leads', 'counts'] as const,
+  search: (query: string) => ['leads', 'search', query] as const,
   forms: ['leads', 'active-forms'] as const,
 };
 
 /** A tab's board column, paged as the user scrolls. */
-export function useLeads(tab: LeadTab) {
+export function useLeads(tab: LeadTab, enabled = true) {
   return useInfiniteQuery({
     queryKey: leadKeys.list(tab),
     queryFn: ({ pageParam }) => fetchLeads(tab, pageParam),
     initialPageParam: 1,
     getNextPageParam: (last) => (last.page < last.lastPage ? last.page + 1 : undefined),
     staleTime: 30_000,
+    // Off while a search is on screen: the board is not visible then, and
+    // letting it refetch behind the results costs a full universe build per
+    // keystroke-settled query for a list nobody is looking at.
+    enabled,
+  });
+}
+
+/** The shortest term worth a round trip. One letter matches half the funnel. */
+export const MIN_SEARCH = 2;
+
+/**
+ * A lookup across the whole funnel — see searchLeads.
+ *
+ * `keepPreviousData` on purpose: the last answer stays on screen while the next
+ * one is in flight, so refining a term does not blink the list back to a
+ * spinner. `isFetching` is what tells the field to show that it is working.
+ */
+export function useLeadSearch(query: string) {
+  const term = query.trim();
+
+  return useQuery({
+    queryKey: leadKeys.search(term),
+    queryFn: () => searchLeads(term),
+    enabled: term.length >= MIN_SEARCH,
+    staleTime: 30_000,
+    placeholderData: keepPreviousData,
   });
 }
 
