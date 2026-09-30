@@ -13,10 +13,16 @@ import { useColors } from '@/lib/theme';
  */
 export function ScreenHeader({
   title,
+  subtitle,
   onBack,
   right,
 }: {
   title: string;
+  /**
+   * The line under the title — who/what this screen is about when the title
+   * alone cannot say it (a conversation is "with someone, about a quote").
+   */
+  subtitle?: string;
   /** Defaults to popping the stack. */
   onBack?: () => void;
   right?: React.ReactNode;
@@ -34,9 +40,16 @@ export function ScreenHeader({
       >
         <Ionicons name="chevron-back" size={30} color={c.foreground} />
       </Pressable>
-      <Text className="flex-1 pr-3 text-base font-semibold text-foreground" numberOfLines={1}>
-        {title}
-      </Text>
+      <View className="flex-1 pr-3">
+        <Text className="text-base font-semibold text-foreground" numberOfLines={1}>
+          {title}
+        </Text>
+        {subtitle ? (
+          <Text className="text-xs text-muted-foreground" numberOfLines={1}>
+            {subtitle}
+          </Text>
+        ) : null}
+      </View>
       {right}
     </View>
   );

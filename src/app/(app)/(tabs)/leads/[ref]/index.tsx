@@ -183,7 +183,7 @@ export default function LeadDetailScreen() {
             <ActionButton
               icon="chatbubbles"
               label={t('conversation.title')}
-              onPress={() => router.push(`/leads/${ref}/conversation`)}
+              onPress={() => router.push(`/conversation/${ref}`)}
             />
             <ActionButton
               icon="document-text"

@@ -4,18 +4,21 @@ import {
   KeyboardChatScrollView,
   KeyboardStickyView,
 } from 'react-native-keyboard-controller';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useQuery } from '@tanstack/react-query';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
 import { Screen } from '@/components/ui/screen';
 import { toast } from '@/components/ui/toast';
 import { useColors } from '@/lib/theme';
-import { useT } from '@/lib/i18n';
-import { clockTime } from '@/lib/time';
+import { useT, type MessageKey, type TFunction } from '@/lib/i18n';
+import { clockTime, dayLabel, relativeTime, sameLocalDay } from '@/lib/time';
 import { hasPermission, PERMISSIONS } from '@/lib/auth/roles';
 import { useAuthStore } from '@/features/auth/store';
 import { ScreenHeader } from '@/features/leads/components/screen-header';
+import { fetchLeadDetail } from '@/features/leads/api/lead-detail.api';
+import { offerKeys } from '@/features/leads/hooks/use-offer';
 import {
   useConversation,
   useMarkConversationRead,
@@ -26,9 +29,11 @@ import type { ConversationEntry, ConversationView } from '@/features/inbox/types
 /**
  * One customer's conversation, on a phone.
  *
- * The dock is hidden here (see the tabs layout) so the composer sits on the
- * safe-area edge — a keyboard, a text field and a tab bar stacked on top of
- * each other is nobody's idea of a chat.
+ * It sits on the ROOT stack rather than inside the leads tab, because it is
+ * opened from three places — the Messages list, the lead itself, and a
+ * notification — and a screen pushed into the leads stack from the Messages tab
+ * sent Back to the leads list: a place the reader had never been. A pushed root
+ * screen covers the dock and returns to exactly where it was opened from.
  *
  * What this screen exists to make possible is the thing the notification
  * promises: read what the assistant and the customer have said to each other,
@@ -42,6 +47,7 @@ export default function LeadConversationScreen() {
   const { ref } = useLocalSearchParams<{ ref: string }>();
   const t = useT();
   const c = useColors();
+  const router = useRouter();
   const insets = useSafeAreaInsets();
   const user = useAuthStore((s) => s.user);
   const list = useRef<ComponentRef<typeof KeyboardChatScrollView>>(null);
@@ -50,6 +56,17 @@ export default function LeadConversationScreen() {
   const query = useConversation(ref ?? '');
   const send = useSendWhatsapp(ref ?? '');
   const markRead = useMarkConversationRead();
+
+  // Who this thread is with. The conversation endpoint answers about messages
+  // only, so the request itself is read separately — on the SAME query key the
+  // lead screen uses, which makes it free when you arrived from there and one
+  // small request when you arrived from the inbox or a notification.
+  const lead = useQuery({
+    queryKey: offerKeys.detail(String(ref)),
+    queryFn: () => fetchLeadDetail(String(ref)),
+    enabled: !!ref,
+    staleTime: 60_000,
+  }).data;
 
   const view = query.data;
   const mayReply = hasPermission(user, PERMISSIONS.leadsCommunicate);
@@ -83,9 +100,38 @@ export default function LeadConversationScreen() {
   // dealer assuming the app is broken.
   const canWrite = mayReply && !!view?.whatsapp.connected && !!view?.whatsapp.windowOpen;
 
+  // The header answers "whose thread is this, against which quote, how far
+  // along". Without it the screen said "Conversation" and nothing else — you
+  // could read five messages without learning who wrote them.
+  const title = lead?.customerName || lead?.offerNo || t('conversation.title');
+  const moment = lead?.offerSignedAt ?? lead?.offerSentAt ?? lead?.createdAt ?? null;
+  const subtitle = [
+    lead?.offerNo,
+    lead?.status ? t(`leads.status.${lead.status}` as MessageKey) : null,
+    moment ? relativeTime(moment) : null,
+  ]
+    .filter(Boolean)
+    .join(' · ');
+
   return (
     <Screen padded={false} edges={['top']}>
-      <ScreenHeader title={t('conversation.title')} />
+      <ScreenHeader
+        title={title}
+        subtitle={subtitle || undefined}
+        right={
+          ref ? (
+            <Pressable
+              onPress={() => router.push(`/leads/${ref}`)}
+              hitSlop={10}
+              accessibilityRole="button"
+              accessibilityLabel={t('conversation.openLead')}
+              className="h-11 w-11 items-center justify-center rounded-full active:bg-muted"
+            >
+              <Ionicons name="albums-outline" size={21} color={c.foreground} />
+            </Pressable>
+          ) : null
+        }
+      />
 
       {view ? <AgentBanner view={view} /> : null}
 
@@ -103,7 +149,16 @@ export default function LeadConversationScreen() {
             <Text className="text-base text-muted-foreground">{t('conversation.empty')}</Text>
           </View>
         ) : (
-          entries.map((entry) => <Bubble key={`${entry.kind}-${entry.id}`} entry={entry} />)
+          entries.map((entry, i) => (
+            <View key={`${entry.kind}-${entry.id}`} className="gap-2.5">
+              {/* A thread that ran over three days showed nothing but clock
+                  times, so every line looked like it happened this morning. */}
+              {sameLocalDay(entries[i - 1]?.occurredAt, entry.occurredAt) ? null : (
+                <DaySeparator iso={entry.occurredAt} />
+              )}
+              <Bubble entry={entry} />
+            </View>
+          ))
         )}
       </KeyboardChatScrollView>
 
@@ -171,6 +226,22 @@ export default function LeadConversationScreen() {
   );
 }
 
+/** "Today" / "Yesterday" / "12 June 2026", between two days of messages. */
+function DaySeparator({ iso }: { iso: string | null }) {
+  const c = useColors();
+  const label = dayLabel(iso);
+
+  if (!label) return null;
+
+  return (
+    <View className="items-center py-1">
+      <View className="rounded-full px-3 py-1" style={{ backgroundColor: c.muted }}>
+        <Text className="text-[11px] font-medium text-muted-foreground">{label}</Text>
+      </View>
+    </View>
+  );
+}
+
 /**
  * Who is answering this, in one line above the thread.
  *
@@ -226,6 +297,27 @@ function AgentBanner({ view }: { view: ConversationView }) {
 }
 
 /**
+ * What a bubble is allowed to say when the body is empty.
+ *
+ * A mail we sent from a template often stores no plain-text body at all, so
+ * `bodyText` is null and the bubble used to render a bare em-dash — five
+ * blank boxes where five quotes had gone out. Everything the message DID
+ * carry is here: the server's excerpt, the subject, the template it was sent
+ * from, and the files that rode along. One of those is always something.
+ */
+function bodyOf(entry: ConversationEntry): string {
+  return (entry.bodyText ?? '').trim() || (entry.preview ?? '').trim();
+}
+
+function headingOf(entry: ConversationEntry): string | null {
+  const subject = (entry.subject ?? '').trim();
+  if (subject) return subject;
+  const template = (entry.templateName ?? '').trim();
+
+  return template || null;
+}
+
+/**
  * One line of the conversation.
  *
  * The customer's words sit left, everything of ours sits right — and "ours"
@@ -240,13 +332,15 @@ function Bubble({ entry }: { entry: ConversationEntry }) {
 
   const mine = entry.direction !== 'in';
   const internal = entry.direction === 'internal' || entry.channel === 'note';
+  const body = bodyOf(entry);
+  const heading = headingOf(entry);
 
   if (internal) {
     return (
       <View className="items-center">
         <View className="max-w-[90%] rounded-md px-3 py-2" style={{ backgroundColor: c.muted }}>
           <Text className="text-center text-xs text-muted-foreground">
-            {entry.bodyText || t('conversation.note')}
+            {body || heading || t('conversation.note')}
           </Text>
         </View>
       </View>
@@ -260,6 +354,10 @@ function Bubble({ entry }: { entry: ConversationEntry }) {
         ? t('conversation.author.system')
         : entry.authorName;
 
+  const fg = mine ? c.background : c.foreground;
+  // Nothing at all to print and no files either: only then is a dash honest.
+  const emptyHanded = !body && !heading && entry.attachments.length === 0;
+
   return (
     <View className={mine ? 'items-end' : 'items-start'}>
       <View
@@ -267,17 +365,46 @@ function Bubble({ entry }: { entry: ConversationEntry }) {
         style={{ backgroundColor: mine ? c.foreground : c.muted }}
       >
         {mine && label ? (
-          <Text
-            className="pb-0.5 text-[11px] font-medium"
-            style={{ color: c.background, opacity: 0.7 }}
-          >
+          <Text className="pb-0.5 text-[11px] font-medium" style={{ color: fg, opacity: 0.7 }}>
             {label}
           </Text>
         ) : null}
-        <Text className="text-base" style={{ color: mine ? c.background : c.foreground }}>
-          {entry.bodyText || '—'}
-        </Text>
+
+        {/* A mail's subject IS its headline, and for a templated send it is
+            usually the only sentence stored. Printed above the body rather
+            than instead of it, so a mail with both reads as a mail. */}
+        {heading ? (
+          <Text className="pb-0.5 text-sm font-semibold" style={{ color: fg }}>
+            {heading}
+          </Text>
+        ) : null}
+
+        {body ? (
+          <Text className="text-base" style={{ color: fg }}>
+            {body}
+          </Text>
+        ) : emptyHanded ? (
+          <Text className="text-base" style={{ color: fg, opacity: 0.6 }}>
+            —
+          </Text>
+        ) : null}
+
+        {entry.attachments.map((file, i) => (
+          <View key={`${file.name}-${i}`} className="flex-row items-center gap-1.5 pt-1">
+            <Ionicons name="document-attach-outline" size={13} color={fg} />
+            <Text className="flex-1 text-xs" style={{ color: fg, opacity: 0.85 }} numberOfLines={1}>
+              {file.name}
+            </Text>
+          </View>
+        ))}
+
         <View className="flex-row items-center justify-end gap-1 pt-0.5">
+          {/* The receipt that matters on a quote: they opened it. */}
+          {mine && entry.openedAt ? (
+            <Text className="text-[10px]" style={{ color: fg, opacity: 0.7 }}>
+              {openedLabel(t, entry.openedAt)}
+            </Text>
+          ) : null}
           <Text
             className="text-[10px]"
             style={{ color: mine ? c.background : c.mutedForeground, opacity: 0.7 }}
@@ -298,4 +425,11 @@ function Bubble({ entry }: { entry: ConversationEntry }) {
       ) : null}
     </View>
   );
+}
+
+/** "Opened · 14:02" — same day, else the day it was opened. */
+function openedLabel(t: TFunction, iso: string): string {
+  const sameDay = sameLocalDay(iso, new Date().toISOString());
+
+  return `${t('conversation.opened')} ${sameDay ? clockTime(iso) : dayLabel(iso)} ·`;
 }

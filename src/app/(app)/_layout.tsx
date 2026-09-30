@@ -49,6 +49,10 @@ export default function AppLayout() {
         {/* The 3D configurator / lead preview WebView — swipe-back disabled so a
             horizontal drag orbits the scene instead of popping the screen. */}
         <Stack.Screen name="web-3d" options={{ gestureEnabled: false }} />
+        {/* A customer's thread. Opened from the Messages tab, from the lead,
+            and from a notification — so it belongs here rather than in any one
+            tab's stack: Back has to return to whichever of the three it was. */}
+        <Stack.Screen name="conversation/[ref]" />
       </Stack>
       <BiometricGate />
     </>

@@ -419,7 +419,7 @@ function LeadList() {
         ) : null
       }
       renderItem={({ item }) => (
-        <LeadRow row={item} onPress={() => router.push(`/leads/${item.ref}/conversation`)} />
+        <LeadRow row={item} onPress={() => router.push(`/conversation/${item.ref}`)} />
       )}
       refreshControl={
         <RefreshControl
@@ -491,7 +491,7 @@ function LeadRow({ row, onPress }: { row: InboxRow; onPress: () => void }) {
           numberOfLines={1}
           style={row.awaitingReply && !row.agentHolds ? { color: c.foreground } : undefined}
         >
-          {row.lastPreview || t('chat.noMessages')}
+          {row.lastPreview || row.lastSubject || t('chat.noMessages')}
         </Text>
 
         {row.agentHolds ? (

@@ -31,5 +31,7 @@
   "conversation.noChannel": { "en": "No WhatsApp number is connected, so this conversation can only be read here.", "nl": "Er is geen WhatsApp-nummer gekoppeld, dus dit gesprek is hier alleen te lezen.", "de": "Es ist keine WhatsApp-Nummer verbunden, dieses Gespräch ist hier nur lesbar.", "fr": "Aucun numéro WhatsApp n'est connecté ; cette conversation est en lecture seule ici.", "tr": "Bağlı bir WhatsApp numarası yok, bu görüşme burada sadece okunabilir." },
   "conversation.openOwnWhatsapp": { "en": "Open in WhatsApp", "nl": "Openen in WhatsApp", "de": "In WhatsApp öffnen", "fr": "Ouvrir dans WhatsApp", "tr": "WhatsApp'ta aç" },
   "conversation.optedOut": { "en": "This customer asked for no automated messages. The assistant stays out; you can still answer.", "nl": "Deze klant wil geen automatische berichten. De assistent blijft eruit; jij kunt nog wel antwoorden.", "de": "Dieser Kunde möchte keine automatischen Nachrichten. Der Assistent hält sich heraus; Sie können weiterhin antworten.", "fr": "Ce client ne veut pas de messages automatiques. L'assistant se retire ; vous pouvez toujours répondre.", "tr": "Bu müşteri otomatik mesaj istemiyor. Asistan devre dışı; siz yine de cevap verebilirsiniz." },
-  "conversation.note": { "en": "Note", "nl": "Notitie", "de": "Notiz", "fr": "Note", "tr": "Not" }
+  "conversation.note": { "en": "Note", "nl": "Notitie", "de": "Notiz", "fr": "Note", "tr": "Not" },
+  "conversation.openLead": { "en": "Open the request", "nl": "Aanvraag openen", "de": "Anfrage öffnen", "fr": "Ouvrir la demande", "tr": "Talebi aç" },
+  "conversation.opened": { "en": "Opened", "nl": "Geopend", "de": "Geöffnet", "fr": "Ouvert", "tr": "Açıldı" }
 }

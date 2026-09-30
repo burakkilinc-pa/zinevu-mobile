@@ -66,9 +66,7 @@ export default function TabsLayout() {
   // button and offers to navigate away mid-edit. Nothing on those screens is
   // reachable from the dock anyway — you got there from a lead, and Back is
   // how you leave.
-  const inEditor = ['offer', 'answers', 'conversation'].includes(
-    segments[segments.length - 1] ?? ''
-  );
+  const inEditor = ['offer', 'answers'].includes(segments[segments.length - 1] ?? '');
 
   const hideDock = inThread || inEditor;
 

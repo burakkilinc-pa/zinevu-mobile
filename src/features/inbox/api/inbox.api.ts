@@ -26,6 +26,7 @@ type RawRow = {
   awaiting_reply?: boolean;
   last_at?: string | null;
   last_channel?: string | null;
+  last_subject?: string | null;
   last_preview?: string | null;
   agent_holds?: boolean;
 };
@@ -43,6 +44,7 @@ function mapRow(raw: RawRow): InboxRow {
     lastAt: raw.last_at ?? null,
     lastChannel: raw.last_channel ?? null,
     lastPreview: raw.last_preview ?? null,
+    lastSubject: raw.last_subject ?? null,
     agentHolds: !!raw.agent_holds,
   };
 }
@@ -88,6 +90,10 @@ type RawEntry = {
   author_name?: string | null;
   subject?: string | null;
   body_text?: string | null;
+  preview?: string | null;
+  template_name?: string | null;
+  attachments?: { name?: string | null; mime?: string | null; size?: number | null }[];
+  opened_at?: string | null;
   occurred_at?: string | null;
   delivered_at?: string | null;
   read_receipt_at?: string | null;
@@ -108,6 +114,12 @@ function mapEntry(raw: RawEntry): ConversationEntry {
     authorName: raw.author_name ?? null,
     subject: raw.subject ?? null,
     bodyText: raw.body_text ?? null,
+    preview: raw.preview ?? null,
+    templateName: raw.template_name ?? null,
+    attachments: (raw.attachments ?? [])
+      .filter((a) => !!a?.name)
+      .map((a) => ({ name: String(a.name), mime: a.mime ?? null, size: a.size ?? null })),
+    openedAt: raw.opened_at ?? null,
     occurredAt: raw.occurred_at ?? null,
     deliveredAt: raw.delivered_at ?? null,
     readReceiptAt: raw.read_receipt_at ?? null,

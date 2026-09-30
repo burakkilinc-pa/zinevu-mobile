@@ -28,6 +28,12 @@ export type InboxRow = {
   lastChannel: string | null;
   lastPreview: string | null;
   /**
+   * The last message's subject line. A sent offer mail often stores no body we
+   * can excerpt — the row then had nothing to show and read "no messages yet"
+   * for a thread that plainly had one. The subject is what that mail WAS.
+   */
+  lastSubject: string | null;
+  /**
    * The assistant is running this one, so nobody has to open it. False the
    * moment a colleague writes, even while the run is still active — see the
    * backend's InboxController::agentHolds().
@@ -45,6 +51,13 @@ export type UnlinkedRow = {
   unread: number;
 };
 
+/** A file that rode along with a message — our offer PDF, their photo. */
+export type EntryAttachment = {
+  name: string;
+  mime: string | null;
+  size: number | null;
+};
+
 export type ConversationEntry = {
   id: number;
   kind: string;
@@ -54,6 +67,21 @@ export type ConversationEntry = {
   authorName: string | null;
   subject: string | null;
   bodyText: string | null;
+  /**
+   * The server's own one-line excerpt. Not the same thing as `bodyText` and
+   * worth carrying: a mail sent from a template stores a rendered body we do
+   * not always keep, and then this is the only sentence that survived.
+   */
+  preview: string | null;
+  /** Which of the dealer's mail templates produced this — names the send. */
+  templateName: string | null;
+  attachments: EntryAttachment[];
+  /**
+   * When the customer first opened this mail. The one receipt that says the
+   * quote was actually read, so it belongs on the bubble rather than in a
+   * report nobody opens.
+   */
+  openedAt: string | null;
   occurredAt: string | null;
   deliveredAt: string | null;
   readReceiptAt: string | null;

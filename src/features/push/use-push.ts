@@ -205,7 +205,7 @@ export function usePush(): void {
         // where you answer it. Landing on the lead's summary instead would
         // make the dealer hunt for the message the banner just showed them.
         const saidSomething = data.type === 'lead.message' || data.type === 'agent.handover';
-        router.push(`/leads/${data.lead_ref}${saidSomething ? '/conversation' : ''}`);
+        router.push(saidSomething ? `/conversation/${data.lead_ref}` : `/leads/${data.lead_ref}`);
         return;
       }
       if (data.type === 'inbox.unlinked') {
