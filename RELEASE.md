@@ -168,25 +168,44 @@ The data-collection questionnaire lives only in the App Store Connect web UI
 (App Store Connect → the app → App Privacy → Edit). It has to agree with
 `ios.privacyManifests` in `app.json`, and Apple does compare them.
 
-Answer "Yes" to data collection, then declare exactly these seven, and nothing
-else:
+Answer "Yes" to data collection, then declare exactly these nine, and nothing
+else. Apple's App Privacy names and the manifest's keys are the same taxonomy
+under two spellings, so the right-hand column is what to look for in `app.json`:
 
-| App Privacy category | Data type           | Linked to user | Tracking | Purpose          |
-| -------------------- | ------------------- | -------------- | -------- | ---------------- |
-| Contact Info         | Name                | Yes            | No       | App Functionality |
-| Contact Info         | Email Address       | Yes            | No       | App Functionality |
-| Contact Info         | Phone Number        | Yes            | No       | App Functionality |
-| Contact Info         | Physical Address    | Yes            | No       | App Functionality |
-| User Content         | Photos or Videos    | Yes            | No       | App Functionality |
-| User Content         | Other User Content  | Yes            | No       | App Functionality |
-| Identifiers          | Device ID           | Yes            | No       | App Functionality |
+| App Privacy category | Data type              | `NSPrivacyCollectedDataType…` |
+| -------------------- | ---------------------- | ----------------------------- |
+| Contact Info         | Name                   | `Name`                        |
+| Contact Info         | Email Address          | `EmailAddress`                |
+| Contact Info         | Phone Number           | `PhoneNumber`                 |
+| Contact Info         | Physical Address       | `PhysicalAddress`             |
+| User Content         | Photos or Videos       | `PhotosorVideos`              |
+| User Content         | Emails or Text Messages| `EmailsOrTextMessages`        |
+| User Content         | Other User Content     | `OtherUserContent`            |
+| Identifiers          | User ID                | `UserID`                      |
+| Identifiers          | Device ID              | `DeviceID`                    |
 
-Nothing else is collected and the list is short for a reason worth knowing: the
-app carries no analytics, crash or attribution SDK at all, and asks for no
-location. "Other User Content" is the messages and notes a dealer writes;
-"Device ID" is the Expo push token. Tracking is No everywhere, which is what
-lets `NSPrivacyTracking: false` stand and is why the app needs no App Tracking
-Transparency prompt.
+Every one of them: **Used for App Functionality**, **Linked to the user's
+identity**, **not used for tracking**. No other purpose, no other combination —
+which is why the table has no columns for them.
+
+What each one actually is, so nobody has to guess the next time:
+
+- *Phone Number* and *Physical Address* are the customer's, not the dealer's —
+  a lead carries both and a visit is booked to a street.
+- *Photos or Videos* is the image picker: profile pictures, and photos attached
+  to a lead or a chat.
+- *Emails or Text Messages* is the Messages tab — mail subjects and bodies, and
+  WhatsApp message bodies, which the app both displays and sends.
+- *Other User Content* is everything the dealer types themselves: notes on a
+  task, replies in a thread.
+- *User ID* is the portal account id; *Device ID* is the Expo push token and the
+  device name that registers with it.
+
+Nothing else is collected, and the absences are as deliberate as the entries:
+the app carries no analytics, crash or attribution SDK at all, and asks for no
+location — a visit's address is typed by the dealer, never read off the phone.
+Tracking is No everywhere, which is what lets `NSPrivacyTracking: false` stand
+and is why the app needs no App Tracking Transparency prompt.
 
 Two neighbouring answers that are deliberate, not oversights:
 
