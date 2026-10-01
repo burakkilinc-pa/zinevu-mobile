@@ -53,5 +53,6 @@
   "account.section.security": { "en": "Security", "nl": "Beveiliging", "de": "Sicherheit", "fr": "Sécurité", "tr": "Güvenlik" },
   "account.editProfile": { "en": "Edit profile", "nl": "Profiel bewerken", "de": "Profil bearbeiten", "fr": "Modifier le profil", "tr": "Profili düzenle" },
   "account.changePassword": { "en": "Change password", "nl": "Wachtwoord wijzigen", "de": "Passwort ändern", "fr": "Changer le mot de passe", "tr": "Şifre değiştir" },
-  "account.signOut": { "en": "Sign out", "nl": "Uitloggen", "de": "Abmelden", "fr": "Se déconnecter", "tr": "Çıkış yap" }
+  "account.signOut": { "en": "Sign out", "nl": "Uitloggen", "de": "Abmelden", "fr": "Se déconnecter", "tr": "Çıkış yap" },
+  "common.clearSearch": { "en": "Clear search", "nl": "Zoekopdracht wissen", "de": "Suche löschen", "fr": "Effacer la recherche", "tr": "Aramayı temizle" }
 }

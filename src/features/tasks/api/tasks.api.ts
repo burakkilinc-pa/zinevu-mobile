@@ -66,6 +66,22 @@ export async function fetchTaskQueue(): Promise<TaskItem[]> {
 }
 
 /**
+ * Look a task up by what the dealer has in hand.
+ *
+ * Server-side, not a filter over the loaded queue: the queue holds OPEN work
+ * only, and half the reason to look something up is to find out whether it was
+ * already done. The backend widens the net for a query (see
+ * LeadTaskController::applyTaskSearch) — the task's own words, a standalone
+ * visit's contact and address, the deal's offer number, the customer's name and
+ * address — and sorts the answer newest-first.
+ */
+export async function searchTasks(term: string): Promise<TaskItem[]> {
+  const d = await request<RawTask[]>('/portal/dealer/lead-tasks', { params: { q: term } });
+
+  return (Array.isArray(d) ? d : []).map(mapTask).filter((task) => task.id !== 0);
+}
+
+/**
  * The dealer's own outcome tags.
  *
  * Inactive ones come back too (the portal's settings page edits them), so they

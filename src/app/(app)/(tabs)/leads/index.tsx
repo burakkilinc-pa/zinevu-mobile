@@ -15,7 +15,7 @@ import { MIN_SEARCH, useLeadCounts, useLeads, useLeadSearch } from '@/features/l
 import { type LeadTab } from '@/features/leads/types';
 import { LeadCard } from '@/features/leads/components/lead-card';
 import { FilterTabs } from '@/features/leads/components/filter-tabs';
-import { LeadSearchField } from '@/features/leads/components/lead-search-field';
+import { SearchField } from '@/components/ui/search-field';
 import { NewLeadButton } from '@/features/leads/components/new-lead-button';
 
 /**
@@ -97,9 +97,10 @@ export default function LeadsScreen() {
         <Text className="text-2xl font-bold text-foreground">{t('tabs.leads')}</Text>
       </View>
 
-      <LeadSearchField
+      <SearchField
         value={term}
         onChange={setTerm}
+        placeholder={t('leads.search.placeholder')}
         busy={searching && (results.isFetching || typed !== settled)}
       />
 

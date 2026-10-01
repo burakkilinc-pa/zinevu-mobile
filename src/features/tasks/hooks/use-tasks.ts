@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import {
   assignTasks,
@@ -7,6 +7,7 @@ import {
   fetchTaskOutcomes,
   fetchTaskQueue,
   fetchTeam,
+  searchTasks,
 } from '@/features/tasks/api/tasks.api';
 import { groupByBucket } from '@/features/tasks/bucket';
 import type { AssigneeFilter } from '@/features/tasks/types';
@@ -15,9 +16,16 @@ import { hasAnyPermission, hasPermission, PERMISSIONS } from '@/lib/auth/roles';
 
 export const taskKeys = {
   queue: ['tasks', 'queue'] as const,
+  search: (term: string) => ['tasks', 'search', term] as const,
   outcomes: ['tasks', 'outcomes'] as const,
   team: ['tasks', 'team'] as const,
 };
+
+/**
+ * Below this a term matches half the book. Two is enough for a house number or
+ * the start of a street, and short enough that nobody notices the gate.
+ */
+export const MIN_SEARCH = 2;
 
 /**
  * The work queue: one fetch, grouped into buckets, narrowed by assignee.
@@ -85,6 +93,39 @@ export function useTaskQueue(assignee: AssigneeFilter) {
     isError: query.isError,
     isRefetching: query.isRefetching,
     refetch: query.refetch,
+  };
+}
+
+/**
+ * A lookup across every task, open or finished, whatever its date.
+ *
+ * Its own query rather than a filter over the queue, because it answers a
+ * different question — see searchTasks. The previous answer is kept in place
+ * while the next one loads (`keepPreviousData`), so typing one more letter
+ * refines a list instead of blanking it to a spinner.
+ */
+export function useTaskSearch(term: string) {
+  const user = useAuthStore((s) => s.user);
+  const settled = term.trim();
+  const enabled = hasPermission(user, PERMISSIONS.tasksView) && settled.length >= MIN_SEARCH;
+
+  const query = useQuery({
+    queryKey: taskKeys.search(settled),
+    queryFn: () => searchTasks(settled),
+    enabled,
+    placeholderData: keepPreviousData,
+    staleTime: 30_000,
+  });
+
+  const tasks = useMemo(() => query.data ?? [], [query.data]);
+
+  return {
+    byBucket: useMemo(() => groupByBucket(tasks), [tasks]),
+    total: tasks.length,
+    enabled,
+    isLoading: query.isLoading,
+    isFetching: query.isFetching,
+    isError: query.isError,
   };
 }
 

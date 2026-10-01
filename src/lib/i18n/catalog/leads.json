@@ -559,13 +559,6 @@
     "fr": "Nom, téléphone, e-mail, adresse…",
     "tr": "İsim, telefon, e-posta, adres…"
   },
-  "leads.search.clear": {
-    "en": "Clear search",
-    "nl": "Zoekopdracht wissen",
-    "de": "Suche löschen",
-    "fr": "Effacer la recherche",
-    "tr": "Aramayı temizle"
-  },
   "leads.search.short": {
     "en": "Type at least {n} characters.",
     "nl": "Typ minstens {n} tekens.",

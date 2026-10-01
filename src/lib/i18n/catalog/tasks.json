@@ -33,5 +33,10 @@
   "tasks.assign.toast": { "en": "{count} assigned", "nl": "{count} toegewezen", "de": "{count} zugewiesen", "fr": "{count} attribuée(s)", "tr": "{count} görev atandı" },
   "tasks.assign.cleared": { "en": "{count} unassigned", "nl": "Toewijzing van {count} verwijderd", "de": "Zuweisung von {count} entfernt", "fr": "Attribution retirée pour {count}", "tr": "{count} görevin ataması kaldırıldı" },
   "tasks.assign.failed": { "en": "Could not assign", "nl": "Toewijzen is niet gelukt", "de": "Zuweisen fehlgeschlagen", "fr": "Attribution impossible", "tr": "Atama yapılamadı" },
-  "tasks.select.count": { "en": "{count} selected", "nl": "{count} geselecteerd", "de": "{count} ausgewählt", "fr": "{count} sélectionnée(s)", "tr": "{count} seçildi" }
+  "tasks.select.count": { "en": "{count} selected", "nl": "{count} geselecteerd", "de": "{count} ausgewählt", "fr": "{count} sélectionnée(s)", "tr": "{count} seçildi" },
+  "tasks.search.placeholder": { "en": "Offer no., name, address, phone…", "nl": "Offertenr., naam, adres, telefoon…", "de": "Angebotsnr., Name, Adresse, Telefon…", "fr": "N° d'offre, nom, adresse, téléphone…", "tr": "Teklif no, isim, adres, telefon…" },
+  "tasks.search.short": { "en": "Type at least {n} characters.", "nl": "Typ minstens {n} tekens.", "de": "Gib mindestens {n} Zeichen ein.", "fr": "Saisissez au moins {n} caractères.", "tr": "En az {n} karakter yaz." },
+  "tasks.search.results": { "en": "{count} found", "nl": "{count} gevonden", "de": "{count} gefunden", "fr": "{count} trouvée(s)", "tr": "{count} sonuç" },
+  "tasks.search.none": { "en": "Nothing matched that.", "nl": "Niets gevonden.", "de": "Nichts gefunden.", "fr": "Aucun résultat.", "tr": "Eşleşen bir şey yok." },
+  "tasks.search.hint": { "en": "Searches every task, finished ones too.", "nl": "Zoekt in alle taken, ook afgeronde.", "de": "Durchsucht alle Aufgaben, auch erledigte.", "fr": "Cherche dans toutes les tâches, même terminées.", "tr": "Tamamlananlar dahil tüm görevlerde arar." }
 }

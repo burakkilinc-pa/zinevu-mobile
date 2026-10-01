@@ -13,10 +13,12 @@ import { AssignSheet } from '@/features/tasks/components/assign-sheet';
 import { OutcomeSheet } from '@/features/tasks/components/outcome-sheet';
 import { TaskRow } from '@/features/tasks/components/task-row';
 import {
+  MIN_SEARCH,
   useAssigneeFilter,
   useCanAssignTasks,
   useCanCloseTasks,
   useTaskQueue,
+  useTaskSearch,
   useTaskTeam,
 } from '@/features/tasks/hooks/use-tasks';
 import { TASK_BUCKETS, type TaskBucket, type TaskItem } from '@/features/tasks/types';
@@ -36,8 +38,14 @@ import { TASK_BUCKETS, type TaskBucket, type TaskItem } from '@/features/tasks/t
  *
  * Long-pressing a row starts picking a batch, and the filter row turns into the
  * batch's toolbar. One sheet assigns one row or twenty — see AssignSheet.
+ *
+ * Given a `term` it shows a LOOKUP instead: the same rows, the same gestures,
+ * but over everything the dealer has rather than over what is still open. The
+ * screen is the same one on purpose — finding a task and then closing it or
+ * handing it on is one errand, and a results list you can only read would send
+ * them back to the queue to do the thing they came for.
  */
-export function TaskQueue() {
+export function TaskQueue({ term = '' }: { term?: string }) {
   const t = useT();
   const c = useColors();
   const router = useRouter();
@@ -45,7 +53,12 @@ export function TaskQueue() {
 
   const [assignee, setAssignee] = useAssigneeFilter();
   const queue = useTaskQueue(assignee);
+  const search = useTaskSearch(term);
   const team = useTaskTeam();
+
+  const typed = term.trim();
+  const searching = typed.length > 0;
+  const tooShort = searching && typed.length < MIN_SEARCH;
   const canClose = useCanCloseTasks();
   const canAssign = useCanAssignTasks();
 
@@ -64,6 +77,14 @@ export function TaskQueue() {
   }
 
   const selecting = selected.size > 0;
+
+  // Results and queue are different sets, so a selection made in one must not
+  // survive into the other.
+  const [lastTerm, setLastTerm] = useState(typed);
+  if (typed !== lastTerm) {
+    setLastTerm(typed);
+    if (selected.size > 0) setSelected(new Set());
+  }
 
   function toggle(id: number) {
     haptic('selection');
@@ -85,10 +106,14 @@ export function TaskQueue() {
     );
   }
 
+  const byBucket = searching ? search.byBucket : queue.byBucket;
   const sections = TASK_BUCKETS.map((bucket) => ({
     bucket,
-    data: queue.byBucket[bucket],
+    data: byBucket[bucket],
   })).filter((section) => section.data.length > 0);
+
+  const loading = searching ? search.isLoading : queue.isLoading;
+  const failed = searching ? search.isError : queue.isError;
 
   return (
     <View className="flex-1">
@@ -100,6 +125,19 @@ export function TaskQueue() {
           onCancel={() => setSelected(new Set())}
           onAssign={() => setAssigning(Array.from(selected))}
         />
+      ) : searching ? (
+        // What the term found, in place of the chips it replaced. The chips
+        // filter the queue and have no meaning over a lookup that already spans
+        // everybody's work.
+        <View className="px-5 py-2.5">
+          <Text className="text-xs text-muted-foreground">
+            {tooShort
+              ? t('tasks.search.short', { n: MIN_SEARCH })
+              : search.isLoading
+                ? t('common.loading')
+                : t('tasks.search.results', { count: search.total })}
+          </Text>
+        </View>
       ) : (
         <AssigneeChips
           value={assignee}
@@ -118,12 +156,16 @@ export function TaskQueue() {
           paddingTop: 4,
           paddingBottom: bottom + 24,
         }}
+        keyboardShouldPersistTaps="handled"
         refreshControl={
-          <RefreshControl
-            refreshing={queue.isRefetching}
-            onRefresh={() => void queue.refetch()}
-            tintColor={c.mutedForeground}
-          />
+          // A lookup has nothing to pull down for — it reloads by typing.
+          searching ? undefined : (
+            <RefreshControl
+              refreshing={queue.isRefetching}
+              onRefresh={() => void queue.refetch()}
+              tintColor={c.mutedForeground}
+            />
+          )
         }
         renderSectionHeader={({ section }) => (
           <GroupHeader bucket={section.bucket} count={section.data.length} />
@@ -144,12 +186,20 @@ export function TaskQueue() {
         )}
         ItemSeparatorComponent={() => <View className="h-px bg-border" />}
         ListEmptyComponent={
-          queue.isLoading ? (
+          loading ? (
             <ActivityIndicator className="py-16" color={c.mutedForeground} />
-          ) : queue.isError ? (
+          ) : failed ? (
             <Text className="py-16 text-center text-sm text-destructive">
               {t('common.error')}
             </Text>
+          ) : searching ? (
+            <View className="items-center gap-2 py-16">
+              <Ionicons name="search-outline" size={28} color={c.mutedForeground} />
+              <Text className="text-base font-medium text-foreground">
+                {tooShort ? t('tasks.search.short', { n: MIN_SEARCH }) : t('tasks.search.none')}
+              </Text>
+              <Text className="text-sm text-muted-foreground">{t('tasks.search.hint')}</Text>
+            </View>
           ) : (
             <View className="items-center gap-2 py-16">
               <Ionicons name="checkmark-done-outline" size={28} color={c.mutedForeground} />

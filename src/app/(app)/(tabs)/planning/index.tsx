@@ -2,10 +2,13 @@ import { useState } from 'react';
 import { useLocalSearchParams } from 'expo-router';
 
 import { Screen } from '@/components/ui/screen';
+import { SearchField } from '@/components/ui/search-field';
+import { useDebounced } from '@/lib/hooks/use-debounced';
+import { useT } from '@/lib/i18n';
 import { CalendarPane } from '@/features/planning/components/calendar-pane';
 import { ViewSwitch, type PlanningView } from '@/features/planning/components/view-switch';
 import { TaskQueue } from '@/features/tasks/components/task-queue';
-import { useTaskQueue } from '@/features/tasks/hooks/use-tasks';
+import { useTaskQueue, useTaskSearch } from '@/features/tasks/hooks/use-tasks';
 import { useAuthStore } from '@/features/auth/store';
 import { hasPermission, PERMISSIONS } from '@/lib/auth/roles';
 
@@ -23,8 +26,16 @@ import { hasPermission, PERMISSIONS } from '@/lib/auth/roles';
  * Two routes would have been the other option, and would have cost the dock a
  * slot it does not have — the brand mark only reads as the hero dead centre,
  * which is what fixes the side count at an even number (see (tabs)/_layout).
+ *
+ * SEARCH SITS ABOVE BOTH, and takes over from whichever face is showing. It is
+ * one field because it is one question — "where is the thing for this customer"
+ * — and the answer is the same list of tasks whether you were looking at a
+ * month or at a queue when you asked. Typing in it is also the only way to
+ * reach a FINISHED task from this screen: the queue is open work by definition
+ * and the calendar only knows the month you are standing in.
  */
 export default function PlanningScreen() {
+  const t = useT();
   const user = useAuthStore((s) => s.user);
   const { date, view: viewParam } = useLocalSearchParams<{ date?: string; view?: string }>();
 
@@ -53,6 +64,16 @@ export default function PlanningScreen() {
     else if (viewParam === 'tasks') setView('tasks');
   }
 
+  // The field moves on every keystroke; the request waits for the typing to
+  // settle, so a surname costs one round trip instead of seven.
+  const [typed, setTyped] = useState('');
+  const settled = useDebounced(typed);
+  const searching = typed.trim().length > 0;
+
+  // Same query key the results list uses, so this is the one request rather
+  // than a second — it is here only to tell the field when it is behind.
+  const search = useTaskSearch(settled);
+
   // Shares its query key with the queue itself, so this is the same single
   // fetch rather than a second one — and it is what makes the other face
   // discoverable: a tab that silently grew a second page is a tab nobody finds.
@@ -64,7 +85,23 @@ export default function PlanningScreen() {
   return (
     <Screen padded={false} edges={['top']}>
       {both ? <ViewSwitch value={showing} onChange={setView} taskCount={openCount} /> : null}
-      {showing === 'tasks' ? <TaskQueue /> : <CalendarPane />}
+
+      {canTasks ? (
+        <SearchField
+          value={typed}
+          onChange={setTyped}
+          placeholder={t('tasks.search.placeholder')}
+          busy={searching && (search.isFetching || typed !== settled)}
+        />
+      ) : null}
+
+      {searching ? (
+        <TaskQueue term={settled} />
+      ) : showing === 'tasks' ? (
+        <TaskQueue />
+      ) : (
+        <CalendarPane />
+      )}
     </Screen>
   );
 }
