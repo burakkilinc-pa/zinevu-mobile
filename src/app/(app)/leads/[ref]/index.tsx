@@ -23,6 +23,7 @@ import { useDealerForm } from '@/features/leads/hooks/use-leads';
 import { lead3dTarget } from '@/features/leads/lead-3d';
 import { OfferLinesCard } from '@/features/leads/components/offer-lines-card';
 import { ScreenHeader } from '@/features/leads/components/screen-header';
+import { CARD_SHADOW } from '@/components/ui/card';
 import {
   useEngagement,
   useOfferPdf,
@@ -487,7 +488,9 @@ function ActionButton({
       accessibilityRole="button"
       accessibilityState={disabled ? { disabled: true } : {}}
       className="flex-1 items-center gap-1.5 rounded-2xl border border-border bg-card py-3.5 active:bg-muted"
-      style={disabled ? { opacity: 0.4 } : undefined}
+      // Already a card face and a hairline; it was only missing the plate every
+      // other surface on the paper now stands on.
+      style={[CARD_SHADOW, disabled ? { opacity: 0.4 } : null]}
     >
       {loading ? (
         <ActivityIndicator size="small" color={c.foreground} />

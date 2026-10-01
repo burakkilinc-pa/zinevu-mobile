@@ -110,7 +110,12 @@ export function Button({
         chip ? 'pl-2 pr-5' : 'px-6',
         CONTAINER[variant],
         isDisabled && 'opacity-45',
-        plated ? undefined : className
+        // The class stays on the FACE even when there is a plate behind it: it
+        // carries size (`h-14` on the offer's send button), and a height landing
+        // on the wrapper instead left the face at its default inside a taller
+        // box. The wrapper takes its size from the face, so the plate still
+        // matches whatever the class makes it.
+        className
       )}
       style={[
         plated && { borderColor: colors.ink, transform: [{ translateX: sink }, { translateY: sink }] },
@@ -153,7 +158,7 @@ export function Button({
   if (!plated) return face;
 
   return (
-    <View className={className}>
+    <View>
       {/* The plate, as a layer rather than a zero-blur shadow: iOS rasterises
           that one without antialiasing and the ends of a rounded face come out
           stepped. Fixed in place — the FACE travels into it on press, which is
