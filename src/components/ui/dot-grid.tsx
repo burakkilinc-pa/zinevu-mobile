@@ -1,35 +1,42 @@
 import { Image, StyleSheet, View } from 'react-native';
-
-import { useColors } from '@/lib/theme';
+import { useColorScheme } from 'nativewind';
 
 /**
  * The paper's texture: zinevu.com's dot grid, 1dp dots on a 22dp square.
  *
- * It is the ground the portal's sign-in screens stand on, and the app's
- * background colour was already the same paper (#F7F4ED) — only the dots were
- * missing, which is why the two products looked related rather than identical.
+ * It is the ground the portal stands on, and the app's background colour was
+ * already the same paper (#F7F4ED) — only the dots were missing, which is why
+ * the two products looked related rather than identical.
  *
  * A tiled PNG rather than an SVG pattern: react-native-svg is not in this app,
- * and adding a native dependency to draw a dot would mean every dev build on
- * every phone has to be rebuilt. The tile ships at 1x/2x/3x so it stays crisp,
- * and `tintColor` recolours it — the dots are baked black with the 7% in their
- * alpha, so the tint only decides whether they read dark on paper or light on
- * the dark theme's ground.
+ * and adding a native dependency to draw a dot would mean rebuilding every dev
+ * build on every phone. It ships at 1x/2x/3x so it stays crisp.
+ *
+ * TWO tiles rather than one tinted one. iOS renders a tinted Image as a
+ * template, which does not reliably tile with resizeMode="repeat" — and a
+ * background that silently fails to draw is a worse trade than two 100-byte
+ * files. The dark tile is also a little stronger than the site's 7%, because
+ * that much white on a near-black ground is below what a phone screen resolves.
  *
  * Purely decorative: it sits behind everything, takes no touches, and is hidden
  * from screen readers.
  */
+const TILE = {
+  light: require('../../../assets/images/dot-grid.png'),
+  dark: require('../../../assets/images/dot-grid-inverse.png'),
+};
+
 export function DotGrid() {
-  const c = useColors();
+  const { colorScheme } = useColorScheme();
 
   return (
     // The wrapper carries pointerEvents — RN's Image does not take the prop,
-    // and a decoration must never eat a tap meant for the list over it.
+    // and a decoration must never eat a tap meant for the content over it.
     <View style={StyleSheet.absoluteFill} pointerEvents="none" accessible={false}>
       <Image
-        source={require('../../../assets/images/dot-grid.png')}
+        source={colorScheme === 'dark' ? TILE.dark : TILE.light}
         resizeMode="repeat"
-        style={[StyleSheet.absoluteFill, { tintColor: c.ink }]}
+        style={StyleSheet.absoluteFill}
       />
     </View>
   );
