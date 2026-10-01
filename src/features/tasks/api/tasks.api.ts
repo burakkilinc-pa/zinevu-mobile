@@ -120,6 +120,26 @@ export async function fetchTeam(): Promise<TeamMember[]> {
 }
 
 /**
+ * Hand tasks to somebody — or take them off whoever has them.
+ *
+ * One endpoint for one task and for twenty: `bulk-update` takes an id list, so
+ * assigning a single row is the same call with a list of one. A separate PATCH
+ * for the single case would be a second code path, a second permission to think
+ * about (`tasks.manage` gates this one) and a second place for the two to drift.
+ *
+ * `null` unassigns. The backend silently skips ids this dealer does not own, so
+ * the count that comes back is what actually moved, not what we asked for.
+ */
+export async function assignTasks(ids: number[], assigneeId: number | null): Promise<number> {
+  const d = await request<{ updated_count?: number }>('/portal/dealer/lead-tasks/bulk-update', {
+    method: 'POST',
+    body: { ids, assigned_to: assigneeId },
+  });
+
+  return Number(d?.updated_count ?? 0);
+}
+
+/**
  * Close a task by recording what happened.
  *
  * There is no "just mark it done": an `outcome_id` closes the task implicitly

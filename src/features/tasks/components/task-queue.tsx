@@ -1,17 +1,20 @@
 import { useState } from 'react';
-import { ActivityIndicator, RefreshControl, SectionList, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, RefreshControl, SectionList, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
 import { Placeholder } from '@/components/ui/placeholder';
 import { useDockClearance } from '@/components/ui/screen';
+import { haptic } from '@/lib/haptics';
 import { useColors } from '@/lib/theme';
 import { useT, type MessageKey } from '@/lib/i18n';
 import { AssigneeChips } from '@/features/tasks/components/assignee-chips';
+import { AssignSheet } from '@/features/tasks/components/assign-sheet';
 import { OutcomeSheet } from '@/features/tasks/components/outcome-sheet';
 import { TaskRow } from '@/features/tasks/components/task-row';
 import {
   useAssigneeFilter,
+  useCanAssignTasks,
   useCanCloseTasks,
   useTaskQueue,
   useTaskTeam,
@@ -30,6 +33,9 @@ import { TASK_BUCKETS, type TaskBucket, type TaskItem } from '@/features/tasks/t
  * The portal keeps empty columns because a board's columns are its layout; a
  * phone list has no such obligation, and six headers over four tasks reads as a
  * screen that is mostly headings.
+ *
+ * Long-pressing a row starts picking a batch, and the filter row turns into the
+ * batch's toolbar. One sheet assigns one row or twenty — see AssignSheet.
  */
 export function TaskQueue() {
   const t = useT();
@@ -41,8 +47,33 @@ export function TaskQueue() {
   const queue = useTaskQueue(assignee);
   const team = useTaskTeam();
   const canClose = useCanCloseTasks();
+  const canAssign = useCanAssignTasks();
 
   const [closing, setClosing] = useState<TaskItem | null>(null);
+  const [assigning, setAssigning] = useState<number[]>([]);
+  const [selected, setSelected] = useState<ReadonlySet<number>>(() => new Set());
+
+  // Switching chips changes which rows are on screen, so a selection made under
+  // the old one would act on tasks the dealer can no longer see. Derived during
+  // render rather than in an effect — an effect would let one frame through
+  // with the stale toolbar still up.
+  const [lastFilter, setLastFilter] = useState(assignee);
+  if (assignee !== lastFilter) {
+    setLastFilter(assignee);
+    if (selected.size > 0) setSelected(new Set());
+  }
+
+  const selecting = selected.size > 0;
+
+  function toggle(id: number) {
+    haptic('selection');
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (!next.delete(id)) next.add(id);
+
+      return next;
+    });
+  }
 
   if (!queue.allowed) {
     return (
@@ -61,12 +92,22 @@ export function TaskQueue() {
 
   return (
     <View className="flex-1">
-      <AssigneeChips
-        value={assignee}
-        onChange={setAssignee}
-        team={team.data ?? []}
-        counts={queue.counts}
-      />
+      {/* Same slot either way, so starting a selection does not shove the list
+          down a row. */}
+      {selecting ? (
+        <SelectionBar
+          count={selected.size}
+          onCancel={() => setSelected(new Set())}
+          onAssign={() => setAssigning(Array.from(selected))}
+        />
+      ) : (
+        <AssigneeChips
+          value={assignee}
+          onChange={setAssignee}
+          team={team.data ?? []}
+          counts={queue.counts}
+        />
+      )}
 
       <SectionList
         sections={sections}
@@ -92,8 +133,13 @@ export function TaskQueue() {
             task={item}
             bucket={section.bucket}
             canClose={canClose}
+            canAssign={canAssign}
+            selecting={selecting}
+            selected={selected.has(item.id)}
+            onOpen={item.leadRef ? () => router.push(`/leads/${item.leadRef}`) : null}
             onComplete={() => setClosing(item)}
-            onOpenLead={item.leadRef ? () => router.push(`/leads/${item.leadRef}`) : null}
+            onAssign={() => setAssigning([item.id])}
+            onToggleSelect={() => toggle(item.id)}
           />
         )}
         ItemSeparatorComponent={() => <View className="h-px bg-border" />}
@@ -117,6 +163,11 @@ export function TaskQueue() {
       />
 
       <OutcomeSheet task={closing} onClose={() => setClosing(null)} />
+      <AssignSheet
+        taskIds={assigning}
+        onClose={() => setAssigning([])}
+        onAssigned={() => setSelected(new Set())}
+      />
     </View>
   );
 }
@@ -144,6 +195,50 @@ function GroupHeader({ bucket, count }: { bucket: TaskBucket; count: number }) {
       <View className="rounded-full px-1.5" style={{ backgroundColor: c.muted }}>
         <Text className="text-[10px] font-semibold text-muted-foreground">{count}</Text>
       </View>
+    </View>
+  );
+}
+
+/** What the filter row becomes once a batch is being picked. */
+function SelectionBar({
+  count,
+  onCancel,
+  onAssign,
+}: {
+  count: number;
+  onCancel: () => void;
+  onAssign: () => void;
+}) {
+  const t = useT();
+  const c = useColors();
+
+  return (
+    <View className="flex-row items-center gap-2 px-5 py-2">
+      <Pressable
+        onPress={onCancel}
+        hitSlop={8}
+        accessibilityRole="button"
+        className="h-8 w-8 items-center justify-center rounded-full active:bg-muted"
+        accessibilityLabel={t('common.cancel')}
+      >
+        <Ionicons name="close" size={20} color={c.foreground} />
+      </Pressable>
+
+      <Text className="flex-1 text-sm font-semibold text-foreground">
+        {t('tasks.select.count', { count })}
+      </Text>
+
+      <Pressable
+        onPress={onAssign}
+        accessibilityRole="button"
+        className="flex-row items-center gap-1.5 rounded-full px-4 py-2 active:opacity-70"
+        style={{ backgroundColor: c.foreground }}
+      >
+        <Ionicons name="person-add-outline" size={14} color={c.background} />
+        <Text className="text-sm font-medium" style={{ color: c.background }}>
+          {t('tasks.assign.action')}
+        </Text>
+      </Pressable>
     </View>
   );
 }

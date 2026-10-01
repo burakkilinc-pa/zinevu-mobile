@@ -24,5 +24,14 @@
   "tasks.outcome.confirmNext": { "en": "Close and book", "nl": "Afronden en inplannen", "de": "Abschließen und planen", "fr": "Terminer et planifier", "tr": "Tamamla ve planla" },
   "tasks.toast.done": { "en": "Task closed", "nl": "Taak afgerond", "de": "Aufgabe abgeschlossen", "fr": "Tâche terminée", "tr": "Görev tamamlandı" },
   "tasks.toast.doneWithNext": { "en": "Closed · next one {when}", "nl": "Afgerond · volgende {when}", "de": "Abgeschlossen · nächste {when}", "fr": "Terminée · prochaine {when}", "tr": "Tamamlandı · sıradaki {when}" },
-  "tasks.toast.failed": { "en": "Could not close the task", "nl": "Afronden is niet gelukt", "de": "Abschließen fehlgeschlagen", "fr": "Impossible de terminer la tâche", "tr": "Görev tamamlanamadı" }
+  "tasks.toast.failed": { "en": "Could not close the task", "nl": "Afronden is niet gelukt", "de": "Abschließen fehlgeschlagen", "fr": "Impossible de terminer la tâche", "tr": "Görev tamamlanamadı" },
+  "tasks.assign.action": { "en": "Assign", "nl": "Toewijzen", "de": "Zuweisen", "fr": "Attribuer", "tr": "Ata" },
+  "tasks.assign.title": { "en": "Who does this?", "nl": "Wie doet dit?", "de": "Wer macht das?", "fr": "Qui s'en charge ?", "tr": "Kim yapacak?" },
+  "tasks.assign.titleMany": { "en": "Who does these {count}?", "nl": "Wie doet deze {count}?", "de": "Wer macht diese {count}?", "fr": "Qui prend ces {count} ?", "tr": "Bu {count} görevi kim yapacak?" },
+  "tasks.assign.me": { "en": "Take it myself", "nl": "Zelf oppakken", "de": "Selbst übernehmen", "fr": "Je m'en charge", "tr": "Ben alıyorum" },
+  "tasks.assign.clear": { "en": "Leave it unassigned", "nl": "Niet toewijzen", "de": "Nicht zuweisen", "fr": "Laisser non attribué", "tr": "Atamayı kaldır" },
+  "tasks.assign.toast": { "en": "{count} assigned", "nl": "{count} toegewezen", "de": "{count} zugewiesen", "fr": "{count} attribuée(s)", "tr": "{count} görev atandı" },
+  "tasks.assign.cleared": { "en": "{count} unassigned", "nl": "Toewijzing van {count} verwijderd", "de": "Zuweisung von {count} entfernt", "fr": "Attribution retirée pour {count}", "tr": "{count} görevin ataması kaldırıldı" },
+  "tasks.assign.failed": { "en": "Could not assign", "nl": "Toewijzen is niet gelukt", "de": "Zuweisen fehlgeschlagen", "fr": "Attribution impossible", "tr": "Atama yapılamadı" },
+  "tasks.select.count": { "en": "{count} selected", "nl": "{count} geselecteerd", "de": "{count} ausgewählt", "fr": "{count} sélectionnée(s)", "tr": "{count} seçildi" }
 }

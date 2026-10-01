@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import {
+  assignTasks,
   completeTask,
   fetchTaskOutcomes,
   fetchTaskQueue,
@@ -160,6 +161,39 @@ export function useCompleteTask() {
       void queryClient.invalidateQueries({ queryKey: ['planning', 'month'] });
     },
   });
+}
+
+/**
+ * Hand tasks over, or take them.
+ *
+ * Invalidates the calendar too: an assignee's name is on the agenda row, so a
+ * visit that just changed hands would otherwise still show the old owner on the
+ * tab's other face.
+ */
+export function useAssignTasks() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ ids, assigneeId }: { ids: number[]; assigneeId: number | null }) =>
+      assignTasks(ids, assigneeId),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: taskKeys.queue });
+      void queryClient.invalidateQueries({ queryKey: ['planning', 'month'] });
+    },
+  });
+}
+
+/**
+ * Whether this user may hand work to somebody else.
+ *
+ * `tasks.manage` only — the same gate the endpoint has. A crew seat
+ * (`tasks.execute`) can carry out and close what it was given, but deciding who
+ * does what is the office's job, and the backend would refuse anyway.
+ */
+export function useCanAssignTasks(): boolean {
+  const user = useAuthStore((s) => s.user);
+
+  return hasPermission(user, PERMISSIONS.tasksManage);
 }
 
 /**
