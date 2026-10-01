@@ -30,23 +30,33 @@ installs and runs fine and silently never receives a notification.
 
 The bundle identifiers are already set: `com.zinevu.mobile` on both platforms.
 
-## 3. Firebase, on Android only
+## 3. Firebase and Google sign-in, on Android only
 
 Android push needs `google-services.json` from a Firebase project whose package
-name is `com.zinevu.mobile`. **This is the one thing still missing.** Get it
-from the Firebase console — add an Android app to the same Google Cloud project
-that already holds our OAuth clients (project number `937185871682`, so the
-sign-in and the push live together) — and drop it in the repo root.
+name is `com.zinevu.mobile`. **It is in the repo root**, from project
+`zinevu-com` (number `132252195087`) — the same Google Cloud project that holds
+the OAuth clients in `eas.json`, so sign-in and push live together. It carries
+only public identifiers, which is why it can be committed.
 
 Nothing else to wire: `app.config.js` picks the file up from there on its own,
 and falls back to a `GOOGLE_SERVICES_JSON` file-type EAS variable if you would
 rather not commit it. When neither exists the key is left off entirely, which is
-why the app builds today and simply never rings on Android.
+why the app builds and simply never rings on Android.
 
-While you are in that console: Google sign-in on Android also needs an **Android
-OAuth client** carrying the SHA-1 of the EAS upload key (`eas credentials` →
-Android → keystore shows it). Without it the Google button opens and fails; iOS
-is unaffected, since its client id is already in `eas.json`.
+Google sign-in on Android needs an **Android OAuth client** carrying the SHA-1
+of whatever certificate signs the installed app. That client exists, for
+`E6:2F:B5:6B:EB:16:88:22:BC:54:4C:5D:16:2A:D6:40:0A:8A:56:9C`, and the trap is
+which key that is:
+
+- an APK installed straight from EAS is signed by the **upload keystore**,
+- an app installed from Play is re-signed by Google with the **Play app signing
+  key**, if Play App Signing is on — a different certificate, a different SHA-1.
+
+Both have to be registered on that OAuth client or the Google button opens and
+fails on one of the two paths while working perfectly on the other. Play
+Console → Setup → App integrity has the app signing fingerprint; `eas
+credentials` → Android → keystore has the upload one. iOS is unaffected either
+way, since its client id is in `eas.json` and nothing re-signs an iOS build.
 
 iOS needs no `google-services.json` equivalent — the push key from step 2 is enough.
 
