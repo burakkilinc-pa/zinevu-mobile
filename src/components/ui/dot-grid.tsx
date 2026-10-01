@@ -1,4 +1,4 @@
-import { Image, StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useColorScheme } from 'nativewind';
 
 /**
@@ -34,6 +34,11 @@ const TILE = {
 
 export function DotGrid() {
   const { colorScheme } = useColorScheme();
+  // Concrete dimensions rather than absoluteFill on the Image itself: a tiled
+  // image needs a laid-out box to work out how many tiles to draw, and an
+  // absolutely-stretched one does not always have measured itself by the time
+  // the tiling is computed.
+  const { width, height } = useWindowDimensions();
 
   return (
     // The wrapper carries pointerEvents — RN's Image does not take the prop,
@@ -42,7 +47,7 @@ export function DotGrid() {
       <Image
         source={colorScheme === 'dark' ? TILE.dark : TILE.light}
         resizeMode="repeat"
-        style={StyleSheet.absoluteFill}
+        style={{ width, height }}
       />
     </View>
   );

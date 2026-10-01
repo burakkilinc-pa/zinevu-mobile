@@ -115,14 +115,22 @@ export function CalendarPane() {
 
       <LaneTabs value={lane} onChange={setLane} counts={counts} />
 
-      <MonthGrid
-        year={cursor.year}
-        month={cursor.month}
-        grid={grid}
-        byDay={byDay}
-        selected={selected}
-        onSelect={setSelected}
-      />
+      {/* The month gets a frame but no fill. On the dotted ground a bare grid
+          of numbers had nothing holding it together — the dots ran straight
+          through it — and a white card would have put the one part of the
+          screen that is pure structure on a surface meant for content. A
+          hairline is enough to say "this is one thing", and the paper keeps
+          showing through it. */}
+      <View className="mx-5 mt-1 rounded-2xl border border-border py-2">
+        <MonthGrid
+          year={cursor.year}
+          month={cursor.month}
+          grid={grid}
+          byDay={byDay}
+          selected={selected}
+          onSelect={setSelected}
+        />
+      </View>
 
       <View className="mt-3 flex-row items-center gap-2 border-t border-border px-5 pb-1 pt-3">
         <Text className="flex-1 text-base font-semibold text-foreground">
