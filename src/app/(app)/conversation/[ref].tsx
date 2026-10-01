@@ -163,7 +163,7 @@ export default function LeadConversationScreen() {
       </KeyboardChatScrollView>
 
       <KeyboardStickyView offset={{ closed: 0, opened: insets.bottom }}>
-        <View className="border-t border-border bg-background px-4 py-2">
+        <View className="border-t border-border bg-card px-4 py-2">
           {canWrite ? (
             <View className="flex-row items-end gap-2">
               <TextInput

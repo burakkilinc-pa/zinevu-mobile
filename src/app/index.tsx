@@ -3,6 +3,7 @@ import { Redirect } from 'expo-router';
 
 import { useAuthStore } from '@/features/auth/store';
 import { useColors } from '@/lib/theme';
+import { DotGrid } from '@/components/ui/dot-grid';
 
 /** Entry gate: waits for bootstrap, then routes to auth or the app shell. */
 export default function Index() {
@@ -12,6 +13,7 @@ export default function Index() {
   if (status === 'loading') {
     return (
       <View className="flex-1 items-center justify-center bg-background">
+      <DotGrid />
         <ActivityIndicator color={colors.foreground} />
       </View>
     );

@@ -83,7 +83,7 @@ export default function PlanningScreen() {
   const showing: PlanningView = both ? view : canTasks ? 'tasks' : 'calendar';
 
   return (
-    <Screen padded={false} edges={['top']} dots>
+    <Screen padded={false} edges={['top']}>
       {both ? <ViewSwitch value={showing} onChange={setView} taskCount={openCount} /> : null}
 
       {canTasks ? (

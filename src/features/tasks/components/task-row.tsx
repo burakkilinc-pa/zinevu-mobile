@@ -314,8 +314,6 @@ function SwipeAction({
   /** What reads on that colour — fixed per panel, not per theme. */
   ink: string;
 }) {
-  const c = useColors();
-
   return (
     <View
       className="items-center justify-center rounded-2xl px-2"

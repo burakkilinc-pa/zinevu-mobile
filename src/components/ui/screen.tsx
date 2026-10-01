@@ -21,10 +21,14 @@ type ScreenProps = {
    */
   tabBar?: boolean;
   /**
-   * Lay zinevu.com's dot grid over the paper. Opt-in rather than always on: it
-   * only reads as texture where the ground is actually visible between slabs,
-   * and a screen whose rows are opaque paper would show it as a dot-free patch
-   * per row instead.
+   * zinevu.com's dot grid over the paper. ON by default — it is the app's
+   * ground, the same way it is the site's, and a screen without it is the one
+   * that looks out of place. Turn it off for a screen that fills itself edge to
+   * edge (a WebView, a photo) where the texture would never be seen anyway.
+   *
+   * It follows from this that anything laid ON the ground should be a surface
+   * (white) rather than more paper: an opaque `bg-background` panel over the
+   * grid reads as a dot-free patch, not as a panel.
    */
   dots?: boolean;
   className?: string;
@@ -48,7 +52,7 @@ export function Screen({
   padded = true,
   edges = ['top', 'bottom'],
   tabBar = false,
-  dots = false,
+  dots = true,
   className,
 }: ScreenProps) {
   const insets = useSafeAreaInsets();

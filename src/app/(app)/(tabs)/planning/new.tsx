@@ -18,6 +18,7 @@ import { dateKey } from '@/features/planning/calendar';
 import { useCreateVisit, useFollowUpTypes } from '@/features/planning/hooks/use-planning';
 import { followUpIcon } from '@/features/planning/icons';
 import { followUpTypeLabel } from '@/features/planning/type-label';
+import { DotGrid } from '@/components/ui/dot-grid';
 
 /**
  * Booking one visit — a measurement, a montage, a delivery, a call.
@@ -142,6 +143,7 @@ export default function NewVisitScreen() {
 
   return (
     <View className="flex-1 bg-background" style={{ paddingTop: insets.top }}>
+      <DotGrid />
       <View className="flex-row items-center gap-1 px-2 py-2">
         <Pressable
           onPress={() => router.back()}

@@ -11,6 +11,7 @@ import { useT } from '@/lib/i18n';
 import { formatDateTime } from '@/lib/time';
 import { useReplyToTicket, useTicket } from '@/features/support/hooks/use-support';
 import type { TicketMessage } from '@/features/support/api/support.api';
+import { DotGrid } from '@/components/ui/dot-grid';
 
 /** One support thread, and the reply box under it. */
 export default function TicketScreen() {
@@ -43,6 +44,7 @@ export default function TicketScreen() {
 
   return (
     <View className="flex-1 bg-background" style={{ paddingTop: insets.top }}>
+      <DotGrid />
       <View className="flex-row items-center gap-1 px-2 py-2">
         <Pressable
           onPress={() => router.back()}

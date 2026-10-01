@@ -14,6 +14,7 @@ import { ApiError } from '@/lib/api/client';
 import { useAuthStore } from '@/features/auth/store';
 import { changePassword, sendOwnAccessCode } from '@/features/auth/api/auth.api';
 import { MIN_PASSWORD_LENGTH } from '@/features/auth/schemas';
+import { DotGrid } from '@/components/ui/dot-grid';
 
 /**
  * Changing your password.
@@ -84,6 +85,7 @@ export default function PasswordScreen() {
 
   return (
     <View className="flex-1 bg-background" style={{ paddingTop: insets.top }}>
+      <DotGrid />
       <View className="flex-row items-center gap-1 px-2 py-2">
         <Pressable
           onPress={() => router.back()}

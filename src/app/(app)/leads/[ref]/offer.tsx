@@ -327,7 +327,7 @@ export default function OfferEditorScreen() {
               footer owns the bottom edge and only has to clear the home
               indicator. */}
           <View
-            className="border-t border-border/60 bg-background px-5 pt-3"
+            className="border-t border-border/60 bg-card px-5 pt-3"
             style={{ paddingBottom: insets.bottom + 12 }}
           >
             <Button

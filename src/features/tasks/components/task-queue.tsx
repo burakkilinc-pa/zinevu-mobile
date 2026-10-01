@@ -62,6 +62,24 @@ export function TaskQueue({ term = '' }: { term?: string }) {
   const canClose = useCanCloseTasks();
   const canAssign = useCanAssignTasks();
 
+  // Driven by the PULL alone, never by `isRefetching`.
+  //
+  // A background refetch — the one TanStack runs when this screen remounts on
+  // stale data — would otherwise raise the pull spinner with nobody pulling,
+  // and iOS leaves that indicator stranded until the list is touched again. It
+  // is also the wrong thing to say: a refresh the dealer did not ask for should
+  // not look like one they did.
+  const [pulling, setPulling] = useState(false);
+
+  async function pullToRefresh() {
+    setPulling(true);
+    try {
+      await (searching ? search.refetch() : queue.refetch());
+    } finally {
+      setPulling(false);
+    }
+  }
+
   const [closing, setClosing] = useState<TaskItem | null>(null);
   const [assigning, setAssigning] = useState<number[]>([]);
   const [selected, setSelected] = useState<ReadonlySet<number>>(() => new Set());
@@ -161,14 +179,11 @@ export function TaskQueue({ term = '' }: { term?: string }) {
         SectionSeparatorComponent={() => <View className="h-1.5" />}
         keyboardShouldPersistTaps="handled"
         refreshControl={
-          // A lookup has nothing to pull down for — it reloads by typing.
-          searching ? undefined : (
-            <RefreshControl
-              refreshing={queue.isRefetching}
-              onRefresh={() => void queue.refetch()}
-              tintColor={c.mutedForeground}
-            />
-          )
+          <RefreshControl
+            refreshing={pulling}
+            onRefresh={() => void pullToRefresh()}
+            tintColor={c.mutedForeground}
+          />
         }
         renderSectionHeader={({ section }) => (
           <GroupHeader bucket={section.bucket} count={section.data.length} />

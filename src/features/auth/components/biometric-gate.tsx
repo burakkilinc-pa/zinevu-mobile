@@ -10,6 +10,7 @@ import {
 } from '@/features/auth/biometric';
 import { useColors } from '@/lib/theme';
 import { useT } from '@/lib/i18n';
+import { DotGrid } from '@/components/ui/dot-grid';
 
 /**
  * Opt-in Face ID / fingerprint lock over the authenticated app. On launch, if
@@ -46,6 +47,7 @@ export function BiometricGate() {
 
   return (
     <View className="absolute inset-0 items-center justify-center gap-8 bg-background px-10">
+      <DotGrid />
       <Image
         source={require('../../../../assets/images/splash-icon.png')}
         contentFit="contain"

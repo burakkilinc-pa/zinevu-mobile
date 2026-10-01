@@ -12,6 +12,7 @@ import { useT, type MessageKey } from '@/lib/i18n';
 import { ApiError } from '@/lib/api/client';
 import { useCreateTicket } from '@/features/support/hooks/use-support';
 import { TICKET_CATEGORIES, type TicketCategory } from '@/features/support/api/support.api';
+import { DotGrid } from '@/components/ui/dot-grid';
 
 /**
  * A new ticket: a subject, a category, and what happened.
@@ -56,6 +57,7 @@ export default function NewTicketScreen() {
 
   return (
     <View className="flex-1 bg-background" style={{ paddingTop: insets.top }}>
+      <DotGrid />
       <View className="flex-row items-center gap-1 px-2 py-2">
         <Pressable
           onPress={() => router.back()}

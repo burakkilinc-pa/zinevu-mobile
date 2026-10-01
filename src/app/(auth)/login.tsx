@@ -188,7 +188,7 @@ export default function LoginScreen() {
   }
 
   return (
-    <Screen padded={false} dots>
+    <Screen padded={false}>
       <KeyboardAvoidingView
         behavior="translate-with-padding"
         keyboardVerticalOffset={0}

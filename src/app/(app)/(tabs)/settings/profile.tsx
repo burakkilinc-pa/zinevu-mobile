@@ -13,6 +13,7 @@ import { useT } from '@/lib/i18n';
 import { ApiError } from '@/lib/api/client';
 import { useAuthStore } from '@/features/auth/store';
 import { updateProfile } from '@/features/auth/api/profile.api';
+import { DotGrid } from '@/components/ui/dot-grid';
 
 /**
  * Your display name.
@@ -60,6 +61,7 @@ export default function ProfileScreen() {
 
   return (
     <View className="flex-1 bg-background" style={{ paddingTop: insets.top }}>
+      <DotGrid />
       <View className="flex-row items-center gap-1 px-2 py-2">
         <Pressable
           onPress={() => router.back()}

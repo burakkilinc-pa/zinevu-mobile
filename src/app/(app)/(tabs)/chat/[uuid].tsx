@@ -38,6 +38,7 @@ import { markThreadRead } from '@/features/chat/api/chat.api';
 import { ConversationHeader } from '@/features/chat/components/customer-header';
 import { QuickReplySheet } from '@/features/chat/components/quick-reply-sheet';
 import type { ChatMessage } from '@/features/chat/types';
+import { DotGrid } from '@/components/ui/dot-grid';
 
 /** Photos per message. The backend takes six; four fits a phone composer. */
 const MAX_FILES = 4;
@@ -194,6 +195,7 @@ export default function ChatThreadScreen() {
 
   return (
     <View className="flex-1 bg-background" style={{ paddingTop: insets.top }}>
+      <DotGrid />
       <ConversationHeader
         detail={detail}
         customer={customer.data ?? null}
@@ -257,7 +259,7 @@ export default function ChatThreadScreen() {
         <KeyboardStickyView offset={{ closed: 0, opened: insets.bottom }}>
           {canReply ? (
             <View
-              className="border-t border-border bg-background"
+              className="border-t border-border bg-card"
               style={{ paddingBottom: insets.bottom > 0 ? insets.bottom : 10 }}
             >
               {files.length > 0 ? (
@@ -345,7 +347,7 @@ export default function ChatThreadScreen() {
               </View>
             </View>
           ) : (
-            <View className="border-t border-border bg-background px-5 py-4">
+            <View className="border-t border-border bg-card px-5 py-4">
               <Text className="text-center text-xs text-muted-foreground">
                 {t('chat.readOnly')}
               </Text>
