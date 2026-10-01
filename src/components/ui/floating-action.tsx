@@ -4,10 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
 import { useColors } from '@/lib/theme';
-
-/** How far the plate sits behind the face, at rest and while pressed. */
-const PLATE = 3;
-const PLATE_PRESSED = 1;
+import { PLATE, PLATE_PRESSED } from '@/components/ui/plate';
 
 /**
  * The floating "+ New …" button at the thumb's resting place, in the site's

@@ -11,6 +11,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { useColors } from '@/lib/theme';
+import { PLATE } from '@/components/ui/plate';
 
 /**
  * Custom Zinevu bottom navigation — a floating ink pill "dock" with a
@@ -157,13 +158,18 @@ export function BrandTabBar({ state, descriptors, navigation, centerRoute }: Tab
       <View
         pointerEvents="none"
         style={{
+          // left/right 0, not the container's 16: an absolutely positioned child
+          // is laid out against the PADDING box, so repeating the inset here
+          // pushed the plate 16dp inside the dock on each side — it only showed
+          // under the right-hand corner, which is what made it look like a
+          // different shadow from the floating button's.
           position: 'absolute',
-          left: 16,
-          right: 16,
-          top: 2,
+          left: 0,
+          right: 0,
           height: DOCK_H,
           borderRadius: DOCK_R,
           backgroundColor: '#000',
+          transform: [{ translateX: PLATE }, { translateY: PLATE }],
         }}
       />
 
@@ -393,11 +399,12 @@ function CenterTab({
           style={{
             position: 'absolute',
             left: 0,
-            top: 2,
+            top: 0,
             width: FAB_SIZE,
             height: FAB_SIZE,
             borderRadius: FAB_SIZE / 2,
             backgroundColor: '#000',
+            transform: [{ translateX: PLATE }, { translateY: PLATE }],
           }}
         />
         <Pressable
