@@ -17,7 +17,12 @@ export function Avatar({
   /**
    * Fit the whole image inside the circle instead of cropping it. Business
    * logos are wide/rectangular, so `cover` chops their sides off — `contain`
-   * letterboxes them on a neutral disc, mirroring the web app.
+   * letterboxes them instead.
+   *
+   * The disc is WHITE, in both schemes. A logo is artwork drawn for white
+   * paper: on the deep teal this used it disappeared, because most dealers'
+   * marks are dark. White is the ground they were made for, and the hairline
+   * is what keeps the disc itself readable on the app's own paper.
    */
   contain?: boolean;
 }) {
@@ -28,7 +33,7 @@ export function Avatar({
         <View
           style={{ width: size, height: size, borderRadius: size / 2, padding: pad }}
           className={cn(
-            'items-center justify-center overflow-hidden bg-secondary',
+            'items-center justify-center overflow-hidden border border-border bg-white',
             className
           )}
         >
