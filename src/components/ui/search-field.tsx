@@ -1,6 +1,7 @@
 import { ActivityIndicator, Pressable, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
+import { CARD_SHADOW } from '@/components/ui/card';
 import { useColors } from '@/lib/theme';
 import { useT } from '@/lib/i18n';
 
@@ -35,7 +36,13 @@ export function SearchField({
   return (
     <View
       className="mx-5 mb-1 flex-row items-center gap-2 rounded-full px-4"
-      style={{ height: 44, backgroundColor: c.card, borderWidth: 1, borderColor: c.border }}
+      style={{
+        height: 44,
+        backgroundColor: c.card,
+        borderWidth: 1,
+        borderColor: c.border,
+        ...CARD_SHADOW,
+      }}
     >
       <Ionicons name="search-outline" size={17} color={c.mutedForeground} />
       <TextInput

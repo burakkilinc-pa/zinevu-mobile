@@ -158,14 +158,12 @@ export function BrandTabBar({ state, descriptors, navigation, centerRoute }: Tab
       <View
         pointerEvents="none"
         style={{
-          // left/right 0, not the container's 16: an absolutely positioned child
-          // is laid out against the PADDING box, so repeating the inset here
-          // pushed the plate 16dp inside the dock on each side — it only showed
-          // under the right-hand corner, which is what made it look like a
-          // different shadow from the floating button's.
+          // The container's own inset, repeated: an absolutely positioned child
+          // is laid out against the BORDER box, not the padding box, so these
+          // are what put the plate on the same footprint as the dock itself.
           position: 'absolute',
-          left: 0,
-          right: 0,
+          left: 16,
+          right: 16,
           height: DOCK_H,
           borderRadius: DOCK_R,
           backgroundColor: '#000',
