@@ -7,11 +7,11 @@ import { useT } from '@/lib/i18n';
 /**
  * The search box above a list.
  *
- * A white slab on the dotted paper, edged in ink — the shape zinevu.com gives
- * everything you can act on. It was a muted pill, which on a paper ground put
- * it in the same tone as the view switch directly above it: two controls, one
- * colour, neither reading as a separate thing. The white face is what tells you
- * this one is a field you type into.
+ * A white field with a hairline, which is what zinevu.com puts on an input. It
+ * was a muted pill, and on a paper ground that left it the same tone as the
+ * view switch directly above: two controls, one colour, neither reading as a
+ * separate thing. The WHITE FACE is what separates them — not a heavy edge,
+ * which the portal keeps for what pops over the page.
  *
  * The spinner replaces the clear button while a query is in flight, so the field
  * itself says the list is catching up — the rows below keep the previous answer
@@ -35,7 +35,7 @@ export function SearchField({
   return (
     <View
       className="mx-5 mb-1 flex-row items-center gap-2 rounded-full px-4"
-      style={{ height: 44, backgroundColor: c.card, borderWidth: 1.5, borderColor: c.ink }}
+      style={{ height: 44, backgroundColor: c.card, borderWidth: 1, borderColor: c.border }}
     >
       <Ionicons name="search-outline" size={17} color={c.mutedForeground} />
       <TextInput

@@ -48,7 +48,7 @@ export function ViewSwitch({
     <View className="px-5 pb-1.5 pt-2">
       <View
         className="flex-row rounded-full p-1"
-        style={{ backgroundColor: c.card, borderWidth: 1.5, borderColor: c.ink }}
+        style={{ backgroundColor: c.card, borderWidth: 1, borderColor: c.border }}
       >
         {(['calendar', 'tasks'] as PlanningView[]).map((view) => {
           const active = view === value;

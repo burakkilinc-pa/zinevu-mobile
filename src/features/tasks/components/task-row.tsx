@@ -32,11 +32,16 @@ import type { TaskBucket, TaskItem } from '@/features/tasks/types';
  * thing you want from a task is not a detail screen, it is directions or a
  * dial tone.
  *
- * It is a SLAB — a white face edged in ink on the dotted paper — rather than a
- * line in a ruled list, which is how zinevu.com draws everything you can act
- * on. That shape earns its keep twice here: it is the brand's, and it is what
- * makes the swipe legible, because a card visibly slides OFF the coloured panel
- * underneath instead of a run of hairlines shifting sideways together.
+ * It is a CARD rather than a line in a ruled list — the shape zinevu.com gives
+ * a row you can act on, and the thing that makes the swipe legible, because a
+ * card visibly slides OFF the coloured panel underneath where a run of
+ * hairlines just shifted sideways together.
+ *
+ * Quiet by default: a white face and a hairline, which is what the portal puts
+ * on every row of a list. The full ink edge is its SELECTED treatment and is
+ * kept for that — on the web it belongs to the card under the cursor and to
+ * things that pop over the page, so spending it on all five rows at rest would
+ * leave nothing to say "this one, not those".
  */
 export function TaskRow({
   task,
@@ -143,7 +148,11 @@ export function TaskRow({
         // and anything translucent would let the green bleed through the card
         // while it is being dragged over.
         className="flex-row items-start gap-3 rounded-2xl p-3 active:opacity-70"
-        style={{ backgroundColor: c.card, borderWidth: 1.5, borderColor: c.ink }}
+        style={{
+          backgroundColor: c.card,
+          borderWidth: selected ? 1.5 : 1,
+          borderColor: selected ? c.ink : c.border,
+        }}
       >
         {selecting ? (
           <View
@@ -289,6 +298,9 @@ export function TaskRow({
  * Both colours come from the brand's own four: lime for the thing you want to
  * do, deep teal for the other one. A system green here was the only colour on
  * the screen that belonged to no one.
+ *
+ * No edge: the panel is already a solid brand colour, and an ink border would
+ * be spending the emphasis the selected card needs.
  */
 function SwipeAction({
   icon,
@@ -307,12 +319,7 @@ function SwipeAction({
   return (
     <View
       className="items-center justify-center rounded-2xl px-2"
-      style={{
-        width: 88,
-        backgroundColor: color,
-        borderWidth: 1.5,
-        borderColor: c.ink,
-      }}
+      style={{ width: 88, backgroundColor: color }}
     >
       <Ionicons name={icon} size={20} color={ink} />
       <Text className="mt-0.5 text-[11px] font-semibold" numberOfLines={1} style={{ color: ink }}>
