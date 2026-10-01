@@ -3,7 +3,7 @@ import { ActivityIndicator, Pressable, Text, View, type PressableProps } from 'r
 import { Ionicons } from '@expo/vector-icons';
 
 import { cn } from '@/lib/cn';
-import { PLATE, PLATE_PRESSED } from '@/components/ui/plate';
+import { Plate, PLATE, PLATE_PRESSED } from '@/components/ui/plate';
 import { useColors } from '@/lib/theme';
 
 type Variant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'success' | 'destructive';
@@ -159,24 +159,8 @@ export function Button({
 
   return (
     <View>
-      {/* The plate, as a layer rather than a zero-blur shadow: iOS rasterises
-          that one without antialiasing and the ends of a rounded face come out
-          stepped. Fixed in place — the FACE travels into it on press, which is
-          the half of the movement that reads as the button going down. */}
-      <View
-        pointerEvents="none"
-        style={{
-          position: 'absolute',
-          left: 0,
-          right: 0,
-          top: 0,
-          bottom: 0,
-          borderRadius: 18,
-          backgroundColor: colors.ink,
-          opacity: isDisabled ? 0.45 : 1,
-          transform: [{ translateX: PLATE }, { translateY: PLATE }],
-        }}
-      />
+      {/* `rounded-md` is 18 in this app's geometry — the plate matches the face. */}
+      <Plate radius={18} />
       {face}
     </View>
   );

@@ -545,7 +545,13 @@ function UnlinkedRowView({ row }: { row: UnlinkedRow }) {
   const c = useColors();
 
   return (
-    <View className="flex-row items-center gap-3 border-b border-border px-5 py-3">
+    // The same card as every other row in this list. It stayed a ruled row when
+    // the rest became cards, which is what made the e-mail side look like it
+    // was built to a different design from the website side.
+    <View
+      className={`${CARD_CLASS} mx-5 mb-2.5 flex-row items-center gap-3 px-4 py-3`}
+      style={CARD_SHADOW}
+    >
       <View
         className="h-9 w-9 items-center justify-center rounded-full"
         style={{ backgroundColor: c.muted }}

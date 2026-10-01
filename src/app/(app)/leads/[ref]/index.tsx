@@ -8,7 +8,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { Ionicons } from '@expo/vector-icons';
 
 import { Screen } from '@/components/ui/screen';
-import { Card } from '@/components/ui/card';
+import { CARD_SHADOW, Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/toast';
 import { useColors } from '@/lib/theme';
@@ -23,7 +23,6 @@ import { useDealerForm } from '@/features/leads/hooks/use-leads';
 import { lead3dTarget } from '@/features/leads/lead-3d';
 import { OfferLinesCard } from '@/features/leads/components/offer-lines-card';
 import { ScreenHeader } from '@/features/leads/components/screen-header';
-import { CARD_SHADOW } from '@/components/ui/card';
 import {
   useEngagement,
   useOfferPdf,

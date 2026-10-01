@@ -40,6 +40,7 @@ import {
   type MessageKey,
 } from '@/lib/i18n';
 import { useColors, useThemeStore, type ThemePreference } from '@/lib/theme';
+import { Plate } from '@/components/ui/plate';
 
 const THEME_OPTIONS: ThemePreference[] = ['system', 'light', 'dark'];
 const LANGUAGE_OPTIONS: LocalePreference[] = ['system', ...SUPPORTED_LOCALES];
@@ -165,7 +166,21 @@ export default function SettingsScreen() {
             accessibilityRole="button"
             accessibilityLabel={t('account.avatar.title')}
           >
-            <Avatar url={user?.avatarUrl} initials={initials || '?'} size={96} />
+            {/* The photo is an object on the paper like any other, so it stands
+                on the same plate and wears the same ink edge as the brand's
+                button. The ring is its own view because Avatar clips to a
+                circle — the camera badge has to sit outside that clip. */}
+            <Plate radius={50} />
+            <View
+              style={{
+                borderWidth: 1.5,
+                borderColor: c.ink,
+                borderRadius: 50,
+                overflow: 'hidden',
+              }}
+            >
+              <Avatar url={user?.avatarUrl} initials={initials || '?'} size={96} />
+            </View>
             <View className="absolute bottom-0 right-0 h-8 w-8 items-center justify-center rounded-full border-2 border-background bg-secondary">
               {avatarBusy ? (
                 <ActivityIndicator size="small" color={c.white} />

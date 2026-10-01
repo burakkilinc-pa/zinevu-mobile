@@ -10,6 +10,7 @@ import { useT, type MessageKey } from '@/lib/i18n';
 import { relativeTime } from '@/lib/time';
 import { useTickets } from '@/features/support/hooks/use-support';
 import type { Ticket, TicketStatus } from '@/features/support/api/support.api';
+import { Plate } from '@/components/ui/plate';
 
 /**
  * Support — the dealer's tickets with Zinevu.
@@ -81,16 +82,26 @@ export default function SupportScreen() {
             <Text className="text-base text-muted-foreground">
               {query.isError ? t('common.error') : t('support.empty')}
             </Text>
-            <Pressable
-              onPress={() => router.push('/settings/support/new')}
-              accessibilityRole="button"
-              className="mt-2 rounded-full px-5 py-3"
-              style={{ backgroundColor: c.primary }}
-            >
-              <Text className="text-sm font-semibold" style={{ color: c.primaryForeground }}>
-                {t('support.new.action')}
-              </Text>
-            </Pressable>
+            {/* The brand's button, which is one object wherever it appears: a
+                lime face on a black edge, standing on a plate. This one was a
+                bare lime pill. */}
+            <View className="mt-2">
+              <Plate radius={999} />
+              <Pressable
+                onPress={() => router.push('/settings/support/new')}
+                accessibilityRole="button"
+                className="rounded-full px-5 py-3"
+                style={{
+                  backgroundColor: c.primary,
+                  borderWidth: 1.5,
+                  borderColor: c.ink,
+                }}
+              >
+                <Text className="text-sm font-semibold" style={{ color: c.primaryForeground }}>
+                  {t('support.new.action')}
+                </Text>
+              </Pressable>
+            </View>
           </View>
         ) : (
           tickets.map((ticket) => (
