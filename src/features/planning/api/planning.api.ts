@@ -1,6 +1,11 @@
 import { ApiError, request } from '@/lib/api/client';
+import {
+  mapFollowUpType,
+  mapTaskAddress,
+  type RawFollowUpType,
+  type RawTask,
+} from '@/features/tasks/api/raw';
 import type {
-  FollowUpType,
   FollowUpTypeOption,
   NewVisitInput,
   PlanningItem,
@@ -8,28 +13,16 @@ import type {
   VisitBehavior,
 } from '@/features/planning/types';
 
-type RawType = {
-  name?: string;
-  slug?: string;
-  color_hex?: string | null;
-  behavior?: string;
-};
-
-type RawTypeOption = RawType & {
+/**
+ * The follow-up catalogue row, which is the task's type plus the few fields
+ * only a booking form cares about. The task shape itself is shared — see
+ * features/tasks/api/raw.ts for why both screens parse it in one place.
+ */
+type RawTypeOption = RawFollowUpType & {
   id?: number;
-  icon_key?: string | null;
   default_duration_minutes?: number | null;
   requires_location?: boolean;
   is_active?: boolean;
-};
-
-type RawAddress = {
-  formatted?: string | null;
-  label?: string | null;
-  street?: string | null;
-  house_number?: string | null;
-  postal_code?: string | null;
-  city?: string | null;
 };
 
 type RawEvent = {
@@ -46,58 +39,7 @@ type RawEvent = {
   is_busy?: boolean;
 };
 
-type RawTask = {
-  id?: number;
-  title?: string | null;
-  note?: string | null;
-  due_at?: string | null;
-  duration_minutes?: number | null;
-  status?: string;
-  follow_up_type?: RawType | null;
-  location_address?: RawAddress | string | null;
-  contact_name?: string | null;
-  contact_phone?: string | null;
-  assignee?: { name?: string } | null;
-  on_site_at?: string | null;
-  work_started_at?: string | null;
-  completed_at?: string | null;
-  lead?: { ref?: string; customer_name?: string | null } | null;
-};
-
 const STATUSES: TaskStatus[] = ['open', 'done', 'cancelled'];
-
-function mapType(raw: RawType | null | undefined): FollowUpType | null {
-  if (!raw) return null;
-
-  return {
-    name: raw.name ?? '',
-    slug: raw.slug ?? '',
-    colorHex: raw.color_hex ?? null,
-    // The catalogue's own default: a type with no behavior set is a reminder,
-    // which is the harmless reading — it puts nothing on a route.
-    behavior: (raw.behavior === 'field_visit' ? 'field_visit' : 'reminder') as VisitBehavior,
-  };
-}
-
-/**
- * The address is stored as a JSON blob once the controller has geocoded it,
- * but older rows hold a plain string. Take whichever shape is there.
- *
- * The blob the portal's own forms write is the FOUR FIELDS, not a `formatted`
- * line — so composing them is the normal path, and `formatted`/`label` are the
- * fallbacks for rows written by something else.
- */
-function mapAddress(raw: RawTask['location_address']): string | null {
-  if (!raw) return null;
-  if (typeof raw === 'string') return raw.trim() || null;
-
-  const street = [raw.street, raw.house_number].filter(Boolean).join(' ').trim();
-  const place = [raw.postal_code, raw.city].filter(Boolean).join(' ').trim();
-  const composed = [street, place].filter(Boolean).join(', ');
-  if (composed) return composed;
-
-  return (raw.formatted ?? raw.label ?? null)?.trim() || null;
-}
 
 function mapItem(raw: RawTask): PlanningItem {
   return {
@@ -108,8 +50,8 @@ function mapItem(raw: RawTask): PlanningItem {
     dueAt: raw.due_at ?? null,
     durationMinutes: raw.duration_minutes ?? null,
     status: STATUSES.includes(raw.status as TaskStatus) ? (raw.status as TaskStatus) : 'open',
-    type: mapType(raw.follow_up_type),
-    locationAddress: mapAddress(raw.location_address),
+    type: mapFollowUpType(raw.follow_up_type),
+    locationAddress: mapTaskAddress(raw.location_address),
     customerName: raw.lead?.customer_name ?? raw.contact_name ?? null,
     leadRef: raw.lead?.ref ?? null,
     contactName: raw.contact_name ?? null,
@@ -254,7 +196,7 @@ export async function fetchFollowUpTypes(): Promise<FollowUpTypeOption[]> {
 
   return (Array.isArray(d) ? d : [])
     .map((raw) => {
-      const base = mapType(raw);
+      const base = mapFollowUpType(raw);
 
       return {
         ...(base ?? { name: '', slug: '', colorHex: null, behavior: 'reminder' as VisitBehavior }),

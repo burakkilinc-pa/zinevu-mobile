@@ -1,196 +1,70 @@
-import { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { useState } from 'react';
+import { useLocalSearchParams } from 'expo-router';
 
-import { Screen, useDockClearance } from '@/components/ui/screen';
-import { Placeholder } from '@/components/ui/placeholder';
-import { useColors } from '@/lib/theme';
-import { useT, type MessageKey } from '@/lib/i18n';
-import { dayLabel } from '@/lib/time';
-import { addMonths, dateKey, monthTitle } from '@/features/planning/calendar';
-import { usePlanningMonth } from '@/features/planning/hooks/use-planning';
-import { MonthGrid } from '@/features/planning/components/month-grid';
-import { AgendaItem } from '@/features/planning/components/agenda-item';
-import { LaneTabs } from '@/features/planning/components/lane-tabs';
-import { NewVisitButton } from '@/features/planning/components/new-visit-button';
-import type { PlanningLane } from '@/features/planning/types';
+import { Screen } from '@/components/ui/screen';
+import { CalendarPane } from '@/features/planning/components/calendar-pane';
+import { ViewSwitch, type PlanningView } from '@/features/planning/components/view-switch';
+import { TaskQueue } from '@/features/tasks/components/task-queue';
+import { useTaskQueue } from '@/features/tasks/hooks/use-tasks';
 import { useAuthStore } from '@/features/auth/store';
 import { hasPermission, PERMISSIONS } from '@/lib/auth/roles';
 
 /**
- * Planning — the month, and the selected day's agenda under it.
+ * The planning tab — one screen with two faces over the same records.
  *
- * The shape every phone calendar settled on, and for a reason: the grid answers
- * "how busy is this week" at a glance while the list answers "what am I doing
- * next", and neither can do the other's job. Selecting a day never navigates —
- * the agenda swaps in place, so paging through a week is a series of taps
- * rather than pushes and backs.
+ *  - the MONTH, with the selected day's agenda under it (CalendarPane)
+ *  - the QUEUE: every open task grouped by how late it is (features/tasks)
  *
- * It OPENS ON VISITS. The unified task list mixes the drives with the call-backs,
- * and on this dealer's data the call-backs outnumber them several times over — a
- * month opening on everything is a month of voicemail reminders with the day's
- * actual route buried in it. Follow-ups stay one chip away.
+ * Both read `lead_tasks`, and neither can do the other's job. A calendar cannot
+ * show an undated task at all, and the undated backlog is where the office
+ * actually works from; a queue cannot show how a week is shaped. So they share a
+ * tab rather than competing for one of the dock's four side slots.
+ *
+ * Two routes would have been the other option, and would have cost the dock a
+ * slot it does not have — the brand mark only reads as the hero dead centre,
+ * which is what fixes the side count at an even number (see (tabs)/_layout).
  */
 export default function PlanningScreen() {
-  const t = useT();
-  const c = useColors();
-  const router = useRouter();
-  const bottom = useDockClearance();
   const user = useAuthStore((s) => s.user);
+  const { date, view: viewParam } = useLocalSearchParams<{ date?: string; view?: string }>();
 
-  // A planning push carries the day it is about, so opening one lands on that
-  // day rather than on whatever month the screen last showed.
-  const { date } = useLocalSearchParams<{ date?: string }>();
-  const initial = useMemo(() => {
-    const parsed = date ? new Date(`${date}T12:00:00`) : null;
+  const canCalendar = hasPermission(user, PERMISSIONS.calendarView);
+  const canTasks = hasPermission(user, PERMISSIONS.tasksView);
 
-    return parsed && !Number.isNaN(parsed.getTime()) ? parsed : new Date();
-  }, [date]);
+  // Someone holding only one of the two never sees a switch, and lands on the
+  // one they hold — the other face would be a permission placeholder, which is
+  // not a thing to offer a person as a choice.
+  const [view, setView] = useState<PlanningView>(() =>
+    viewParam === 'tasks' || (!canCalendar && canTasks) ? 'tasks' : 'calendar'
+  );
 
-  const [cursor, setCursor] = useState({
-    year: initial.getFullYear(),
-    month: initial.getMonth(),
-  });
-  const [selected, setSelected] = useState(() => dateKey(initial));
-
-  // A second push while the screen is already open must move it too — the
-  // state above only runs on mount.
-  useEffect(() => {
-    if (!date) return;
-    setCursor({ year: initial.getFullYear(), month: initial.getMonth() });
-    setSelected(dateKey(initial));
-  }, [date, initial]);
-
-  const [lane, setLane] = useState<PlanningLane>('visits');
-
-  const { grid, byDay, counts, isLoading, isError, allowed, refetch, isRefetching } =
-    usePlanningMonth(cursor.year, cursor.month, lane);
-
-  const dayItems = byDay.get(selected) ?? [];
-
-  function goToMonth(delta: number) {
-    setCursor((prev) => addMonths(prev.year, prev.month, delta));
+  // Deep links win over whatever the screen last showed: a push about a day is
+  // about the calendar, and ?view=tasks is about the queue.
+  //
+  // Derived during render rather than in an effect. A second push arriving while
+  // the tab is already mounted has to move it, and an effect doing that renders
+  // the wrong face first and corrects it — a visible flip on the screen the push
+  // just opened.
+  const link = `${date ?? ''}|${viewParam ?? ''}`;
+  const [lastLink, setLastLink] = useState(link);
+  if (link !== lastLink) {
+    setLastLink(link);
+    if (date) setView('calendar');
+    else if (viewParam === 'tasks') setView('tasks');
   }
 
-  function goToToday() {
-    const now = new Date();
-    setCursor({ year: now.getFullYear(), month: now.getMonth() });
-    setSelected(dateKey(now));
-  }
+  // Shares its query key with the queue itself, so this is the same single
+  // fetch rather than a second one — and it is what makes the other face
+  // discoverable: a tab that silently grew a second page is a tab nobody finds.
+  const openCount = useTaskQueue('all').counts.all;
 
-  if (!allowed) {
-    return (
-      <Placeholder
-        icon="lock-closed-outline"
-        title={t('planning.noAccess.title')}
-        subtitle={t('planning.noAccess.body')}
-      />
-    );
-  }
-
-  // Booking is a write, and a read-only calendar seat has no business creating
-  // one — the backend re-checks the same permission anyway.
-  const canBook = hasPermission(user, PERMISSIONS.tasksManage);
+  const both = canCalendar && canTasks;
+  const showing: PlanningView = both ? view : canTasks ? 'tasks' : 'calendar';
 
   return (
     <Screen padded={false} edges={['top']}>
-      <View className="flex-row items-center gap-1 px-3 py-2">
-        <Text className="flex-1 pl-2 text-2xl font-bold capitalize text-foreground">
-          {monthTitle(cursor.year, cursor.month)}
-        </Text>
-
-        <HeaderButton icon="today-outline" label={t('planning.today')} onPress={goToToday} />
-        <HeaderButton icon="chevron-back" label={t('planning.prevMonth')} onPress={() => goToMonth(-1)} />
-        <HeaderButton icon="chevron-forward" label={t('planning.nextMonth')} onPress={() => goToMonth(1)} />
-      </View>
-
-      <LaneTabs value={lane} onChange={setLane} counts={counts} />
-
-      <MonthGrid
-        year={cursor.year}
-        month={cursor.month}
-        grid={grid}
-        byDay={byDay}
-        selected={selected}
-        onSelect={setSelected}
-      />
-
-      <View className="mt-3 flex-row items-center gap-2 border-t border-border px-5 pb-1 pt-3">
-        <Text className="flex-1 text-base font-semibold text-foreground">
-          {dayLabel(`${selected}T12:00:00`)}
-        </Text>
-        {isLoading || isRefetching ? <ActivityIndicator size="small" color={c.mutedForeground} /> : null}
-        <Pressable
-          onPress={() => void refetch()}
-          hitSlop={8}
-          accessibilityRole="button"
-          accessibilityLabel={t('common.retry')}
-        >
-          <Ionicons name="refresh" size={16} color={c.mutedForeground} />
-        </Pressable>
-      </View>
-
-      <ScrollView
-        contentContainerStyle={{
-          paddingHorizontal: 20,
-          paddingTop: 4,
-          // Extra room under the last row so the floating button never covers it.
-          paddingBottom: bottom + (canBook ? 72 : 0),
-        }}
-      >
-        {isError ? (
-          <Text className="py-10 text-center text-sm text-destructive">{t('common.error')}</Text>
-        ) : dayItems.length === 0 ? (
-          <View className="items-center gap-2 py-12">
-            <Ionicons name="calendar-clear-outline" size={24} color={c.mutedForeground} />
-            {/* Lane-specific, because "nothing planned" on the visits chip when
-                the day is full of call-backs reads as a broken screen. */}
-            <Text className="text-sm text-muted-foreground">
-              {t(`planning.emptyDay.${lane}` as MessageKey)}
-            </Text>
-          </View>
-        ) : (
-          dayItems.map((item) => (
-            <AgendaItem
-              key={`${item.source}${item.id}`}
-              item={item}
-              // A visit hanging off a lead opens that lead — it is the only
-              // place with the customer, the offer and the configuration. A
-              // standalone visit has nowhere fuller to go, so it stays put.
-              onPress={() => {
-                if (item.leadRef) router.push(`/leads/${item.leadRef}`);
-              }}
-            />
-          ))
-        )}
-      </ScrollView>
-
-      {canBook ? <NewVisitButton date={selected} /> : null}
+      {both ? <ViewSwitch value={showing} onChange={setView} taskCount={openCount} /> : null}
+      {showing === 'tasks' ? <TaskQueue /> : <CalendarPane />}
     </Screen>
-  );
-}
-
-function HeaderButton({
-  icon,
-  label,
-  onPress,
-}: {
-  icon: keyof typeof Ionicons.glyphMap;
-  label: string;
-  onPress: () => void;
-}) {
-  const c = useColors();
-
-  return (
-    <Pressable
-      onPress={onPress}
-      hitSlop={8}
-      accessibilityRole="button"
-      accessibilityLabel={label}
-      className="h-9 w-9 items-center justify-center rounded-full active:bg-muted"
-    >
-      <Ionicons name={icon} size={20} color={c.foreground} />
-    </Pressable>
   );
 }

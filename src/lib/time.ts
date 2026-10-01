@@ -103,3 +103,11 @@ export function clockTime(iso: string | null | undefined): string {
     minute: '2-digit',
   });
 }
+
+/** Short date for a dense column ("12 Jun"). */
+export function shortDate(iso: string | null | undefined): string {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toLocaleDateString(currentIntlLocale(), { day: 'numeric', month: 'short' });
+}

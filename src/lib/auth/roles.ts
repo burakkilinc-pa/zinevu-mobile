@@ -33,6 +33,12 @@ export const PERMISSIONS = {
   calendarView: 'calendar.view',
   calendarManage: 'calendar.manage',
   tasksView: 'tasks.view',
+  /**
+   * Whether the whole team's work is visible, or only your own assignments.
+   * Without it the backend pins every task read to `assigned_to = you`, so a
+   * screen offering to filter by colleague would be offering empty columns.
+   */
+  tasksViewAll: 'tasks.view_all',
   // Booking / rescheduling a visit, as opposed to carrying one out.
   tasksManage: 'tasks.manage',
   tasksExecute: 'tasks.execute',
