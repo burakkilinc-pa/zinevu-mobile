@@ -610,6 +610,7 @@ export const tr: Record<MessageKey, string> = {
   'tasks.assign.titleMany': 'Bu {count} görevi kim yapacak?',
   'tasks.assign.toast': '{count} görev atandı',
   'tasks.complete': 'Tamamla',
+  'tasks.doneShort': 'Bitti',
   'tasks.empty.body': 'Bu filtredeki bütün görevler tamamlandı.',
   'tasks.empty.title': 'Açık iş yok',
   'tasks.filter.all': 'Herkes',

@@ -31,6 +31,12 @@ import type { TaskBucket, TaskItem } from '@/features/tasks/types';
  * Address and phone each keep a tap of their own. Standing in a doorway, the
  * thing you want from a task is not a detail screen, it is directions or a
  * dial tone.
+ *
+ * It is a SLAB — a white face edged in ink on the dotted paper — rather than a
+ * line in a ruled list, which is how zinevu.com draws everything you can act
+ * on. That shape earns its keep twice here: it is the brand's, and it is what
+ * makes the swipe legible, because a card visibly slides OFF the coloured panel
+ * underneath instead of a run of hairlines shifting sideways together.
  */
 export function TaskRow({
   task,
@@ -85,13 +91,22 @@ export function TaskRow({
       // sheet opening mid-selection would throw away what was picked.
       enabled={!selecting && (canClose || canAssign)}
       friction={2}
-      leftThreshold={48}
-      rightThreshold={48}
+      leftThreshold={56}
+      rightThreshold={56}
       overshootLeft={false}
       overshootRight={false}
       renderLeftActions={
         canClose
-          ? () => <SwipeAction icon="checkmark" label={t('tasks.complete')} color={c.success} />
+          ? () => (
+              <SwipeAction
+                icon="checkmark"
+                label={t('tasks.doneShort')}
+                color={c.primary}
+                // Lime carries black, in both themes — it is the brand mark's
+                // own pairing and the one the active tab already uses.
+                ink={c.primaryForeground}
+              />
+            )
           : undefined
       }
       renderRightActions={
@@ -100,8 +115,11 @@ export function TaskRow({
               <SwipeAction
                 icon="person-add-outline"
                 label={t('tasks.assign.action')}
-                color={c.foreground}
-                align="right"
+                color={c.deep}
+                // Deep teal is dark in BOTH themes, so its text cannot follow
+                // `onInk` — that flips to black on the dark theme and would
+                // disappear into the panel.
+                ink={c.white}
               />
             )
           : undefined
@@ -121,9 +139,11 @@ export function TaskRow({
         delayLongPress={300}
         accessibilityRole={selecting || onOpen ? 'button' : undefined}
         accessibilityState={selecting ? { selected } : {}}
-        // Opaque: the swipe panels sit behind this, and a transparent row would
-        // let the green through while it is being dragged over.
-        className="flex-row items-start gap-3 bg-background py-2.5 active:opacity-70"
+        // Opaque, and it has to stay opaque: the swipe panels sit behind this,
+        // and anything translucent would let the green bleed through the card
+        // while it is being dragged over.
+        className="flex-row items-start gap-3 rounded-2xl p-3 active:opacity-70"
+        style={{ backgroundColor: c.card, borderWidth: 1.5, borderColor: c.ink }}
       >
         {selecting ? (
           <View
@@ -257,31 +277,47 @@ export function TaskRow({
   );
 }
 
-/** The coloured panel a swipe pulls out from under the row. */
+/**
+ * The coloured panel a swipe pulls out from under the card.
+ *
+ * Fixed width rather than content width, so the label is never half a word wide
+ * — and it is set to roughly what a thumb travels, so the panel is fully shown
+ * and read by the time the gesture passes its threshold. It wears the card's
+ * own radius and ink edge, so what appears under the card looks like another of
+ * the same slabs rather than a coloured gap in the list.
+ *
+ * Both colours come from the brand's own four: lime for the thing you want to
+ * do, deep teal for the other one. A system green here was the only colour on
+ * the screen that belonged to no one.
+ */
 function SwipeAction({
   icon,
   label,
   color,
-  align = 'left',
+  ink,
 }: {
   icon: keyof typeof Ionicons.glyphMap;
   label: string;
   color: string;
-  align?: 'left' | 'right';
+  /** What reads on that colour — fixed per panel, not per theme. */
+  ink: string;
 }) {
   const c = useColors();
 
   return (
     <View
-      className="my-1 justify-center rounded-xl px-4"
-      style={{ backgroundColor: color, alignItems: align === 'left' ? 'flex-start' : 'flex-end' }}
+      className="items-center justify-center rounded-2xl px-2"
+      style={{
+        width: 88,
+        backgroundColor: color,
+        borderWidth: 1.5,
+        borderColor: c.ink,
+      }}
     >
-      <View className="items-center gap-0.5">
-        <Ionicons name={icon} size={18} color={c.background} />
-        <Text className="text-[11px] font-semibold" style={{ color: c.background }}>
-          {label}
-        </Text>
-      </View>
+      <Ionicons name={icon} size={20} color={ink} />
+      <Text className="mt-0.5 text-[11px] font-semibold" numberOfLines={1} style={{ color: ink }}>
+        {label}
+      </Text>
     </View>
   );
 }

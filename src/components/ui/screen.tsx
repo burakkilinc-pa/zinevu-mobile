@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets, type Edge } from 'react-native-safe-area-context';
 
 import { cn } from '@/lib/cn';
+import { DotGrid } from '@/components/ui/dot-grid';
 
 type ScreenProps = {
   children: ReactNode;
@@ -19,6 +20,13 @@ type ScreenProps = {
    * bundle — so we approximate: ~56pt bar + the bottom safe-area inset.
    */
   tabBar?: boolean;
+  /**
+   * Lay zinevu.com's dot grid over the paper. Opt-in rather than always on: it
+   * only reads as texture where the ground is actually visible between slabs,
+   * and a screen whose rows are opaque paper would show it as a dot-free patch
+   * per row instead.
+   */
+  dots?: boolean;
   className?: string;
 };
 
@@ -40,6 +48,7 @@ export function Screen({
   padded = true,
   edges = ['top', 'bottom'],
   tabBar = false,
+  dots = false,
   className,
 }: ScreenProps) {
   const insets = useSafeAreaInsets();
@@ -48,6 +57,7 @@ export function Screen({
   const resolvedEdges = tabBar ? edges.filter((e) => e !== 'bottom') : edges;
   return (
     <SafeAreaView edges={resolvedEdges} className="flex-1 bg-background">
+      {dots ? <DotGrid /> : null}
       <View
         className={cn('flex-1', padded && 'px-5 py-4', className)}
         style={tabBar ? { paddingBottom: insets.bottom + 74 } : undefined}

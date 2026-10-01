@@ -38,5 +38,6 @@
   "tasks.search.short": { "en": "Type at least {n} characters.", "nl": "Typ minstens {n} tekens.", "de": "Gib mindestens {n} Zeichen ein.", "fr": "Saisissez au moins {n} caractères.", "tr": "En az {n} karakter yaz." },
   "tasks.search.results": { "en": "{count} found", "nl": "{count} gevonden", "de": "{count} gefunden", "fr": "{count} trouvée(s)", "tr": "{count} sonuç" },
   "tasks.search.none": { "en": "Nothing matched that.", "nl": "Niets gevonden.", "de": "Nichts gefunden.", "fr": "Aucun résultat.", "tr": "Eşleşen bir şey yok." },
-  "tasks.search.hint": { "en": "Searches every task, finished ones too.", "nl": "Zoekt in alle taken, ook afgeronde.", "de": "Durchsucht alle Aufgaben, auch erledigte.", "fr": "Cherche dans toutes les tâches, même terminées.", "tr": "Tamamlananlar dahil tüm görevlerde arar." }
+  "tasks.search.hint": { "en": "Searches every task, finished ones too.", "nl": "Zoekt in alle taken, ook afgeronde.", "de": "Durchsucht alle Aufgaben, auch erledigte.", "fr": "Cherche dans toutes les tâches, même terminées.", "tr": "Tamamlananlar dahil tüm görevlerde arar." },
+  "tasks.doneShort": { "en": "Done", "nl": "Klaar", "de": "Fertig", "fr": "Fait", "tr": "Bitti" }
 }

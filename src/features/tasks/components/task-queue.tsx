@@ -156,6 +156,9 @@ export function TaskQueue({ term = '' }: { term?: string }) {
           paddingTop: 4,
           paddingBottom: bottom + 24,
         }}
+        // Cards, not rows: the swipe panel is as tall as the card it comes out
+        // from, so the gap has to sit outside both.
+        SectionSeparatorComponent={() => <View className="h-1.5" />}
         keyboardShouldPersistTaps="handled"
         refreshControl={
           // A lookup has nothing to pull down for — it reloads by typing.
@@ -184,7 +187,7 @@ export function TaskQueue({ term = '' }: { term?: string }) {
             onToggleSelect={() => toggle(item.id)}
           />
         )}
-        ItemSeparatorComponent={() => <View className="h-px bg-border" />}
+        ItemSeparatorComponent={() => <View className="h-2.5" />}
         ListEmptyComponent={
           loading ? (
             <ActivityIndicator className="py-16" color={c.mutedForeground} />
@@ -235,7 +238,7 @@ function GroupHeader({ bucket, count }: { bucket: TaskBucket; count: number }) {
     bucket === 'overdue' ? c.destructive : bucket === 'today' ? c.warning : c.mutedForeground;
 
   return (
-    <View className="flex-row items-center gap-2 bg-background pb-1.5 pt-3">
+    <View className="flex-row items-center gap-2 bg-background pb-2 pt-3">
       <Text
         className="text-[11px] font-semibold uppercase tracking-wide"
         style={{ color: tone }}

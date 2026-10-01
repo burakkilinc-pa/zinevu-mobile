@@ -610,6 +610,7 @@ export const nl: Record<MessageKey, string> = {
   'tasks.assign.titleMany': 'Wie doet deze {count}?',
   'tasks.assign.toast': '{count} toegewezen',
   'tasks.complete': 'Afronden',
+  'tasks.doneShort': 'Klaar',
   'tasks.empty.body': 'Alle taken in dit filter zijn afgerond.',
   'tasks.empty.title': 'Niets meer open',
   'tasks.filter.all': 'Iedereen',

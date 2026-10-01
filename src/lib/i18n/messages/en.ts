@@ -615,6 +615,7 @@ export const en = {
   'tasks.assign.titleMany': 'Who does these {count}?',
   'tasks.assign.toast': '{count} assigned',
   'tasks.complete': 'Mark done',
+  'tasks.doneShort': 'Done',
   'tasks.empty.body': 'Every task in this filter is done.',
   'tasks.empty.title': 'Nothing open',
   'tasks.filter.all': 'Everyone',

@@ -7,9 +7,11 @@ import { useT } from '@/lib/i18n';
 /**
  * The search box above a list.
  *
- * A pill on the muted surface rather than a bordered form field: this is not
- * part of a form being filled in, it is the list's own control, and every phone
- * draws that one the same way. It stays put while the list under it changes.
+ * A white slab on the dotted paper, edged in ink — the shape zinevu.com gives
+ * everything you can act on. It was a muted pill, which on a paper ground put
+ * it in the same tone as the view switch directly above it: two controls, one
+ * colour, neither reading as a separate thing. The white face is what tells you
+ * this one is a field you type into.
  *
  * The spinner replaces the clear button while a query is in flight, so the field
  * itself says the list is catching up — the rows below keep the previous answer
@@ -33,7 +35,7 @@ export function SearchField({
   return (
     <View
       className="mx-5 mb-1 flex-row items-center gap-2 rounded-full px-4"
-      style={{ height: 44, backgroundColor: c.muted }}
+      style={{ height: 44, backgroundColor: c.card, borderWidth: 1.5, borderColor: c.ink }}
     >
       <Ionicons name="search-outline" size={17} color={c.mutedForeground} />
       <TextInput

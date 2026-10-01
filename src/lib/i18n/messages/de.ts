@@ -610,6 +610,7 @@ export const de: Record<MessageKey, string> = {
   'tasks.assign.titleMany': 'Wer macht diese {count}?',
   'tasks.assign.toast': '{count} zugewiesen',
   'tasks.complete': 'Abschließen',
+  'tasks.doneShort': 'Fertig',
   'tasks.empty.body': 'Alle Aufgaben in diesem Filter sind erledigt.',
   'tasks.empty.title': 'Nichts offen',
   'tasks.filter.all': 'Alle',
