@@ -44,10 +44,14 @@ export function LeadCard({ lead, onPress }: { lead: Lead; onPress: () => void })
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
-      className={`${CARD_CLASS} mb-3 overflow-hidden active:opacity-90`}
+      // NOT `overflow-hidden`. On iOS that sets clipsToBounds, which clips the
+      // layer's own shadow away — the card simply had none. The clip belongs to
+      // the thing that needs it anyway: the full-bleed image, which is the only
+      // child that would otherwise square off the card's top corners.
+      className={`${CARD_CLASS} mb-3 active:opacity-90`}
       style={CARD_SHADOW}
     >
-      <View className="h-40 w-full bg-muted">
+      <View className="h-40 w-full overflow-hidden rounded-t-2xl bg-muted">
         {lead.previewImageUrl ? (
           <Image
             source={{ uri: lead.previewImageUrl }}
