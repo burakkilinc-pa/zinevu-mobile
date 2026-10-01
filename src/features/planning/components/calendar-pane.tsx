@@ -115,13 +115,16 @@ export function CalendarPane() {
 
       <LaneTabs value={lane} onChange={setLane} counts={counts} />
 
-      {/* The month gets a frame but no fill. On the dotted ground a bare grid
-          of numbers had nothing holding it together — the dots ran straight
-          through it — and a white card would have put the one part of the
-          screen that is pure structure on a surface meant for content. A
-          hairline is enough to say "this is one thing", and the paper keeps
-          showing through it. */}
-      <View className="mx-5 mt-1 rounded-2xl border border-border py-2">
+      {/* A frame, and a veil rather than a fill. On the bare dotted ground the
+          grid had nothing holding it together and the dots ran straight through
+          the numbers; a solid white card would have put the one part of the
+          screen that is pure structure onto a surface meant for content. Half a
+          coat of white settles the numbers on something of their own and still
+          lets the paper read through. */}
+      <View
+        className="mx-5 mt-1 rounded-2xl border border-border py-2"
+        style={{ backgroundColor: c.veil }}
+      >
         <MonthGrid
           year={cursor.year}
           month={cursor.month}

@@ -29,6 +29,14 @@ export type ThemeColors = {
   warning: string;
   success: string;
   white: string;
+  /**
+   * A surface laid ON the dotted paper that still lets it show: the card colour
+   * at part strength. For the few places that need to settle content down
+   * without claiming to be a card — the month grid is the one, where a solid
+   * white face would put pure structure on a surface meant for content, and
+   * nothing at all leaves the dots running through the numbers.
+   */
+  veil: string;
 };
 
 const LIGHT: ThemeColors = {
@@ -47,6 +55,7 @@ const LIGHT: ThemeColors = {
   warning: '#B45309',
   success: '#16A34A',
   white: '#FFFFFF',
+  veil: 'rgba(255, 255, 255, 0.55)',
 } as const;
 
 const DARK: ThemeColors = {
@@ -66,6 +75,7 @@ const DARK: ThemeColors = {
   warning: '#EFB13A',
   success: '#34C759',
   white: '#FFFFFF',
+  veil: 'rgba(11, 44, 53, 0.55)',
 } as const;
 
 export type ThemePreference = 'system' | 'light' | 'dark';

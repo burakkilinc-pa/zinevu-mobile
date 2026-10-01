@@ -16,6 +16,7 @@ import { surfaceLabel } from '@/features/chat/components/customer-header';
 import type { ChatCustomer } from '@/features/chat/types';
 import { useInbox, useUnlinked } from '@/features/inbox/hooks/use-inbox';
 import type { InboxRow, UnlinkedRow } from '@/features/inbox/types';
+import { CARD_CLASS, CARD_SHADOW } from '@/components/ui/card';
 
 /**
  * Two sources of message, one tab.
@@ -244,7 +245,7 @@ function AvailabilityRow() {
   // meant the card dropped in a moment after the list had drawn and shoved
   // every row down the screen — the inbox visibly jumped on every open.
   if (isLoading) {
-    return <View className="mx-5 mb-2 h-[62px] rounded-md border border-border bg-card" />;
+    return <View className="mx-5 mb-2.5 h-[62px] rounded-2xl border border-border bg-card" />;
   }
 
   const mine = !!availableUntil;
@@ -255,7 +256,7 @@ function AvailabilityRow() {
       : t('chat.available.off');
 
   return (
-    <View className="mx-5 mb-2 flex-row items-center gap-3 rounded-md border border-border bg-card px-4 py-3">
+    <View className="mx-5 mb-2.5 flex-row items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3">
       <View
         className="h-2.5 w-2.5 rounded-full"
         style={{ backgroundColor: online ? c.success ?? '#22c55e' : c.mutedForeground }}
@@ -280,7 +281,12 @@ function CustomerRow({ person, onPress }: { person: ChatCustomer; onPress: () =>
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
-      className="flex-row items-center gap-3 border-b border-border px-5 py-3.5 active:bg-muted"
+      // A card, like every other list in the app. It was the last ruled list —
+      // hairline-separated rows on the bare paper — which is what made Messages
+      // look like a screen from a different product once the ground had dots on
+      // it and everything else had lifted onto a white face.
+      className={`${CARD_CLASS} mx-5 mb-2.5 flex-row items-center gap-3 px-4 py-3.5 active:opacity-90`}
+      style={CARD_SHADOW}
     >
       <View>
         <View
@@ -469,7 +475,12 @@ function LeadRow({ row, onPress }: { row: InboxRow; onPress: () => void }) {
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
-      className="flex-row items-center gap-3 border-b border-border px-5 py-3.5 active:bg-muted"
+      // A card, like every other list in the app. It was the last ruled list —
+      // hairline-separated rows on the bare paper — which is what made Messages
+      // look like a screen from a different product once the ground had dots on
+      // it and everything else had lifted onto a white face.
+      className={`${CARD_CLASS} mx-5 mb-2.5 flex-row items-center gap-3 px-4 py-3.5 active:opacity-90`}
+      style={CARD_SHADOW}
     >
       <View
         className="h-11 w-11 items-center justify-center rounded-full"

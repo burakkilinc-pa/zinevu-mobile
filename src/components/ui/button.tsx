@@ -3,6 +3,7 @@ import { ActivityIndicator, Pressable, Text, View, type PressableProps } from 'r
 import { Ionicons } from '@expo/vector-icons';
 
 import { cn } from '@/lib/cn';
+import { PLATE, PLATE_PRESSED } from '@/components/ui/plate';
 import { useColors } from '@/lib/theme';
 
 type Variant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'success' | 'destructive';
@@ -36,7 +37,10 @@ type ButtonProps = PressableProps & {
  * when it has to be — on paper and outline faces, and when pressed.
  */
 const CONTAINER: Record<Variant, string> = {
-  primary: 'border-[1.5px] border-transparent bg-primary',
+  // The edge is ink, not transparent: this is the same object as the floating
+  // "New lead" button, and that one is the brand's button — a lime face on a
+  // black edge, standing on a solid plate.
+  primary: 'border-[1.5px] bg-primary',
   secondary: 'border-[1.5px] border-transparent bg-secondary active:opacity-90',
   // The site's `paper` button: a white face on a hairline edge.
   outline: 'border-[1.5px] border-border bg-card active:border-foreground',
@@ -76,6 +80,10 @@ export function Button({
   const isDisabled = disabled || loading;
   const turned = variant === 'primary' && pressed;
   const chip = variant === 'primary' && !!icon;
+  // Only the brand's own face earns the plate. A secondary or a destructive
+  // button is a choice on a screen, not an object lying on the paper.
+  const plated = variant === 'primary';
+  const sink = pressed ? PLATE - PLATE_PRESSED : 0;
 
   const contentColor =
     contentColorProp ??
@@ -85,7 +93,7 @@ export function Button({
         ? colors.white
         : colors.foreground);
 
-  return (
+  const face = (
     <Pressable
       accessibilityRole="button"
       disabled={isDisabled}
@@ -102,9 +110,12 @@ export function Button({
         chip ? 'pl-2 pr-5' : 'px-6',
         CONTAINER[variant],
         isDisabled && 'opacity-45',
-        className
+        plated ? undefined : className
       )}
-      style={turned ? { backgroundColor: colors.ink, borderColor: colors.ink } : undefined}
+      style={[
+        plated && { borderColor: colors.ink, transform: [{ translateX: sink }, { translateY: sink }] },
+        turned && { backgroundColor: colors.ink, borderColor: colors.ink },
+      ]}
       {...props}
     >
       {loading ? (
@@ -137,5 +148,31 @@ export function Button({
         </>
       )}
     </Pressable>
+  );
+
+  if (!plated) return face;
+
+  return (
+    <View className={className}>
+      {/* The plate, as a layer rather than a zero-blur shadow: iOS rasterises
+          that one without antialiasing and the ends of a rounded face come out
+          stepped. Fixed in place — the FACE travels into it on press, which is
+          the half of the movement that reads as the button going down. */}
+      <View
+        pointerEvents="none"
+        style={{
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          top: 0,
+          bottom: 0,
+          borderRadius: 18,
+          backgroundColor: colors.ink,
+          opacity: isDisabled ? 0.45 : 1,
+          transform: [{ translateX: PLATE }, { translateY: PLATE }],
+        }}
+      />
+      {face}
+    </View>
   );
 }

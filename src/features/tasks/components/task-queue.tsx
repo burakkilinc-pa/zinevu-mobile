@@ -168,7 +168,7 @@ export function TaskQueue({ term = '' }: { term?: string }) {
       <SectionList
         sections={sections}
         keyExtractor={(item) => String(item.id)}
-        stickySectionHeadersEnabled
+        stickySectionHeadersEnabled={false}
         contentContainerStyle={{
           paddingHorizontal: 20,
           paddingTop: 4,
@@ -241,9 +241,12 @@ export function TaskQueue({ term = '' }: { term?: string }) {
 }
 
 /**
- * A group's heading. Sticky, so scrolling deep into "Later" still says which
- * pile you are in — the rows themselves only carry a time, and "14:30" means
- * something very different under Overdue than under Later.
+ * A group's heading.
+ *
+ * NOT sticky, and that is the trade. A pinned heading has to be opaque to hide
+ * the cards sliding under it, and an opaque band of paper over the dot grid is
+ * a dot-free stripe across the ground — the one place the texture visibly broke.
+ * The groups are short enough to hold in your head without it.
  */
 function GroupHeader({ bucket, count }: { bucket: TaskBucket; count: number }) {
   const t = useT();
@@ -253,7 +256,7 @@ function GroupHeader({ bucket, count }: { bucket: TaskBucket; count: number }) {
     bucket === 'overdue' ? c.destructive : bucket === 'today' ? c.warning : c.mutedForeground;
 
   return (
-    <View className="flex-row items-center gap-2 bg-background pb-2 pt-3">
+    <View className="flex-row items-center gap-2 pb-2 pt-3">
       <Text
         className="text-[11px] font-semibold uppercase tracking-wide"
         style={{ color: tone }}
