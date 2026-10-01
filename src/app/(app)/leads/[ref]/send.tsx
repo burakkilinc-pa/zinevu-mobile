@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { ActivityIndicator, Alert, Linking, Share, Text, View, ScrollView } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import * as Clipboard from 'expo-clipboard';
@@ -7,7 +8,7 @@ import * as Sharing from 'expo-sharing';
 import * as WebBrowser from 'expo-web-browser';
 import { Directory, File, Paths } from 'expo-file-system';
 
-import { Screen, useDockClearance } from '@/components/ui/screen';
+import { Screen } from '@/components/ui/screen';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/toast';
@@ -50,7 +51,9 @@ import type { WhatsappSendResult } from '@/features/leads/api/offer.api';
  */
 export default function SendOfferScreen() {
   const { ref } = useLocalSearchParams<{ ref: string }>();
-  const dock = useDockClearance();
+  // The dock does not reach this screen — it is pushed over the tabs, not
+  // inside one (see (app)/_layout) — so the bottom only owes the safe area.
+  const bottom = useSafeAreaInsets().bottom;
   const t = useT();
   const c = useColors();
   const router = useRouter();
@@ -304,7 +307,7 @@ export default function SendOfferScreen() {
           <ActivityIndicator color={c.mutedForeground} />
         </View>
       ) : (
-        <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: dock + 24, gap: 16 }}>
+        <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: bottom + 24, gap: 16 }}>
           <Card className="gap-3 p-4">
             <Row label={t('leads.detail.email')} value={lead.customerEmail ?? '—'} />
             <Row label={t('leads.detail.phone')} value={lead.customerPhone ?? '—'} />

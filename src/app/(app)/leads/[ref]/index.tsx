@@ -1,12 +1,13 @@
 import { useCallback } from 'react';
 import { ActivityIndicator, Alert, Linking, Pressable, ScrollView, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { Image } from 'expo-image';
 import * as WebBrowser from 'expo-web-browser';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Screen, useDockClearance } from '@/components/ui/screen';
+import { Screen } from '@/components/ui/screen';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/toast';
@@ -42,7 +43,9 @@ import {
  */
 export default function LeadDetailScreen() {
   const { ref } = useLocalSearchParams<{ ref: string }>();
-  const dock = useDockClearance();
+  // The dock does not reach this screen — it is pushed over the tabs, not
+  // inside one (see (app)/_layout) — so the bottom only owes the safe area.
+  const bottom = useSafeAreaInsets().bottom;
   const t = useT();
   // Answer keys and values come from the dealer's own master form, so they
   // are open-ended — see useTFallback.
@@ -152,7 +155,7 @@ export default function LeadDetailScreen() {
           <Text className="text-center text-sm text-destructive">{t('common.error')}</Text>
         </View>
       ) : (
-        <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: dock + 24, gap: 16 }}>
+        <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: bottom + 24, gap: 16 }}>
           {lead.previewImageUrl ? (
             <Image
               source={{ uri: lead.previewImageUrl }}

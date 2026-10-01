@@ -53,6 +53,14 @@ export default function AppLayout() {
             and from a notification — so it belongs here rather than in any one
             tab's stack: Back has to return to whichever of the three it was. */}
         <Stack.Screen name="conversation/[ref]" />
+        {/* The lead itself, for the same reason: it is opened from the Leads
+            list, from a visit on the planning calendar, from a row in the task
+            queue and from a notification. While it lived in the Leads tab's own
+            stack, opening it from anywhere else SWITCHED TABS — and Back then
+            unwound the tab change instead of returning, dropping the dealer on
+            the dashboard. The offer editors ride along: they are only ever
+            reached from here. */}
+        <Stack.Screen name="leads/[ref]/index" />
       </Stack>
       <BiometricGate />
     </>
