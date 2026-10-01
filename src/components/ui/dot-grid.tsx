@@ -15,8 +15,14 @@ import { useColorScheme } from 'nativewind';
  * TWO tiles rather than one tinted one. iOS renders a tinted Image as a
  * template, which does not reliably tile with resizeMode="repeat" — and a
  * background that silently fails to draw is a worse trade than two 100-byte
- * files. The dark tile is also a little stronger than the site's 7%, because
- * that much white on a near-black ground is below what a phone screen resolves.
+ * files.
+ *
+ * The dots are DARKER than the site's rgba(0,0,0,0.07), and deliberately. At 7%
+ * a dot on this paper is #E6E3DD — a six-percent step in brightness, carried by
+ * a mark a third of a millimetre across on a 3x screen. That reads on a desktop
+ * canvas and sits under the threshold on a phone held at arm's length: it drew
+ * correctly and could not be seen. The 22dp geometry is the site's and stays;
+ * only the contrast is a phone's.
  *
  * Purely decorative: it sits behind everything, takes no touches, and is hidden
  * from screen readers.

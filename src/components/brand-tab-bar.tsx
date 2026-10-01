@@ -148,6 +148,25 @@ export function BrandTabBar({ state, descriptors, navigation, centerRoute }: Tab
         paddingHorizontal: 16,
       }}
     >
+      {/* The plate the dock stands on. A real layer, not a shadow with its blur
+          set to zero: iOS rasterises a zero-radius shadow from the layer's
+          shadow path WITHOUT antialiasing, and on a shape this round the ends
+          came out visibly stepped. A plain rounded View is drawn like any other
+          rectangle — clean at any radius, and identical on Android, where
+          `elevation` would have blurred a shadow the brand never blurs. */}
+      <View
+        pointerEvents="none"
+        style={{
+          position: 'absolute',
+          left: 16,
+          right: 16,
+          top: 2,
+          height: DOCK_H,
+          borderRadius: DOCK_R,
+          backgroundColor: '#000',
+        }}
+      />
+
       <View
         style={{
           height: DOCK_H,
@@ -155,13 +174,6 @@ export function BrandTabBar({ state, descriptors, navigation, centerRoute }: Tab
           backgroundColor: DOCK,
           flexDirection: 'row',
           alignItems: 'center',
-          // zinevu.com never blurs a shadow: a floating slab stands on a solid
-          // plate. 2px, the weight the portal's sidebar settled on.
-          shadowColor: '#000',
-          shadowOpacity: 1,
-          shadowRadius: 0,
-          shadowOffset: { width: 0, height: 2 },
-          elevation: 12,
         }}
       >
         {/* Notch: a bg-coloured circle clipped to the dock, biting a cradle out
@@ -375,6 +387,19 @@ function CenterTab({
       }}
     >
       <Animated.View style={[{ alignSelf: 'center' }, style]}>
+        {/* Its plate, as a layer rather than a zero-blur shadow — see the dock's. */}
+        <View
+          pointerEvents="none"
+          style={{
+            position: 'absolute',
+            left: 0,
+            top: 2,
+            width: FAB_SIZE,
+            height: FAB_SIZE,
+            borderRadius: FAB_SIZE / 2,
+            backgroundColor: '#000',
+          }}
+        />
         <Pressable
           onPress={onPress}
           onPressIn={() => {
@@ -393,14 +418,10 @@ function CenterTab({
             backgroundColor: ACTIVE_PILL,
             alignItems: 'center',
             justifyContent: 'center',
-            // The site's lime button: a 1.5px black edge on a solid plate.
+            // The site's lime button: a 1.5px black edge on a solid plate. The
+            // plate is the sibling below, for the reason the dock's is.
             borderWidth: 1.5,
             borderColor: '#000',
-            shadowColor: '#000',
-            shadowOpacity: 1,
-            shadowRadius: 0,
-            shadowOffset: { width: 0, height: 2 },
-            elevation: 10,
           }}
         >
           <Image
