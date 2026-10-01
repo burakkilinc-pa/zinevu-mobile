@@ -45,45 +45,46 @@ export function ViewSwitch({
   const c = useColors();
 
   return (
-    <View className="px-5 pb-1.5 pt-2">
-      <View
-        className="flex-row rounded-full p-1"
-        style={{ backgroundColor: c.card, borderWidth: 1, borderColor: c.border }}
-      >
-        {(['calendar', 'tasks'] as PlanningView[]).map((view) => {
-          const active = view === value;
+    // No outer padding of its own: the screen puts this in a toolbar row beside
+    // the search button, and a control that carries its own margins cannot be
+    // stood next to anything.
+    <View
+      className="flex-1 flex-row rounded-full p-1"
+      style={{ backgroundColor: c.card, borderWidth: 1, borderColor: c.border }}
+    >
+      {(['calendar', 'tasks'] as PlanningView[]).map((view) => {
+        const active = view === value;
 
-          return (
-            <Pressable
-              key={view}
-              onPress={() => onChange(view)}
-              accessibilityRole="button"
-              accessibilityState={active ? { selected: true } : {}}
-              className="flex-1 flex-row items-center justify-center gap-1.5 rounded-full py-2"
-              style={{ backgroundColor: active ? c.primary : 'transparent' }}
+        return (
+          <Pressable
+            key={view}
+            onPress={() => onChange(view)}
+            accessibilityRole="button"
+            accessibilityState={active ? { selected: true } : {}}
+            className="flex-1 flex-row items-center justify-center gap-1.5 rounded-full py-2"
+            style={{ backgroundColor: active ? c.primary : 'transparent' }}
+          >
+            <Ionicons
+              name={ICONS[view]}
+              size={15}
+              color={active ? c.primaryForeground : c.mutedForeground}
+            />
+            <Text
+              className="text-sm font-semibold"
+              style={{ color: active ? c.primaryForeground : c.mutedForeground }}
             >
-              <Ionicons
-                name={ICONS[view]}
-                size={15}
-                color={active ? c.primaryForeground : c.mutedForeground}
-              />
-              <Text
-                className="text-sm font-semibold"
-                style={{ color: active ? c.primaryForeground : c.mutedForeground }}
-              >
-                {t(view === 'calendar' ? 'tasks.viewCalendar' : 'tasks.viewTasks')}
-              </Text>
-              {view === 'tasks' && taskCount ? (
-                <View className="rounded-full px-1.5" style={{ backgroundColor: c.ink }}>
-                  <Text className="text-[10px] font-semibold" style={{ color: c.onInk }}>
-                    {taskCount}
-                  </Text>
-                </View>
-              ) : null}
-            </Pressable>
-          );
-        })}
-      </View>
+              {t(view === 'calendar' ? 'tasks.viewCalendar' : 'tasks.viewTasks')}
+            </Text>
+            {view === 'tasks' && taskCount ? (
+              <View className="rounded-full px-1.5" style={{ backgroundColor: c.ink }}>
+                <Text className="text-[10px] font-semibold" style={{ color: c.onInk }}>
+                  {taskCount}
+                </Text>
+              </View>
+            ) : null}
+          </Pressable>
+        );
+      })}
     </View>
   );
 }

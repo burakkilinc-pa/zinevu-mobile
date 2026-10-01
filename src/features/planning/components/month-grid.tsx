@@ -16,7 +16,9 @@ import type { PlanningItem } from '@/features/planning/types';
  * one they chose in their portal — this screen has no opinion about what a
  * measurement should look like.
  *
- * Six rows always, so the agenda below never jumps as you page months.
+ * As many week rows as the month needs — see monthGrid. The trailing all-grey
+ * week a fixed six-row grid draws was costing the agenda below it a row of its
+ * own, on the screen with the least room to give.
  */
 
 const MAX_DOTS = 3;
@@ -51,7 +53,7 @@ export function MonthGrid({
         ))}
       </View>
 
-      {Array.from({ length: 6 }, (_, week) => (
+      {Array.from({ length: grid.length / 7 }, (_, week) => (
         <View key={week} className="flex-row">
           {grid.slice(week * 7, week * 7 + 7).map((date) => {
             const key = dateKey(date);

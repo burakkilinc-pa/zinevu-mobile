@@ -82,9 +82,10 @@ export default function SupportScreen() {
             <Text className="text-base text-muted-foreground">
               {query.isError ? t('common.error') : t('support.empty')}
             </Text>
-            <View className="mt-2">
-              <BrandButton label={t('support.new.action')} onPress={() => router.push('/settings/support/new')} />
-            </View>
+            <BrandButton
+              label={t('support.new.action')}
+              onPress={() => router.push('/settings/support/new')}
+            />
           </View>
         ) : (
           tickets.map((ticket) => (

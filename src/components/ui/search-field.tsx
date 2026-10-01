@@ -23,12 +23,22 @@ export function SearchField({
   onChange,
   placeholder,
   busy = false,
+  autoFocus = false,
+  onDismiss,
 }: {
   value: string;
   onChange: (next: string) => void;
   /** What this list is searched by, in the dealer's language. */
   placeholder: string;
   busy?: boolean;
+  /** For a field that was opened by a tap — the keyboard comes with it. */
+  autoFocus?: boolean;
+  /**
+   * Given when the field is something the screen opened rather than something
+   * it always shows: the trailing control then closes it instead of only
+   * emptying it, because an empty field that will not go away is furniture.
+   */
+  onDismiss?: () => void;
 }) {
   const t = useT();
   const c = useColors();
@@ -56,6 +66,7 @@ export function SearchField({
         autoCorrect={false}
         spellCheck={false}
         returnKeyType="search"
+        autoFocus={autoFocus}
         // fontSize via style, not `text-base`: that class also sets a 24pt line
         // height, which pushes a single-line input's text off centre on iOS.
         className="flex-1 text-foreground"
@@ -64,9 +75,12 @@ export function SearchField({
       />
       {busy ? (
         <ActivityIndicator size="small" color={c.mutedForeground} />
-      ) : value.length > 0 ? (
+      ) : value.length > 0 || onDismiss ? (
         <Pressable
-          onPress={() => onChange('')}
+          onPress={() => {
+            onChange('');
+            onDismiss?.();
+          }}
           hitSlop={10}
           accessibilityRole="button"
           accessibilityLabel={t('common.clearSearch')}

@@ -1,8 +1,11 @@
 import { useState } from 'react';
+import { Pressable, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 
 import { Screen } from '@/components/ui/screen';
 import { SearchField } from '@/components/ui/search-field';
+import { useColors } from '@/lib/theme';
 import { useDebounced } from '@/lib/hooks/use-debounced';
 import { useT } from '@/lib/i18n';
 import { CalendarPane } from '@/features/planning/components/calendar-pane';
@@ -33,6 +36,13 @@ import { hasPermission, PERMISSIONS } from '@/lib/auth/roles';
  * month or at a queue when you asked. Typing in it is also the only way to
  * reach a FINISHED task from this screen: the queue is open work by definition
  * and the calendar only knows the month you are standing in.
+ *
+ * It is a BUTTON until it is used, though, sharing the switch's row. Standing
+ * open it cost a 48pt band of its own, and on the calendar face this screen is
+ * already four stacked controls deep — switch, month header, lane chips, grid —
+ * before the agenda gets a pixel. Search is also the rarest of the four: the
+ * month is what the tab is opened for. So it waits as a magnifier beside the
+ * switch, and takes the row when asked.
  */
 export default function PlanningScreen() {
   const t = useT();
@@ -70,6 +80,11 @@ export default function PlanningScreen() {
   const settled = useDebounced(typed);
   const searching = typed.trim().length > 0;
 
+  // Open is its own state rather than `typed.length > 0`: a field that vanished
+  // the moment it was emptied would take the keyboard and the caret with it
+  // halfway through a correction.
+  const [searchOpen, setSearchOpen] = useState(false);
+
   // Same query key the results list uses, so this is the one request rather
   // than a second — it is here only to tell the field when it is behind.
   const search = useTaskSearch(settled);
@@ -84,15 +99,24 @@ export default function PlanningScreen() {
 
   return (
     <Screen padded={false} edges={['top']}>
-      {both ? <ViewSwitch value={showing} onChange={setView} taskCount={openCount} /> : null}
-
-      {canTasks ? (
+      {searchOpen ? (
         <SearchField
           value={typed}
           onChange={setTyped}
           placeholder={t('tasks.search.placeholder')}
           busy={searching && (search.isFetching || typed !== settled)}
+          autoFocus
+          onDismiss={() => setSearchOpen(false)}
         />
+      ) : both || canTasks ? (
+        <View className="flex-row items-center gap-2 px-5 pb-1.5 pt-2">
+          {both ? (
+            <ViewSwitch value={showing} onChange={setView} taskCount={openCount} />
+          ) : (
+            <View className="flex-1" />
+          )}
+          {canTasks ? <SearchButton onPress={() => setSearchOpen(true)} /> : null}
+        </View>
       ) : null}
 
       {searching ? (
@@ -103,5 +127,34 @@ export default function PlanningScreen() {
         <CalendarPane />
       )}
     </Screen>
+  );
+}
+
+/**
+ * Search, folded up.
+ *
+ * The same white face and hairline the open field wears, so the row reads as
+ * one material rather than as a control with an ornament bolted to its end.
+ */
+function SearchButton({ onPress }: { onPress: () => void }) {
+  const t = useT();
+  const c = useColors();
+
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={t('common.search')}
+      className="items-center justify-center rounded-full active:opacity-70"
+      style={{
+        width: 42,
+        height: 42,
+        backgroundColor: c.card,
+        borderWidth: 1,
+        borderColor: c.border,
+      }}
+    >
+      <Ionicons name="search-outline" size={18} color={c.foreground} />
+    </Pressable>
   );
 }

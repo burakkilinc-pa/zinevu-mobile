@@ -33,7 +33,16 @@ export function BrandButton({
   const sink = pressed ? PLATE - PLATE_PRESSED : 0;
 
   return (
-    <View>
+    // `alignSelf` is load-bearing, not tidiness. The plate is an absolutely
+    // positioned layer pinned to all four sides of THIS view, so it is only the
+    // face's own footprint while this view is exactly the face's size — and a
+    // plain View inherits `stretch`, which lets a parent size it to something
+    // the Pressable does not fill. Centred in a column inside a ScrollView that
+    // is what happened on the support screen: the plate came out a different
+    // box from the face, and the brand's one-light-source offset read as
+    // travelling further down than across. Centre is right in both homes — the
+    // floating wrapper shrink-wraps a single child either way.
+    <View style={{ alignSelf: 'center' }}>
       <Plate radius={999} />
 
       <Pressable

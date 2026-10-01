@@ -7,7 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Screen, useDockClearance } from '@/components/ui/screen';
 import { Placeholder } from '@/components/ui/placeholder';
 import { useColors } from '@/lib/theme';
-import { useT } from '@/lib/i18n';
+import { useT, type MessageKey } from '@/lib/i18n';
 import { clockTime, relativeTime } from '@/lib/time';
 import { useAuthStore } from '@/features/auth/store';
 import { hasPermission, PERMISSIONS } from '@/lib/auth/roles';
@@ -364,9 +364,15 @@ function Badge({ icon, label }: { icon: keyof typeof Ionicons.glyphMap; label: s
   const c = useColors();
 
   return (
-    <View className="flex-row items-center gap-1">
+    // Shrinkable and clamped to one line: these badges are the row's third
+    // line and both sides of the switch are only the same height while it
+    // stays one. A long label — the unlinked hint is a whole sentence —
+    // ellipsises instead of wrapping the card taller.
+    <View className="min-w-0 shrink flex-row items-center gap-1">
       <Ionicons name={icon} size={11} color={c.mutedForeground} />
-      <Text className="text-xs text-muted-foreground">{label}</Text>
+      <Text className="shrink text-xs text-muted-foreground" numberOfLines={1}>
+        {label}
+      </Text>
     </View>
   );
 }
@@ -462,12 +468,16 @@ function LeadRow({ row, onPress }: { row: InboxRow; onPress: () => void }) {
   const c = useColors();
 
   const name = row.customerName || row.offerNo || t('inbox.anonymous');
+  const channel =
+    row.lastChannel === 'whatsapp' || row.lastChannel === 'call' || row.lastChannel === 'note'
+      ? row.lastChannel
+      : 'mail';
   const channelIcon: keyof typeof Ionicons.glyphMap =
-    row.lastChannel === 'whatsapp'
+    channel === 'whatsapp'
       ? 'logo-whatsapp'
-      : row.lastChannel === 'call'
+      : channel === 'call'
         ? 'call-outline'
-        : row.lastChannel === 'note'
+        : channel === 'note'
           ? 'document-text-outline'
           : 'mail-outline';
 
@@ -505,19 +515,34 @@ function LeadRow({ row, onPress }: { row: InboxRow; onPress: () => void }) {
           {row.lastPreview || row.lastSubject || t('chat.noMessages')}
         </Text>
 
-        {row.agentHolds ? (
-          <View className="mt-0.5 flex-row items-center gap-1">
-            <Text className="text-xs">🤖</Text>
-            <Text className="text-xs text-muted-foreground">{t('inbox.agentHolds')}</Text>
-          </View>
-        ) : row.awaitingReply ? (
-          <View className="mt-0.5 flex-row items-center gap-1">
-            <Ionicons name="alert-circle-outline" size={11} color={c.destructive} />
-            <Text className="text-xs" style={{ color: c.destructive }}>
-              {t('inbox.awaitingReply')}
-            </Text>
-          </View>
-        ) : null}
+        {/* The badge row is on EVERY row here, exactly as it is on the website
+            side. The two halves of this screen are one list behind a switch,
+            and a third line that only appeared when something was wrong made
+            the cards visibly different heights depending on which chip was
+            lit — the same row, taller on one tab than the other.
+
+            What it carries is the request this thread hangs off, which is the
+            lead side's answer to the website side's "which page were they on".
+            A thread on no offer yet falls back to naming its pipe. */}
+        <View className="mt-0.5 flex-row items-center gap-3">
+          <Badge
+            icon="pricetag-outline"
+            label={row.offerNo || t(`inbox.channel.${channel}` as MessageKey)}
+          />
+          {row.agentHolds ? (
+            <View className="flex-row items-center gap-1">
+              <Text className="text-xs">🤖</Text>
+              <Text className="text-xs text-muted-foreground">{t('inbox.agentHolds')}</Text>
+            </View>
+          ) : row.awaitingReply ? (
+            <View className="flex-row items-center gap-1">
+              <Ionicons name="alert-circle-outline" size={11} color={c.destructive} />
+              <Text className="text-xs" style={{ color: c.destructive }}>
+                {t('inbox.awaitingReply')}
+              </Text>
+            </View>
+          ) : null}
+        </View>
       </View>
 
       {row.unread > 0 ? (
@@ -549,18 +574,22 @@ function UnlinkedRowView({ row }: { row: UnlinkedRow }) {
     // the rest became cards, which is what made the e-mail side look like it
     // was built to a different design from the website side.
     <View
-      className={`${CARD_CLASS} mx-5 mb-2.5 flex-row items-center gap-3 px-4 py-3`}
+      className={`${CARD_CLASS} mx-5 mb-2.5 flex-row items-center gap-3 px-4 py-3.5`}
       style={CARD_SHADOW}
     >
+      {/* The same 44pt mark, type sizes and padding as the rows under it. It
+          was built a size down — a smaller disc, a smaller name, less air —
+          which made the top of this list read as a different kind of row
+          rather than as the same row with a different story. */}
       <View
-        className="h-9 w-9 items-center justify-center rounded-full"
+        className="h-11 w-11 items-center justify-center rounded-full"
         style={{ backgroundColor: c.muted }}
       >
-        <Ionicons name="logo-whatsapp" size={17} color={c.mutedForeground} />
+        <Ionicons name="logo-whatsapp" size={19} color={c.mutedForeground} />
       </View>
       <View className="flex-1 gap-0.5">
         <View className="flex-row items-center gap-2">
-          <Text className="flex-1 text-sm font-semibold text-foreground" numberOfLines={1}>
+          <Text className="flex-1 text-base font-semibold text-foreground" numberOfLines={1}>
             {row.fromName || t('inbox.anonymous')}
           </Text>
           <Text className="text-xs text-muted-foreground">{relativeTime(row.lastAt)}</Text>
@@ -568,7 +597,9 @@ function UnlinkedRowView({ row }: { row: UnlinkedRow }) {
         <Text className="text-sm text-muted-foreground" numberOfLines={1}>
           {row.preview || t('chat.noMessages')}
         </Text>
-        <Text className="text-xs text-muted-foreground">{t('inbox.unlinked.hint')}</Text>
+        <View className="mt-0.5 flex-row items-center gap-3">
+          <Badge icon="link-outline" label={t('inbox.unlinked.hint')} />
+        </View>
       </View>
     </View>
   );

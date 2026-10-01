@@ -7,6 +7,11 @@
   "inbox.empty": { "en": "No customer conversations yet.", "nl": "Nog geen klantgesprekken.", "de": "Noch keine Kundengespräche.", "fr": "Pas encore de conversations clients.", "tr": "Henüz müşteri görüşmesi yok." },
   "inbox.emptyHint": { "en": "A reply on WhatsApp or to one of your mails lands here.", "nl": "Een reactie via WhatsApp of op een van je mails komt hier binnen.", "de": "Eine Antwort über WhatsApp oder auf eine deiner Mails landet hier.", "fr": "Une réponse par WhatsApp ou à l'un de vos e-mails arrive ici.", "tr": "WhatsApp'tan ya da mailine gelen bir cevap buraya düşer." },
 
+  "inbox.channel.whatsapp": { "en": "WhatsApp", "nl": "WhatsApp", "de": "WhatsApp", "fr": "WhatsApp", "tr": "WhatsApp" },
+  "inbox.channel.mail": { "en": "E-mail", "nl": "E-mail", "de": "E-Mail", "fr": "E-mail", "tr": "E-posta" },
+  "inbox.channel.call": { "en": "Call", "nl": "Telefoon", "de": "Anruf", "fr": "Appel", "tr": "Telefon" },
+  "inbox.channel.note": { "en": "Note", "nl": "Notitie", "de": "Notiz", "fr": "Note", "tr": "Not" },
+
   "inbox.anonymous": { "en": "Unknown customer", "nl": "Onbekende klant", "de": "Unbekannter Kunde", "fr": "Client inconnu", "tr": "Bilinmeyen müşteri" },
   "inbox.agentHolds": { "en": "assistant", "nl": "assistent", "de": "Assistent", "fr": "assistant", "tr": "asistan" },
   "inbox.awaitingReply": { "en": "waiting for an answer", "nl": "wacht op antwoord", "de": "wartet auf Antwort", "fr": "attend une réponse", "tr": "cevap bekliyor" },

@@ -1,6 +1,7 @@
-import { ActivityIndicator, Image, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
+import { Avatar } from '@/components/ui/avatar';
 import { BottomSheet } from '@/components/ui/bottom-sheet';
 import type { Membership } from '@/features/auth/types';
 import { useCompanySwitch, useMemberships } from '@/features/companies/use-company-switch';
@@ -125,29 +126,28 @@ function CompanyRow({
   );
 }
 
-/** The company's logo, or its initial — never an empty square. */
+/**
+ * The company's logo, or its initial — never an empty disc.
+ *
+ * The shared Avatar, not a mark of its own. This was written before there was
+ * one and kept its own rules: a muted square, and an image element the moment
+ * `logoUrl` was non-null. The portal serves logos off a private disk, so that
+ * URL is often one the phone cannot fetch — and the row then showed a blank
+ * square where the company's name should have been. Avatar treats a picture
+ * that does not arrive the same as no picture at all, and falls back to the
+ * initial.
+ *
+ * `contain` for the same reason the settings header uses it: a dealer's mark
+ * is wide artwork drawn for white paper, so it is letterboxed on a white disc
+ * rather than cropped onto a tinted one.
+ */
 function CompanyMark({ membership }: { membership: Membership }) {
-  const c = useColors();
-
-  if (membership.logoUrl) {
-    return (
-      <Image
-        source={{ uri: membership.logoUrl }}
-        resizeMode="contain"
-        className="h-10 w-10 rounded-md"
-        style={{ backgroundColor: c.muted }}
-      />
-    );
-  }
-
   return (
-    <View
-      className="h-10 w-10 items-center justify-center rounded-md"
-      style={{ backgroundColor: c.muted }}
-    >
-      <Text className="text-base font-bold" style={{ color: c.mutedForeground }}>
-        {(membership.name || '?').trim().charAt(0).toUpperCase()}
-      </Text>
-    </View>
+    <Avatar
+      url={membership.logoUrl}
+      initials={(membership.name || '?').trim().charAt(0).toUpperCase()}
+      size={40}
+      contain
+    />
   );
 }

@@ -40,19 +40,29 @@ export function addMonths(year: number, month: number, delta: number) {
 }
 
 /**
- * The six-week grid a month is drawn on, Monday first.
+ * The grid a month is drawn on, Monday first — as many weeks as the month
+ * actually needs, which is five or six.
  *
- * Always six rows, even when five would do. A grid that changes height as you
- * page through the year makes the agenda underneath jump, and the eye loses
- * its place — every native calendar pads for the same reason.
+ * It was always six. The argument for padding is that a grid changing height
+ * makes the agenda under it jump as you page the year, and on a desktop
+ * calendar that is the right call. On a phone it is not: the agenda is the
+ * part of this screen with nowhere else to go, and a row of greyed next-month
+ * numbers was spending 56pt of it — on a five-week month, an entire week of
+ * days belonging to a month you are not looking at, above a list that had
+ * about two rows of room left.
+ *
+ * The jump is real and it is the price. It only happens on a deliberate page
+ * of the month, never while reading a day, and what moves is the boundary
+ * between the two halves — not the content of either.
  */
 export function monthGrid(year: number, month: number): Date[] {
   const first = startOfMonth(year, month);
   // getDay() is Sunday-first; Europe reads Monday-first.
   const leading = (first.getDay() + 6) % 7;
   const start = new Date(year, month, 1 - leading);
+  const weeks = Math.ceil((leading + endOfMonth(year, month).getDate()) / 7);
 
-  return Array.from({ length: 42 }, (_, i) => {
+  return Array.from({ length: weeks * 7 }, (_, i) => {
     const d = new Date(start);
     d.setDate(start.getDate() + i);
     return d;
