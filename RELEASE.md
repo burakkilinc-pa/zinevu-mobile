@@ -94,10 +94,13 @@ that review needs the demo account from step 6.
 
 ## 6. Store listings
 
-Not started. Both stores need an icon (already generated — `assets/images/icon.png`),
+Live on Apple in English and Dutch since 1.1.0, and section 7 is how they are
+edited now. Both stores need an icon (generated — `assets/images/icon.png`),
 screenshots, a description, and a privacy policy URL. The app links to
-`https://zinevu.com/{locale}/legal/privacy` from the login screen; that page has
-to exist and be reachable before review, or the submission is rejected.
+`https://zinevu.com/{locale}/mobile-app-privacy` from the login screen; that page
+has to exist and be reachable before review, or the submission is rejected. Only
+nl/de/fr/en are published there — the login screen sends Turkish to the English
+page on purpose, so do not "fix" that into a 404.
 
 Apple additionally requires an account they can sign in with — sign-up is closed
 in the app, so without one a reviewer cannot get past the login screen at all.
@@ -113,7 +116,8 @@ visits. `ZinevuDemoSeeder` in the API repo owns it — re-run it before submitti
 if the agenda has aged out, since it books everything relative to `now()` and a
 review six weeks after the build would otherwise open onto an empty Planning tab.
 
-Put those credentials in App Review notes on both stores, and say there that
+Those credentials are already in `store.config.json` (`apple.review`), which is
+what puts them in App Review notes on Apple's side. Say there as well that
 accounts are provisioned by the dealer's own firm — Apple occasionally reads a
 closed B2B sign-in as grounds to push an app to custom distribution under 4.2.3,
 and the sentence usually settles it.
@@ -121,6 +125,61 @@ and the sentence usually settles it.
 Tell them to sign in with the **password**, not the Apple or Google buttons: a
 reviewer's own Apple ID is an identity we have never seen, and with sign-up
 closed the backend correctly turns it away.
+
+## 7. The store listing itself
+
+`store.config.json` holds everything App Store Connect will take over an API —
+titles, descriptions, keywords, release notes, the review notes with the demo
+account, and the App Clip experience. It is pulled from the live listing, so it
+is never written from scratch:
+
+```bash
+npx eas metadata:pull --profile production   # live listing -> store.config.json
+# edit store.config.json
+npx eas metadata:lint --profile production   # catches a length or shape error
+npx eas metadata:push --profile production   # back to App Store Connect
+```
+
+Bump `apple.version` to the version being shipped before pushing, or the notes
+land on the previous version record. Screenshots point at `store/appstore/`,
+which is what `scripts/gen-store-screenshots.mjs` writes — a pull would
+otherwise drop Apple's own re-encoded copies beside them as a second set.
+
+### App Privacy — the one part no API will fill
+
+The data-collection questionnaire lives only in the App Store Connect web UI
+(App Store Connect → the app → App Privacy → Edit). It has to agree with
+`ios.privacyManifests` in `app.json`, and Apple does compare them.
+
+Answer "Yes" to data collection, then declare exactly these seven, and nothing
+else:
+
+| App Privacy category | Data type           | Linked to user | Tracking | Purpose          |
+| -------------------- | ------------------- | -------------- | -------- | ---------------- |
+| Contact Info         | Name                | Yes            | No       | App Functionality |
+| Contact Info         | Email Address       | Yes            | No       | App Functionality |
+| Contact Info         | Phone Number        | Yes            | No       | App Functionality |
+| Contact Info         | Physical Address    | Yes            | No       | App Functionality |
+| User Content         | Photos or Videos    | Yes            | No       | App Functionality |
+| User Content         | Other User Content  | Yes            | No       | App Functionality |
+| Identifiers          | Device ID           | Yes            | No       | App Functionality |
+
+Nothing else is collected and the list is short for a reason worth knowing: the
+app carries no analytics, crash or attribution SDK at all, and asks for no
+location. "Other User Content" is the messages and notes a dealer writes;
+"Device ID" is the Expo push token. Tracking is No everywhere, which is what
+lets `NSPrivacyTracking: false` stand and is why the app needs no App Tracking
+Transparency prompt.
+
+Two neighbouring answers that are deliberate, not oversights:
+
+- **Age rating → "Messaging and Chat": No.** The Messages tab is a dealer
+  talking to their own customers, who are not users of this app. There is no
+  user-to-user channel, no discovery and nothing public, which is the same
+  reading every other CRM with a customer inbox is rated on. Revisit it the day
+  two Zinevu users can message each other.
+- **"User Generated Content": No**, for the same reason — nothing a dealer or a
+  customer writes is published to anyone else.
 
 ## Before you build: a checklist that has caught things
 

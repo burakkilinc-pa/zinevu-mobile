@@ -58,3 +58,8 @@ targets/*/Assets.xcassets/
 
 # Screenshot generator scratch
 store/appstore/.build/
+
+# App Store listing: pulled binaries Apple re-encoded. The originals that
+# were uploaded live in store/appstore/, which store.config.json points at.
+store/apple/
+store/appstore/Archive.zip

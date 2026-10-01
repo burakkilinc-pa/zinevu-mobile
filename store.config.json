@@ -1,0 +1,154 @@
+{
+  "configVersion": 0,
+  "apple": {
+    "version": "1.3.0",
+    "copyright": "Zinevu",
+    "release": {
+      "automaticRelease": true
+    },
+    "info": {
+      "en-GB": {
+        "description": "Run your veranda business. Wherever the job takes you.\n\nZinevu helps veranda businesses manage their sales, customers, quotes and projects from one connected platform.\n\nWhether you're meeting a customer, visiting an installation site or managing your team, the Zinevu mobile app keeps the information you need close at hand.\n\nMANAGE LEADS AND SALES\nKeep track of new leads, customers and sales opportunities. Access important information and stay on top of your sales pipeline.\n\nACCESS QUOTES AND PROJECTS\nView quotes and project details wherever you are. Follow every veranda project from the first customer conversation through to completion.\n\nSTAY ON SCHEDULE\nKeep track of appointments, upcoming activities and project schedules so you always know what needs attention next.\n\nCUSTOMER INFORMATION AT YOUR FINGERTIPS\nQuickly access customer and project details while you're on-site, meeting clients or working away from the office.\n\nBUILT FOR VERANDA BUSINESSES\nZinevu is designed for businesses that sell and deliver verandas and outdoor-living projects. Bring your customer management, sales, quoting and operations together in one place.\n\nWORK FROM ANYWHERE\nFrom the showroom to the customer's home and the installation site, Zinevu helps your veranda business stay connected and organized.",
+        "keywords": [
+          "veranda",
+          "CRM",
+          "quotes",
+          "projects",
+          "sales",
+          "leads",
+          "customers",
+          "contractor",
+          "schedule",
+          "workflow",
+          "outdoor"
+        ],
+        "releaseNotes": "Messages. The conversations your customers start are now on your phone — the live chat from your website, and their replies on WhatsApp and by e-mail, in one list. Say you are reachable, answer with a photo, and see when they have read you.\n\nSend a quote over WhatsApp. The offer goes down the channel the customer already uses, straight from the request.\n\nA work queue. Everything still owed, grouped by how late it is, on the second face of the Planning tab. Swipe to close one, hold to pick several, and search the lot by name, number or address — finished work included.\n\nMore than one company? Switch between them without signing out, and hear from the other one while you are here.\n\nPlus: find a request by name, offer number or address, and a calendar that gives the day's agenda more room.",
+        "marketingUrl": "https://zinevu.com",
+        "supportUrl": "https://zinevu.com/en/contact",
+        "title": "Zinevu",
+        "subtitle": "App for Veranda Businesses",
+        "privacyPolicyUrl": "https://zinevu.com/en/mobile-app-privacy",
+        "screenshots": {
+          "APP_IPHONE_65": [
+            "store/appstore/iphone-6.5/en/1-dashboard.png",
+            "store/appstore/iphone-6.5/en/2-leads.png",
+            "store/appstore/iphone-6.5/en/3-analytics.png",
+            "store/appstore/iphone-6.5/en/4-chat.png",
+            "store/appstore/iphone-6.5/en/5-planning.png",
+            "store/appstore/iphone-6.5/en/6-offer.png"
+          ],
+          "APP_IPAD_PRO_3GEN_129": [
+            "store/appstore/ipad-13/en/1-dashboard.png",
+            "store/appstore/ipad-13/en/2-leads.png",
+            "store/appstore/ipad-13/en/3-analytics.png",
+            "store/appstore/ipad-13/en/4-chat.png",
+            "store/appstore/ipad-13/en/5-planning.png",
+            "store/appstore/ipad-13/en/6-offer.png"
+          ]
+        }
+      },
+      "nl-NL": {
+        "description": "Beheer je verandabedrijf. Waar je ook bent.\n\nZinevu helpt verandabedrijven bij het beheren van verkoop, klanten, offertes en projecten vanuit één verbonden platform.\n\nOf je nu bij een klant bent, een projectlocatie bezoekt of je team aanstuurt, met de mobiele app van Zinevu heb je altijd de informatie die je nodig hebt binnen handbereik.\n\nBEHEER LEADS EN VERKOOP\nHoud nieuwe leads, klanten en verkoopkansen bij. Bekijk belangrijke informatie en blijf op de hoogte van je verkoopproces.\n\nBEKIJK OFFERTES EN PROJECTEN\nBekijk offertes en projectgegevens, waar je ook bent. Volg elk verandaproject vanaf het eerste klantcontact tot en met de oplevering.\n\nBLIJF OP DE HOOGTE VAN JE PLANNING\nHoud afspraken, aankomende activiteiten en projectplanningen bij, zodat je altijd weet wat er als volgende moet gebeuren.\n\nKLANTINFORMATIE BINNEN HANDBEREIK\nKrijg snel toegang tot klant- en projectgegevens wanneer je op locatie bent, een klant bezoekt of onderweg werkt.\n\nGEBOUWD VOOR VERANDABEDRIJVEN\nZinevu is ontwikkeld voor bedrijven die veranda's en buitenlevenprojecten verkopen en realiseren. Breng klantbeheer, verkoop, offertes en bedrijfsprocessen samen op één plek.\n\nWERK OVERAL\nVan de showroom tot bij de klant en op de montagelocatie: Zinevu helpt je verandabedrijf verbonden, georganiseerd en in controle te blijven.",
+        "keywords": [
+          "veranda",
+          "CRM",
+          "offertes",
+          "projecten",
+          "verkoop",
+          "leads",
+          "klanten",
+          "planning",
+          "werkbonnen",
+          "workflow"
+        ],
+        "releaseNotes": "Berichten. De gesprekken die je klanten beginnen staan nu op je telefoon — de live chat van je website, en hun antwoorden via WhatsApp en e-mail, in één lijst. Zet jezelf op bereikbaar, antwoord met een foto, en zie wanneer ze je gelezen hebben.\n\nStuur een offerte via WhatsApp. De offerte gaat over het kanaal dat de klant toch al gebruikt, rechtstreeks vanaf de aanvraag.\n\nEen werklijst. Alles wat nog openstaat, gegroepeerd op hoe laat het is, op de tweede kant van het tabblad Planning. Veeg om er een af te sluiten, houd ingedrukt om er meerdere te kiezen, en doorzoek alles op naam, nummer of adres — afgeronde taken erbij.\n\nWerk je voor meer dan één bedrijf? Wissel zonder uit te loggen, en hoor het als het andere bedrijf je nodig heeft.\n\nVerder: vind een aanvraag op naam, offertenummer of adres, en een agenda die de dag meer ruimte geeft.",
+        "marketingUrl": "https://zinevu.com",
+        "supportUrl": "https://zinevu.com/nl/contact",
+        "title": "Zinevu",
+        "subtitle": "App voor Verandabedrijven",
+        "privacyPolicyUrl": "https://zinevu.com/nl/mobile-app-privacy",
+        "screenshots": {
+          "APP_IPAD_PRO_3GEN_129": [
+            "store/appstore/ipad-13/nl/1-dashboard.png",
+            "store/appstore/ipad-13/nl/2-leads.png",
+            "store/appstore/ipad-13/nl/3-analytics.png",
+            "store/appstore/ipad-13/nl/4-chat.png",
+            "store/appstore/ipad-13/nl/5-planning.png",
+            "store/appstore/ipad-13/nl/6-offer.png"
+          ],
+          "APP_IPHONE_65": [
+            "store/appstore/iphone-6.5/nl/1-dashboard.png",
+            "store/appstore/iphone-6.5/nl/2-leads.png",
+            "store/appstore/iphone-6.5/nl/3-analytics.png",
+            "store/appstore/iphone-6.5/nl/4-chat.png",
+            "store/appstore/iphone-6.5/nl/5-planning.png",
+            "store/appstore/iphone-6.5/nl/6-offer.png"
+          ]
+        }
+      }
+    },
+    "categories": [
+      "BUSINESS"
+    ],
+    "advisory": {
+      "ageRatingOverride": "NONE",
+      "alcoholTobaccoOrDrugUseOrReferences": "NONE",
+      "contests": "NONE",
+      "gambling": false,
+      "gamblingSimulated": "NONE",
+      "horrorOrFearThemes": "NONE",
+      "kidsAgeBand": null,
+      "koreaAgeRatingOverride": "NONE",
+      "lootBox": false,
+      "matureOrSuggestiveThemes": "NONE",
+      "medicalOrTreatmentInformation": "NONE",
+      "profanityOrCrudeHumor": "NONE",
+      "sexualContentGraphicAndNudity": "NONE",
+      "sexualContentOrNudity": "NONE",
+      "unrestrictedWebAccess": false,
+      "violenceCartoonOrFantasy": "NONE",
+      "violenceRealistic": "NONE",
+      "violenceRealisticProlongedGraphicOrSadistic": "NONE",
+      "advertising": false,
+      "ageAssurance": false,
+      "ageRatingOverrideV2": "NONE",
+      "developerAgeRatingInfoUrl": null,
+      "gunsOrOtherWeapons": "NONE",
+      "healthOrWellnessTopics": false,
+      "messagingAndChat": false,
+      "parentalControls": false,
+      "userGeneratedContent": false
+    },
+    "review": {
+      "firstName": "Burak",
+      "lastName": "Kilinc",
+      "email": "b.kilinc@gedipo.com",
+      "phone": "+31 6 27333861",
+      "demoUsername": "demo@zinevu.com",
+      "demoPassword": "DemoVeranda2026!",
+      "demoRequired": true,
+      "notes": "Sign in with the demo account below. Accounts in Zinevu are provisioned by the\ndealer's own firm — there is no public sign-up — so this account is the only way\ninto the app, and it is a real dealer account carrying demo data.\n\nPlease sign in with the EMAIL AND PASSWORD, not the Apple or Google buttons. Those\ntwo hand us an identity we have never seen, and with sign-up closed the backend\ncorrectly turns it away.\n\nZinevu is a business tool for veranda companies: their own staff manage their own\nrequests, quotes, planning and customer conversations. Every screen shows only the\nsigned-in company's data.\n\nWHAT IS NEW IN 1.3.0\n1. Messages (tab bar → speech-bubble icon). Two sources behind one switch:\n   \"Website\" is the live chat from the dealer's own site; \"WhatsApp & mail\" is\n   their customers' replies on WhatsApp and by e-mail. Tap a row to read the\n   thread and answer it.\n2. Sending a quote over WhatsApp: Leads → open a request → Send → WhatsApp.\n3. A work queue: Planning tab → the \"Tasks\" side of the switch at the top.\n   Everything still owed, grouped by how late it is. Swipe a row to close it,\n   long-press to select several, and the magnifier searches all of them.\n4. Search over requests: Leads → the field at the top (name, offer number or\n   address).\n\nOne item in the release notes will NOT be visible on the demo account: switching\ncompany. That control only appears for a person who works for more than one\nZinevu company, and the demo account belongs to a single one. Nothing is hidden\nbehind it — it is a sheet that lists the person's companies and changes which\none the app is showing.\n\nTHE APP CLIP AND AR MEASURING (unchanged since 1.1.0)\nIn the app: Leads → \"New lead\" (bottom right) → \"Start by measuring\". After\n\"Done\", tap \"Continue with these sizes\", pick a veranda, and the dealer's form\nopens with the measured width and depth already filled in.\n\nTo test the App Clip itself, on an iPhone with iOS 16.4 or later open:\nhttps://app.zinevu.com/ar/5kbmKEIJ0u8bMLD0cmQAWO2b01wZb3ps?id=e245e554-02a5-4abf-b890-23757449f869&lang=en\nTap \"Start measuring\", allow camera access, move the phone slowly over the floor,\nplace two points along a wall and one more away from it, then tap \"Done\"."
+    },
+    "appClip": {
+      "defaultExperience": {
+        "action": "OPEN",
+        "releaseWithAppStoreVersion": true,
+        "reviewDetail": {
+          "invocationUrls": [
+            "https://app.zinevu.com/ar/5kbmKEIJ0u8bMLD0cmQAWO2b01wZb3ps?id=e245e554-02a5-4abf-b890-23757449f869&lang=en"
+          ]
+        },
+        "info": {
+          "nl-NL": {
+            "subtitle": "Meet je veranda met je telefoon",
+            "headerImage": "store/app-clip/nl-NL/cube-veranda-apple-card-1800x1200.png"
+          },
+          "en-GB": {
+            "subtitle": "Measure your veranda with your phone",
+            "headerImage": "store/app-clip/en-GB/cube-veranda-apple-card-1800x1200.png"
+          }
+        }
+      }
+    }
+  }
+}
