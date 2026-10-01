@@ -110,11 +110,28 @@ That account exists:
 demo@zinevu.com / DemoVeranda2026!
 ```
 
-It is the "DEMO Veranda" dealer (account 27) on `api.zinevu.com`: 29 deals
-across the board's four tabs, three chat threads, and a fortnight of planned
-visits. `ZinevuDemoSeeder` in the API repo owns it — re-run it before submitting
-if the agenda has aged out, since it books everything relative to `now()` and a
-review six weeks after the build would otherwise open onto an empty Planning tab.
+It is the "DEMO Veranda" dealer (account 27) on `api.zinevu.com`: 36 deals across
+the board's four columns, three website chat threads, 25 WhatsApp/mail
+conversations, a four-person team and an answered support ticket.
+
+`ZinevuDemoSeeder` in the API repo keeps it current, and **it has to be run again
+before every submission**:
+
+```bash
+ssh root@91.99.181.231 "cd /var/www/api.zinevu.com/public && \
+  php artisan db:seed --class=ZinevuDemoSeeder --force"
+```
+
+Everything it touches is dated relative to `now()`, so what it tops up is exactly
+what goes stale between one release and the next: six weeks of planned visits
+(+40 days, far enough to put dots in the following month), five existing wins
+walked into the dashboard's 30-day window, and the support thread. It changes
+dates, never amounts — the revenue a reviewer sees is revenue this tenant
+already had. Keyed throughout, so running it twice books nothing twice.
+
+Skip it and the app does not break, it empties: a Planning tab with no visits, a
+dashboard reading "0 won · €0" under a board holding thirteen approved deals.
+That is the 2.1 this seeder exists to stop.
 
 Those credentials are already in `store.config.json` (`apple.review`), which is
 what puts them in App Review notes on Apple's side. Say there as well that
