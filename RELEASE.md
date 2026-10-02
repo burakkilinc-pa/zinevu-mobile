@@ -227,6 +227,84 @@ Two neighbouring answers that are deliberate, not oversights:
 - **"User Generated Content": No**, for the same reason — nothing a dealer or a
   customer writes is published to anyone else.
 
+## 8. Google Play: Data safety
+
+Play's questionnaire asks the same question as Apple's App Privacy and uses a
+different vocabulary to do it, so the two cannot be copied across. This is the
+translation, derived from what the app does rather than from the iOS answers.
+
+Three questions come first, before any data type:
+
+| Question | Answer | Why |
+| -------- | ------ | --- |
+| Does your app collect or share any of the required user data types? | **Yes** | |
+| Is all of the user data collected by your app encrypted in transit? | **Yes** | every endpoint is HTTPS, the socket is wss, and the manifest sets no `usesCleartextTraffic` |
+| Do you provide a way for users to request that their data be deleted? | **Yes** | Settings → danger section → Delete account, which calls the API directly |
+
+Then the types. Everything is **collected, not shared** — the app talks only to
+`api.zinevu.com`, and Expo's push service and FCM are processors carrying a
+token, which Play does not count as sharing.
+
+| Play category | Data type | Required? | Purpose |
+| ------------- | --------- | --------- | ------- |
+| Personal info | Name | Required | App functionality, Account management |
+| Personal info | Email address | Required | App functionality, Account management |
+| Personal info | User IDs | Required | App functionality, Account management |
+| Personal info | Phone number | Required | App functionality |
+| Personal info | Address | Required | App functionality |
+| Messages | Emails | Required | App functionality |
+| Messages | Other in-app messages | Required | App functionality |
+| Photos and videos | Photos | **Optional** | App functionality |
+| App activity | Other user-generated content | Required | App functionality |
+| Device or other IDs | Device or other IDs | Required | App functionality |
+
+Photos is the one marked optional, and it is the only honest answer there: the
+app works fine for somebody who never attaches one. Everything else is what the
+app is.
+
+Phone number and Address are the CUSTOMER's, not the dealer's — a lead carries
+both. Play counts data a user types about somebody else as collected all the
+same, exactly as Apple does, so they are declared.
+
+### What to leave unticked, and why it is not an oversight
+
+Location, Financial info, Health and fitness, Audio files, Files and docs,
+Calendar, Contacts, Web browsing history, Crash logs, Diagnostics, App
+interactions, In-app search history, Installed apps, SMS or MMS, Videos.
+
+Three of those are worth a sentence because they look like they should be on:
+
+- **Calendar and Contacts** mean the DEVICE's calendar and address book. The app
+  reads neither; its agenda is its own records and a customer's number is typed
+  into a lead.
+- **Videos.** `captureVideo` exists in `src/lib/media.ts` and no screen calls it,
+  so no video leaves a phone. The day a screen does, this answer changes.
+- **Crash logs and Diagnostics.** There is no analytics, crash or attribution SDK
+  in the dependency list at all, which is also why `AD_ID` is absent from the
+  manifest and the advertising-ID question is answered **No**.
+
+### Permissions needing a Play declaration form: none
+
+Checked against the built APK's manifest, and the absences are the reason:
+`QUERY_ALL_PACKAGES`, `MANAGE_EXTERNAL_STORAGE`, `READ_MEDIA_IMAGES`,
+`READ_MEDIA_VIDEO`, `SCHEDULE_EXACT_ALARM`, SMS/Call Log,
+`ACCESS_BACKGROUND_LOCATION` and `FOREGROUND_SERVICE` are all absent.
+
+`READ_MEDIA_IMAGES` is the one that would have cost a form. `expo-image-picker`
+goes through Android's Photo Picker instead, so the app never asks for the broad
+gallery permission that Play's Photo and Video Permissions declaration exists
+for. `READ_EXTERNAL_STORAGE`/`WRITE_EXTERNAL_STORAGE` are present but capped at
+`maxSdkVersion="32"`, which is the legacy path and needs no declaration.
+
+### Two more sections in App content
+
+- **App access.** Sign-up is closed, so Play needs the demo account to get past
+  the login screen — the same one in Apple's review notes, with the same
+  instruction to use the password rather than the Apple or Google buttons.
+- **Data deletion.** Play wants an in-app path AND a URL reachable without
+  installing the app. The in-app path exists; confirm the web one does before
+  relying on this answer.
+
 ## Before you build: a checklist that has caught things
 
 - `npm run typecheck` — clean
