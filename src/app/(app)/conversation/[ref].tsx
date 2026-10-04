@@ -162,8 +162,18 @@ export default function LeadConversationScreen() {
         )}
       </KeyboardChatScrollView>
 
+      {/* The offset exists to CANCEL the bar's own bottom inset while the
+          keyboard is up, and the inset has to be there for it to cancel. It
+          was not: the bar carried a flat `py-2`, so the offset had nothing to
+          take back and simply pushed the composer that far behind the
+          keyboard — the send button came out sliced in half. The live-chat
+          thread has had the pair right from the start; this is the same two
+          lines. */}
       <KeyboardStickyView offset={{ closed: 0, opened: insets.bottom }}>
-        <View className="border-t border-border bg-card px-4 py-2">
+        <View
+          className="border-t border-border bg-card px-4 pt-2"
+          style={{ paddingBottom: insets.bottom > 0 ? insets.bottom : 10 }}
+        >
           {canWrite ? (
             <View className="flex-row items-end gap-2">
               <TextInput
